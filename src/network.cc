@@ -66,10 +66,8 @@ namespace oct::neu
 			{
 				//std::cout << "\tCantidd de neuraonas = " << at(i).size() << "\n";
 				for(unsigned short k = 0; k < at(i).at(j).get_inputs().size(); k++)
-				{
-					//std::cout << "\t\tCantidd de entradas = " << at(i).at(j).get_values().size() << "\n";
-					//dendrities[i][j][k] = at(i).at(j).get_values().at(k);	
-					at(i).at(j).get_inputs().at(k);				
+				{	
+					if(k < at(i-1).size()) at(i).at(j).get_inputs().at(k) = &at(i-1).at(k).get_out();						
 				}
 			}		
 		}
