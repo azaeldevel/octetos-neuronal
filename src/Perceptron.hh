@@ -30,16 +30,16 @@ public:
 	Perceptron(unsigned short inputs);
 	void set(unsigned short inputs);
 	
-	std::vector<datatype>& get_values();
+	std::vector<datatype*>& get_inputs();
 	std::vector<datatype>& get_weight();
 	datatype& get_out();
 
-	void set_values(const std::vector<datatype>&);
+	void set_inputs(const std::vector<datatype*>&);
 
 	datatype spread(datatype (*F)(datatype));
 	
 private:
-	std::vector<datatype> values;
+	std::vector<datatype*> inputs;
 	std::vector<datatype> weight;
 	datatype out;
 	//datatype umbral;
@@ -84,13 +84,13 @@ typedef std::vector<unsigned short> LayerWidth;
 /**
 *\brief Indica que la salida(output) de la capa(layer) se conecta con la entrada(input) de la capa siguiente
 */
-struct Dendrite
+/*struct Dendrite
 {
 	unsigned short layer;
 	unsigned short output;
 	unsigned short input;
-};
-typedef std::vector<Dendrite> Dendrities;
+};*/
+//typedef std::vector<Dendrite> Dendrities;
 class Network : public std::vector<Layer>
 {
 public:
@@ -99,17 +99,20 @@ public:
 	*\param FA Funcion de activacion
 	*\param insP Inidca la canitdad de entradas de cada neurona
 	*/
-	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP);
+	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP,unsigned short outsP);
+	~Network();
 	
 private:
 	void conecting();
 	void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l);
 
 private:
-	Dendrities dendrities;
+	//Dendrities dendrities;
 	LayerWidth layerWidth;
 	datatype (*FA)(datatype);
 	unsigned short inputsPerpceptron;
+	datatype*** dendrities;
+	unsigned short outsPerpceptron;
 };
 
 }

@@ -29,19 +29,19 @@ namespace oct::neu
 	{
 	
 	}
-	Perceptron::Perceptron(unsigned short ins) : values(ins), weight(ins)
+	Perceptron::Perceptron(unsigned short ins) : inputs(ins), weight(ins)
 	{
 	
 	}
 	void Perceptron::set(unsigned short ins)
 	{
-		values.resize(ins);
+		inputs.resize(ins);
 		weight.resize(ins);
 	}
 	
-	std::vector<datatype>& Perceptron::get_values()
+	std::vector<datatype*>& Perceptron::get_inputs()
 	{
-		return values;
+		return inputs;
 	}
 	std::vector<datatype>& Perceptron::get_weight()
 	{
@@ -52,12 +52,12 @@ namespace oct::neu
 		return out;
 	}
 	
-	void Perceptron::set_values(const std::vector<datatype>& v)
+	void Perceptron::set_inputs(const std::vector<datatype*>& v)
 	{
-		if(values.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+		if(inputs.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 		for(unsigned short i = 0; i < v.size(); i++)
 		{
-			values[i] = v[i];
+			inputs[i] = v[i];
 		}
 	}
 	
@@ -73,10 +73,10 @@ namespace oct::neu
 	datatype Perceptron::sigma()
 	{
 		datatype val = 0;
-		if(values.size() != weight.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
-		for(unsigned short i = 0; i < values.size(); i++)
+		if(inputs.size() != weight.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+		for(unsigned short i = 0; i < inputs.size(); i++)
 		{
-			val += values[i]*weight[i];
+			val += (*inputs[i])*weight[i];
 		}
 		
 		return val;

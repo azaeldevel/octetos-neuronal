@@ -21,6 +21,7 @@ namespace oct::neu
 	}
 	void Layer::set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype))
 	{
+		if(size() < countP)resize(countP);
 		for(Perceptron& p : *this)
 		{
 			p.set(inputsP);
@@ -57,10 +58,10 @@ namespace oct::neu
 	{
 		for(Perceptron& p : *this)
 		{
-			p.set_values(c);
-			p.spread(FA);			
+			//p.set_inputs(c);
+			//p.spread(FA);			
 		}
-		//calculanbdo la derivada de cada funcion
+		/*//calculanbdo la derivada de cada funcion
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient[i] = sigmoide_dev(at(i).get_out());
@@ -75,13 +76,13 @@ namespace oct::neu
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient_unit[i] = gradient[i]/leght;
-		}		
+		}*/		
 	}
 	void Layer::learning(const Cases& cases)
 	{
 		for(const Case& c : cases)
 		{
-			spread(c.input);
+			
 		}
 	}
 	

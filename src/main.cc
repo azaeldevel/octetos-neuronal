@@ -26,10 +26,14 @@ int main()
 {
 	std::cout << "Hello world!" << std::endl;
 	
+	std::vector<oct::neu::datatype> data(3);
+	data[0] = 3.0;
+	data[1] = 4.0;
+	data[2] = -2.0;
 	oct::neu::Perceptron per(3);
-	per.get_values()[0] = 3.0;
-	per.get_values()[1] = 4.0;
-	per.get_values()[2] = -2.0;
+	per.get_inputs()[0] = &data[0];
+	per.get_inputs()[1] = &data[1];
+	per.get_inputs()[2] = &data[2];
 	per.get_weight()[0] = 0.2;
 	per.get_weight()[1] = 0.6;
 	per.get_weight()[2] = 0.01;
@@ -41,17 +45,17 @@ int main()
 	value[1] = 4.0;
 	value[2] = -2.0;
 	oct::neu::Layer layer(3,50,oct::neu::sigmoide);
-	layer.spread(value);
+	layer.spread(data);
 	oct::neu::Layer::print(layer.get_gradient());
 	
 	oct::neu::LayerWidth layerWidth(6);
 	layerWidth[0]=3;
-	layerWidth[1]=20;
+	layerWidth[1]=18;
 	layerWidth[2]=60;
 	layerWidth[3]=30;
 	layerWidth[4]=5;
-	layerWidth[5]=2;
-	oct::neu::Network network(layerWidth,oct::neu::sigmoide,6);
+	layerWidth[5]=1;
+	oct::neu::Network network(layerWidth,oct::neu::sigmoide,6,1);
 	
 	return 0;
 }
