@@ -26,15 +26,24 @@ int main()
 {
 	std::cout << "Hello world!" << std::endl;
 	
-	oct::neu::Perceptron per(3,2.5,oct::neu::sigmoide);
+	oct::neu::Perceptron per(3);
 	per.get_values()[0] = 3.0;
 	per.get_values()[1] = 4.0;
 	per.get_values()[2] = -2.0;
 	per.get_weight()[0] = 0.2;
 	per.get_weight()[1] = 0.6;
 	per.get_weight()[2] = 0.01;
-	per.spread();
+	per.spread(oct::neu::sigmoide);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
+	
+	std::vector<oct::neu::datatype> value(3);
+	value[0] = 3.0;
+	value[1] = 4.0;
+	value[2] = -2.0;
+	oct::neu::Layer layer(3,50,oct::neu::sigmoide);
+	layer.spread(value);
+	oct::neu::Layer::print(layer.get_gradient());
+	
 	
 	
 	return 0;
