@@ -8,11 +8,6 @@ namespace oct::neu
 {
 typedef float datatype;
 
-enum Activation
-{
-	NONE,
-	SIGMOIDE,
-};
 
 datatype sigmoide(datatype);
 

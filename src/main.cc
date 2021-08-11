@@ -35,8 +35,6 @@ int main()
 	per.get_weight()[2] = 0.01;
 	per.spread();
 	std::cout << "Salida = " << per.get_out() << std::endl;	
-	//oct::neu::datatype activation = per.sigmoide(per.get_out());
-	//std::cout << "Sigmoide = " << activation << std::endl;
 	
 	
 	return 0;
