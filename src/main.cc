@@ -44,7 +44,14 @@ int main()
 	layer.spread(value);
 	oct::neu::Layer::print(layer.get_gradient());
 	
-	
+	oct::neu::LayerWidth layerWidth(6);
+	layerWidth[0]=3;
+	layerWidth[1]=20;
+	layerWidth[2]=60;
+	layerWidth[3]=30;
+	layerWidth[4]=10;
+	layerWidth[5]=1;
+	oct::neu::Network network(layerWidth,oct::neu::sigmoide,4);
 	
 	return 0;
 }

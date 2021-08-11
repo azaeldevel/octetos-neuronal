@@ -53,8 +53,14 @@ private:
 class Layer : public std::vector<Perceptron>
 {
 public:
+	Layer();
+	/**
+	*\param inputsP Entradas por perceptron
+	*\param countP cantidad de perseptornes en la capa
+	*\param FA funcion de activavion
+	*/
 	Layer(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
-	void learning(const Cases&);
+	void set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
 
 	std::vector<datatype>& get_gradient();
 	std::vector<datatype>& get_gradient_unit();
@@ -62,6 +68,7 @@ public:
 	static void print(const std::vector<datatype>&);
 
 	void spread(const std::vector<datatype>& c);
+	void learning(const Cases&);
 
 private:
 	datatype (*FA)(datatype);
@@ -72,13 +79,36 @@ private:
 	std::vector<datatype> gradient_descent;
 };
 
+typedef std::vector<unsigned short> LayerWidth;
+
+/**
+*\brief Indica que la salida(output) de la capa(layer) se conecta con la entrada(input) de la capa siguiente
+*/
+struct Dendrite
+{
+	unsigned short layer;
+	unsigned short output;
+	unsigned short input;
+};
+typedef std::vector<Dendrite> Dendrities;
 class Network : public std::vector<Layer>
 {
 public:
-	Network(unsigned short inputs, std::vector<unsigned short> layerWidth,unsigned short outputs);
+	/**
+	*\param layerWidth Inidca la caxntidad de neuronal para la capa i-esima, deve de tener 1 para la primer capa
+	*\param FA Funcion de activacion
+	*\param insP Inidca la canitdad de entradas de cada neurona
+	*/
+	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP);
 	
 private:
+	void conecting();
 
+private:
+	Dendrities dendrities;
+	LayerWidth layerWidth;
+	datatype (*FA)(datatype);
+	unsigned short inputsPerpceptron;
 };
 
 }

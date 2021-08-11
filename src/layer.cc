@@ -11,8 +11,15 @@ namespace oct::neu
 	
 	
 	
+	Layer::Layer()
+	{
 	
+	}
 	Layer::Layer(unsigned short inputsP, unsigned short countP, datatype (*fa)(datatype)) : std::vector<Perceptron>(countP),FA(fa)
+	{
+		set(inputsP,countP,fa);
+	}
+	void Layer::set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype))
 	{
 		for(Perceptron& p : *this)
 		{
