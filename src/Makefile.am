@@ -1,6 +1,3 @@
-## Process this file with automake to produce Makefile.in
-
-## Created by Anjuta
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(localedir)"\" \
@@ -11,13 +8,10 @@ AM_CFLAGS =\
 	 -Wall\
 	 -g
 
-bin_PROGRAMS = octetos_neuronal
+bin_PROGRAMS = develop
 
-octetos_neuronal_SOURCES = \
-	main.cc
-
-octetos_neuronal_LDFLAGS = 
-
-octetos_neuronal_LDADD = 
+develop_SOURCES = main.cc Perceptron.cc
+develop_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
+develop_LDADD = $(OCTETOS_CORE_LIBS)
 
 

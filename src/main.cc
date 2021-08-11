@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
+
 /*
  * main.cc
  * Copyright (C) 2021 Azael R. <azael.devel@gmail.com>
@@ -19,9 +19,26 @@
 
 #include <iostream>
 
+#include "Perceptron.hh"
+
+
 int main()
 {
 	std::cout << "Hello world!" << std::endl;
+	
+	oct::neu::Perceptron per(3,2.5,oct::neu::sigmoide);
+	per.get_values()[0] = 3.0;
+	per.get_values()[1] = 4.0;
+	per.get_values()[2] = -2.0;
+	per.get_weight()[0] = 0.2;
+	per.get_weight()[1] = 0.6;
+	per.get_weight()[2] = 0.01;
+	per.spread();
+	std::cout << "Salida = " << per.get_out() << std::endl;	
+	//oct::neu::datatype activation = per.sigmoide(per.get_out());
+	//std::cout << "Sigmoide = " << activation << std::endl;
+	
+	
 	return 0;
 }
 
