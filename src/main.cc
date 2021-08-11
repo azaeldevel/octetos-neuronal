@@ -49,9 +49,9 @@ int main()
 	layerWidth[1]=20;
 	layerWidth[2]=60;
 	layerWidth[3]=30;
-	layerWidth[4]=10;
-	layerWidth[5]=1;
-	oct::neu::Network network(layerWidth,oct::neu::sigmoide,4);
+	layerWidth[4]=5;
+	layerWidth[5]=2;
+	oct::neu::Network network(layerWidth,oct::neu::sigmoide,6);
 	
 	return 0;
 }

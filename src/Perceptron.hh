@@ -103,6 +103,7 @@ public:
 	
 private:
 	void conecting();
+	void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l);
 
 private:
 	Dendrities dendrities;
