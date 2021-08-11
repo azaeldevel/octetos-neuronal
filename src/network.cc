@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-#include "Perceptron.hh"
+#include "neuronal.hh"
 
 namespace oct::neu
 {

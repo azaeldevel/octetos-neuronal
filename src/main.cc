@@ -19,12 +19,12 @@
 
 #include <iostream>
 
-#include "Perceptron.hh"
+#include "neuronal.hh"
 
 
 int main()
 {
-	std::cout << "Hello world!" << std::endl;
+	//std::cout << "Hello world!" << std::endl;
 	
 	std::vector<oct::neu::datatype> data(3);
 	data[0] = 3.0;
