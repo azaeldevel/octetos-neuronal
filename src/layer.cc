@@ -45,6 +45,10 @@ namespace oct::neu
 	{
 		return gradient_descent;
 	}
+	std::vector<datatype*>& Layer::get_outputs()
+	{
+		return outputs;
+	}
 	
 	void Layer::print(const std::vector<datatype>& v)
 	{
@@ -56,14 +60,26 @@ namespace oct::neu
 		}
 		std::cout << ")";
 	}
-	void Layer::spread(const std::vector<datatype>& c)
+	void Layer::print(const std::vector<datatype*>& v)
 	{
-		for(Perceptron& p : *this)
+		std::cout << "(";
+		for(unsigned short i = 0; i < v.size(); i++)
 		{
-			//p.set_inputs(c);
-			//p.spread(FA);			
+			std::cout << *v[i];
+			if(i < v.size() - 1) std::cout << ",";
 		}
-		/*//calculanbdo la derivada de cada funcion
+		std::cout << ")";
+	}
+	
+	void Layer::spread()
+	{
+		//std::cout << "\tvoid Layer::spread(): step 1 \n";
+		for(unsigned short i = 0; i < size(); i++)
+		{
+			//std::cout << "\tvoid Layer::spread(): step 1.1\n";
+			at(i).spread(FA);			
+		}	
+		//std::cout << "\tvoid Layer::spread(): step 2\n";
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient[i] = sigmoide_dev(at(i).get_out());
@@ -78,23 +94,15 @@ namespace oct::neu
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient_unit[i] = gradient[i]/leght;
-		}*/		
-	}
-	void Layer::spread()
-	{
-		//std::cout << "\tvoid Layer::spread(): step 1 \n";
+		}
+		
+		//save outs
+		outputs.clear();
+		outputs.resize(size());
+		//std::cout << "size = " << size() << "\n";
 		for(unsigned short i = 0; i < size(); i++)
 		{
-			//std::cout << "\tvoid Layer::spread(): step 1.1\n";
-			at(i).spread(FA);			
-		}	
-		//std::cout << "\tvoid Layer::spread(): step 2\n";
-	}
-	void Layer::learning(const Cases& cases)
-	{
-		for(const Case& c : cases)
-		{
-			
+			outputs[i] = &at(i).get_out(); 
 		}
 	}
 	

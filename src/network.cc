@@ -12,6 +12,7 @@ namespace oct::neu
 	Network::Network(const LayerWidth& lw,datatype (*fa)(datatype),unsigned short insP,unsigned short outsP) 
 		: FA(fa),inputsPerpceptron(insP),outsPerpceptron(outsP)
 	{
+		//std::cout << "Network::Network(---) = step 1\n";
 		//validacion de entradas
 		for(unsigned short i = 2; i < lw.size(); i++)
 		{
@@ -22,15 +23,20 @@ namespace oct::neu
 		{
 			layerWidth[i] = lw[i];
 		}
+		//std::cout << "Network::Network(---) = step 2\n";
 		
 		resize(layerWidth.size());
 		
+		//std::cout << "Network::Network(---) = step 3 - " << size() << "\n";
 		at(0).set(1,layerWidth[0],fa);
+		//std::cout << "Network::Network(---) = step 3.1 - " << 0 << " - " << at(0).size() << "\n";
 		for(unsigned short i = 1; i < layerWidth.size(); i++)
 		{
 			at(i).set(insP,layerWidth[i],fa);//configurar cada capa
+			//std::cout << "Network::Network(---) = step 3.1 - " << i << " - " << at(i).size() << "\n";
 		}
 		
+		//std::cout << "Network::Network(---) = step 4\n";
 		conecting();
 	}
 	Network::~Network()
@@ -66,7 +72,7 @@ namespace oct::neu
 		msg += std::to_string(i-1) + "' requiere " + std::to_string(layerWidth[i-1]);
 		throw octetos::core::Exception(msg,f,l);
 	}
-	std::vector<datatype>& Network::spread(std::vector<datatype>& out)
+	std::vector<datatype*>& Network::spread(std::vector<datatype>& out)
 	{
 		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 1\n";
 		if(at(0).size() != out.size()) throw octetos::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
@@ -80,25 +86,32 @@ namespace oct::neu
 		}
 		
 		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 3\n";
-		for(unsigned short i = 0; i < at(i).size(); i++)
+		for(unsigned short i = 0; i < size(); i++)
 		{
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 3.1 - " << i << "\n";
 			at(i).spread();	
 		}
 		
-		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4\n";
-		outs.clear();
-		outs.resize(at(size() - 1).size());
-		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.1\n";
-		for(unsigned short i = 0; i < at(size() - 1).size(); i++)
-		{
-			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.2\n";
-			outs[i] = at(size() - 1).at(i).get_out();
-			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.3\n";
-		}
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4\n";		
+		outs = &(at(size() - 1).get_outputs());
 		
 		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
-		return outs;
+		return *outs;
+	}
+	
+	void Network::learning(const Datas& ds)
+	{
+		spread(*ds[0]);
+		for(unsigned short i = 0; i < size(); i++)
+		{
+			//oct::neu::Layer::print(at(i).get_gradient());
+			oct::neu::Layer::print(at(i).get_outputs());
+			std::cout << "\n";
+		}
+		for(unsigned short i = at(i).size() - 1; i == 0; i--)
+		{
+			
+		}
 	}
 	
 }

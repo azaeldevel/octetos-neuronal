@@ -29,14 +29,18 @@ namespace oct::neu
 	{
 	
 	}
-	Perceptron::Perceptron(unsigned short ins) : inputs(ins), weight(ins)
+	Perceptron::Perceptron(unsigned short ins)
 	{
-	
+		set(ins);
 	}
 	void Perceptron::set(unsigned short ins)
 	{
 		inputs.resize(ins);
 		weight.resize(ins);
+		for(unsigned short i = 0; i < weight.size(); i++)
+		{
+			weight[i] = 1.0;
+		}
 	}
 	
 	std::vector<datatype*>& Perceptron::get_inputs()
@@ -84,7 +88,7 @@ namespace oct::neu
 		for(unsigned short i = 0; i < inputs.size(); i++)
 		{
 			//std::cout << "\tdatatype Perceptron::sigma step 3.1 - " << i << "\n";
-			val += (*inputs[i])*weight[i];
+			val += (*inputs[i]) * weight[i];
 		}
 		
 		//std::cout << "\tdatatype Perceptron::sigma step 4\n";

@@ -7,7 +7,7 @@
 
 namespace oct::neu
 {
-typedef float datatype;
+typedef double datatype;
 
 
 datatype sigmoide(datatype);
@@ -63,25 +63,28 @@ public:
 	Layer(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
 	void set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
 
+	std::vector<datatype*>& get_outputs();
 	std::vector<datatype>& get_gradient();
 	std::vector<datatype>& get_gradient_unit();
 	std::vector<datatype>& get_gradient_descent();
 	static void print(const std::vector<datatype>&);
+	static void print(const std::vector<datatype*>&);
 
-	void spread(const std::vector<datatype>& c);
 	void spread();
-	void learning(const Cases&);
 
 private:
 	datatype (*FA)(datatype);
 
 private:
+	std::vector<datatype*> outputs;
 	std::vector<datatype> gradient;
 	std::vector<datatype> gradient_unit;
 	std::vector<datatype> gradient_descent;
 };
 
 typedef std::vector<unsigned short> LayerWidth;
+
+typedef std::vector<std::vector<datatype>*> Datas;
 
 /**
 *\brief red neuronal
@@ -96,7 +99,8 @@ public:
 	*/
 	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP,unsigned short outsP);
 	~Network();
-	std::vector<datatype>& spread(std::vector<datatype>&);
+	std::vector<datatype*>& spread(std::vector<datatype>&);
+	void learning(const Datas&);
 
 private:
 	void conecting();
@@ -109,7 +113,7 @@ private:
 	unsigned short inputsPerpceptron;
 	datatype*** dendrities;
 	unsigned short outsPerpceptron;
-	std::vector<datatype> outs;
+	std::vector<datatype*>* outs;
 };
 
 }
