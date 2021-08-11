@@ -46,7 +46,7 @@ int main()
 	value[2] = -2.0;
 	oct::neu::Layer layer(3,50,oct::neu::sigmoide);
 	layer.spread(data);
-	oct::neu::Layer::print(layer.get_gradient());
+	//oct::neu::Layer::print(layer.get_gradient());
 	
 	oct::neu::LayerWidth layerWidth(6);
 	layerWidth[0]=3;
@@ -56,6 +56,8 @@ int main()
 	layerWidth[4]=5;
 	layerWidth[5]=1;
 	oct::neu::Network network(layerWidth,oct::neu::sigmoide,6,1);
+	std::vector<oct::neu::datatype>& out = network.spread(data);
+	oct::neu::Layer::print(out);
 	
 	return 0;
 }

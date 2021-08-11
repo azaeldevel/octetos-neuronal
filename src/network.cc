@@ -35,30 +35,16 @@ namespace oct::neu
 	}
 	Network::~Network()
 	{
-		for(unsigned short i = 0; i < layerWidth.size(); i++)
-		{
-			/*for(unsigned short j = 0; j < outsPerpceptron; j++)
-			{
-				delete[] dendrities[i][j];
-			}*/
-			//delete[] dendrities[i];
-		}
-		//delete[] dendrities;
 	}
 	void Network::conecting()
 	{
-		//dendrities.resize(layerWidth.size() * inputsPerpceptron);//ajustando la cantidad de dendritas posibles
 		dendrities = new datatype** [layerWidth.size()];
 		for(unsigned short i = 0; i < layerWidth.size(); i++)
 		{
 			dendrities[i] = new datatype* [outsPerpceptron];
-			/*for(unsigned short j = 0; j < outsPerpceptron; j++)
-			{
-				dendrities[i][j] = new unsigned short [inputsPerpceptron];
-			}*/
 		}
 		
-		std::cout << "\n";
+		//std::cout << "\n";
 		for(unsigned short i = 1; i < size(); i++)
 		{
 			//std::cout << "Cantidd de Layers = " << size() << "\n";
@@ -67,7 +53,8 @@ namespace oct::neu
 				//std::cout << "\tCantidd de neuraonas = " << at(i).size() << "\n";
 				for(unsigned short k = 0; k < at(i).at(j).get_inputs().size(); k++)
 				{	
-					if(k < at(i-1).size()) at(i).at(j).get_inputs().at(k) = &at(i-1).at(k).get_out();						
+					if(k < at(i-1).size()) at(i).at(j).get_inputs().at(k) = &(at(i-1).at(k).get_out());
+					else at(i).at(j).resize(k);					
 				}
 			}		
 		}
@@ -79,4 +66,39 @@ namespace oct::neu
 		msg += std::to_string(i-1) + "' requiere " + std::to_string(layerWidth[i-1]);
 		throw octetos::core::Exception(msg,f,l);
 	}
+	std::vector<datatype>& Network::spread(std::vector<datatype>& out)
+	{
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 1\n";
+		if(at(0).size() != out.size()) throw octetos::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
+		
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 2\n";
+		for(unsigned short i = 0; i < at(0).size(); i++)
+		{
+			//std::cout << "\tEntradas por neuraona = " << at(0).at(i).get_inputs().size << "\n";
+			if(at(0).at(i).get_inputs().size() != 1) throw octetos::core::Exception("La cantidad de entradas por neurona deve ser 1 en la primer capa.",__FILE__,__LINE__);
+			at(0).at(i).get_inputs()[0] = &out[i];
+		}
+		
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 3\n";
+		for(unsigned short i = 0; i < at(i).size(); i++)
+		{
+			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 3.1 - " << i << "\n";
+			at(i).spread();	
+		}
+		
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4\n";
+		outs.clear();
+		outs.resize(at(size() - 1).size());
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.1\n";
+		for(unsigned short i = 0; i < at(size() - 1).size(); i++)
+		{
+			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.2\n";
+			outs[i] = at(size() - 1).at(i).get_out();
+			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4.3\n";
+		}
+		
+		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
+		return outs;
+	}
+	
 }

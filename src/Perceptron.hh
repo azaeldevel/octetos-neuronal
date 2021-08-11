@@ -37,6 +37,7 @@ public:
 	void set_inputs(const std::vector<datatype*>&);
 
 	datatype spread(datatype (*F)(datatype));
+	void resize(unsigned short);
 	
 private:
 	std::vector<datatype*> inputs;
@@ -68,6 +69,7 @@ public:
 	static void print(const std::vector<datatype>&);
 
 	void spread(const std::vector<datatype>& c);
+	void spread();
 	void learning(const Cases&);
 
 private:
@@ -82,15 +84,8 @@ private:
 typedef std::vector<unsigned short> LayerWidth;
 
 /**
-*\brief Indica que la salida(output) de la capa(layer) se conecta con la entrada(input) de la capa siguiente
+*\brief red neuronal
 */
-/*struct Dendrite
-{
-	unsigned short layer;
-	unsigned short output;
-	unsigned short input;
-};*/
-//typedef std::vector<Dendrite> Dendrities;
 class Network : public std::vector<Layer>
 {
 public:
@@ -101,7 +96,8 @@ public:
 	*/
 	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP,unsigned short outsP);
 	~Network();
-	
+	std::vector<datatype>& spread(std::vector<datatype>&);
+
 private:
 	void conecting();
 	void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l);
@@ -113,6 +109,7 @@ private:
 	unsigned short inputsPerpceptron;
 	datatype*** dendrities;
 	unsigned short outsPerpceptron;
+	std::vector<datatype> outs;
 };
 
 }

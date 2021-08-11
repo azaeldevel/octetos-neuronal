@@ -64,24 +64,37 @@ namespace oct::neu
 	
 	datatype Perceptron::spread(datatype (*F)(datatype))
 	{
+		//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 1\n";
 		datatype s = sigma();
+		//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 2\n";
 		out =  F(s);
+		//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 3\n";
 		return out;
 	}
 
 	
 	datatype Perceptron::sigma()
 	{
+		//std::cout << "\tdatatype Perceptron::sigma step 1\n";
 		datatype val = 0;
+		//std::cout << "\tdatatype Perceptron::sigma step 2\n";
 		if(inputs.size() != weight.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+		//std::cout << "\tdatatype Perceptron::sigma step 3\n";
+		
 		for(unsigned short i = 0; i < inputs.size(); i++)
 		{
+			//std::cout << "\tdatatype Perceptron::sigma step 3.1 - " << i << "\n";
 			val += (*inputs[i])*weight[i];
 		}
 		
+		//std::cout << "\tdatatype Perceptron::sigma step 4\n";
 		return val;
 	}
-	
+	void Perceptron::resize(unsigned short ins)
+	{
+		inputs.resize(ins);
+		weight.resize(ins);
+	}
 	
 	
 	

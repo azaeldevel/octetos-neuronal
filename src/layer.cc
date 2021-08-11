@@ -19,9 +19,11 @@ namespace oct::neu
 	{
 		set(inputsP,countP,fa);
 	}
-	void Layer::set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype))
+	void Layer::set(unsigned short inputsP, unsigned short countP, datatype (*fa)(datatype))
 	{
 		if(size() < countP)resize(countP);
+		
+		FA = fa;
 		for(Perceptron& p : *this)
 		{
 			p.set(inputsP);
@@ -77,6 +79,16 @@ namespace oct::neu
 		{
 			gradient_unit[i] = gradient[i]/leght;
 		}*/		
+	}
+	void Layer::spread()
+	{
+		//std::cout << "\tvoid Layer::spread(): step 1 \n";
+		for(unsigned short i = 0; i < size(); i++)
+		{
+			//std::cout << "\tvoid Layer::spread(): step 1.1\n";
+			at(i).spread(FA);			
+		}	
+		//std::cout << "\tvoid Layer::spread(): step 2\n";
 	}
 	void Layer::learning(const Cases& cases)
 	{
