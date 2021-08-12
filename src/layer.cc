@@ -80,6 +80,7 @@ namespace oct::neu
 			at(i).spread(FA);			
 		}	
 		//std::cout << "\tvoid Layer::spread(): step 2\n";
+		gradient.resize(size());
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient[i] = sigmoide_dev(at(i).get_out());
@@ -91,9 +92,15 @@ namespace oct::neu
 			leght += std::pow(gradient[i],2.0);//suma de cuadrados
 		}
 		leght = std::sqrt(leght);
+		gradient_unit.resize(size());
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient_unit[i] = gradient[i]/leght;
+		}
+		gradient_descent.resize(size());
+		for(unsigned short i = 0; i < size(); i++)
+		{
+			gradient_descent[i] = -1.0 * gradient_unit[i];
 		}
 		
 		//save outs
@@ -105,5 +112,8 @@ namespace oct::neu
 			outputs[i] = &at(i).get_out(); 
 		}
 	}
+	void Layer::minimize(unsigned short maxit, datatype ratio, std::vector<datatype*>&)
+	{
 	
+	}
 }

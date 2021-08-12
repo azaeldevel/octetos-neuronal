@@ -105,12 +105,12 @@ namespace oct::neu
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			//oct::neu::Layer::print(at(i).get_gradient());
-			oct::neu::Layer::print(at(i).get_outputs());
-			std::cout << "\n";
+			//oct::neu::Layer::print(at(i).get_outputs());
+			//std::cout << "\n";
 		}
 		for(unsigned short i = at(i).size() - 1; i == 0; i--)
 		{
-			
+			at(i).minimize(5,0.01,at(i).get_outputs());
 		}
 	}
 	

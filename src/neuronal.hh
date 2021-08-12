@@ -71,6 +71,7 @@ public:
 	static void print(const std::vector<datatype*>&);
 
 	void spread();
+	void minimize(unsigned short maxit, datatype ratio, std::vector<datatype*>&);
 
 private:
 	datatype (*FA)(datatype);
