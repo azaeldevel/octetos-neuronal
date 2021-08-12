@@ -30,27 +30,27 @@ namespace oct::neu
 		}
 		gradient.resize(countP);
 		gradient_unit.resize(countP);
-		gradient_descent.resize(countP);
+		//gradient_descent.resize(countP);
 	}
 	
-	std::vector<datatype>& Layer::get_gradient()
+	oct::math::Vector<datatype>& Layer::get_gradient()
 	{
 		return gradient;
 	}
-	std::vector<datatype>& Layer::get_gradient_unit()
+	oct::math::Vector<datatype>& Layer::get_gradient_unit()
 	{
 		return gradient_unit;
 	}
-	std::vector<datatype>& Layer::get_gradient_descent()
+	/*oct::math::Vector<datatype>& Layer::get_gradient_descent()
 	{
 		return gradient_descent;
-	}
-	std::vector<datatype*>& Layer::get_outputs()
+	}*/
+	oct::math::Vector<datatype*>& Layer::get_outputs()
 	{
 		return outputs;
 	}
 	
-	void Layer::print(const std::vector<datatype>& v)
+	void Layer::print(const oct::math::Vector<datatype>& v)
 	{
 		std::cout << "(";
 		for(unsigned short i = 0; i < v.size(); i++)
@@ -60,7 +60,7 @@ namespace oct::neu
 		}
 		std::cout << ")";
 	}
-	void Layer::print(const std::vector<datatype*>& v)
+	void Layer::print(const oct::math::Vector<datatype*>& v)
 	{
 		std::cout << "(";
 		for(unsigned short i = 0; i < v.size(); i++)
@@ -97,11 +97,11 @@ namespace oct::neu
 		{
 			gradient_unit[i] = gradient[i]/leght;
 		}
-		gradient_descent.resize(size());
+		/*gradient_descent.resize(size());
 		for(unsigned short i = 0; i < size(); i++)
 		{
 			gradient_descent[i] = -1.0 * gradient_unit[i];
-		}
+		}*/
 		
 		//save outs
 		outputs.clear();
@@ -112,8 +112,31 @@ namespace oct::neu
 			outputs[i] = &at(i).get_out(); 
 		}
 	}
-	void Layer::minimize(unsigned short maxit, datatype ratio, std::vector<datatype*>&)
+	void Layer::minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out, Layer& prevL)
 	{
-	
+		//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 1\n";
+		if(outputs.size() != gradient_unit.size()) throw octetos::core::Exception("Los vectores son de diferente tamano",__FILE__,__LINE__);
+		
+		//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 2\n";
+		oct::math::Vector<datatype> newdat(outputs.size());
+		std::list<oct::math::Vector<datatype>> options;
+		bool running = true;
+		unsigned short countit = 0;
+		//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 3\n";
+		do
+		{
+			for(unsigned short i = 0; i < gradient_unit.size(); i++)
+			{
+				newdat[i] = *outputs[i] - (gradient_unit[i] * ratio * datatype(maxit));
+			}	
+			//options.push_back(newdat);
+			countit++;
+			if(maxit > 0) if(countit >= maxit) running = false;				
+		}
+		while(running);
+		
+		//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 4\n";
+		out = newdat;
+		//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 5\n";
 	}
 }

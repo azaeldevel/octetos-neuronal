@@ -26,7 +26,7 @@ int main()
 {
 	//std::cout << "Hello world!" << std::endl;
 	
-	std::vector<oct::neu::datatype> data(3);
+	oct::math::Vector<oct::neu::datatype> data(3);
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
@@ -40,7 +40,7 @@ int main()
 	per.spread(oct::neu::sigmoide);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
-	std::vector<oct::neu::datatype> value(3);
+	oct::math::Vector<oct::neu::datatype> value(3);
 	value[0] = 3.0;
 	value[1] = 4.0;
 	value[2] = -2.0;

@@ -43,13 +43,7 @@ namespace oct::neu
 	{
 	}
 	void Network::conecting()
-	{
-		dendrities = new datatype** [layerWidth.size()];
-		for(unsigned short i = 0; i < layerWidth.size(); i++)
-		{
-			dendrities[i] = new datatype* [outsPerpceptron];
-		}
-		
+	{		
 		//std::cout << "\n";
 		for(unsigned short i = 1; i < size(); i++)
 		{
@@ -58,11 +52,18 @@ namespace oct::neu
 			{
 				//std::cout << "\tCantidd de neuraonas = " << at(i).size() << "\n";
 				for(unsigned short k = 0; k < at(i).at(j).get_inputs().size(); k++)
-				{	
-					if(k < at(i-1).size()) at(i).at(j).get_inputs().at(k) = &(at(i-1).at(k).get_out());
-					else at(i).at(j).resize(k);					
+				{
+					if(k < at(i-1).size()) 
+					{
+						at(i).at(j).get_inputs().at(k) = &(at(i-1).at(k).get_out());
+					}
+					else 
+					{
+						at(i).at(j).resize(k);
+						break;
+					}
 				}
-			}		
+			}	
 		}
 	}
 	void Network::errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l)
@@ -72,7 +73,7 @@ namespace oct::neu
 		msg += std::to_string(i-1) + "' requiere " + std::to_string(layerWidth[i-1]);
 		throw octetos::core::Exception(msg,f,l);
 	}
-	std::vector<datatype*>& Network::spread(std::vector<datatype>& out)
+	oct::math::Vector<datatype*>& Network::spread(oct::math::Vector<datatype>& out)
 	{
 		//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 1\n";
 		if(at(0).size() != out.size()) throw octetos::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
@@ -101,6 +102,7 @@ namespace oct::neu
 	
 	void Network::learning(const Datas& ds)
 	{
+		//std::cout << "void learning(const Datas& ds) Step 1\n";
 		spread(*ds[0]);
 		for(unsigned short i = 0; i < size(); i++)
 		{
@@ -108,10 +110,18 @@ namespace oct::neu
 			//oct::neu::Layer::print(at(i).get_outputs());
 			//std::cout << "\n";
 		}
-		for(unsigned short i = at(i).size() - 1; i == 0; i--)
-		{
-			at(i).minimize(5,0.01,at(i).get_outputs());
-		}
+		//std::cout << "void learning(const Datas& ds) Step 2\n";
+		oct::neu::Layer::print(at(size()-1).get_outputs());
+		std::cout << "\n";
+		//std::cout << "void learning(const Datas& ds) Step 3\n";
+		unsigned short lastlayer = size()-1;
+		oct::math::Vector<datatype> newvect;
+		//std::cout << "void learning(const Datas& ds) Step 4\n";
+		at(lastlayer).minimize(50,0.01,newvect);
+		//std::cout << "void learning(const Datas& ds) Step 5\n";
+		oct::neu::Layer::print(newvect);
+		std::cout << "\n";
+		//std::cout << "void learning(const Datas& ds) Step 6\n";
 	}
 	
 }

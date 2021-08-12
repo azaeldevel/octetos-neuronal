@@ -1,12 +1,14 @@
 
-#ifndef OCTETOS_NEURONAL_PERCEPTRON_HH
-#define OCTETOS_NEURONAL_PERCEPTRON_HH
+#ifndef OCTETOS_NEURONAL_HH
+#define OCTETOS_NEURONAL_HH
 
 #include <vector>
 #include <list>
+#include <octetos/math/Vector.hh>
 
 namespace oct::neu
 {
+
 typedef double datatype;
 
 
@@ -31,17 +33,17 @@ public:
 	void set(unsigned short inputs);
 	
 	std::vector<datatype*>& get_inputs();
-	std::vector<datatype>& get_weight();
+	oct::math::Vector<datatype>& get_weight();
 	datatype& get_out();
 
-	void set_inputs(const std::vector<datatype*>&);
+	void set_inputs(const oct::math::Vector<datatype*>&);
 
 	datatype spread(datatype (*F)(datatype));
 	void resize(unsigned short);
 	
 private:
 	std::vector<datatype*> inputs;
-	std::vector<datatype> weight;
+	oct::math::Vector<datatype> weight;
 	datatype out;
 	//datatype umbral;
 
@@ -63,29 +65,29 @@ public:
 	Layer(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
 	void set(unsigned short inputsP, unsigned short countP, datatype (*FA)(datatype));
 
-	std::vector<datatype*>& get_outputs();
-	std::vector<datatype>& get_gradient();
-	std::vector<datatype>& get_gradient_unit();
-	std::vector<datatype>& get_gradient_descent();
-	static void print(const std::vector<datatype>&);
-	static void print(const std::vector<datatype*>&);
+	oct::math::Vector<datatype*>& get_outputs();
+	oct::math::Vector<datatype>& get_gradient();
+	oct::math::Vector<datatype>& get_gradient_unit();
+	//oct::math::Vector<datatype>& get_gradient_descent();
+	static void print(const oct::math::Vector<datatype>&);
+	static void print(const oct::math::Vector<datatype*>&);
 
 	void spread();
-	void minimize(unsigned short maxit, datatype ratio, std::vector<datatype*>&);
+	void minimize(unsigned short maxit, datatype ratio, oct::math::Vector<datatype>& out, Layer& prevL);
 
 private:
 	datatype (*FA)(datatype);
 
 private:
-	std::vector<datatype*> outputs;
-	std::vector<datatype> gradient;
-	std::vector<datatype> gradient_unit;
-	std::vector<datatype> gradient_descent;
+	oct::math::Vector<datatype*> outputs;
+	oct::math::Vector<datatype> gradient;
+	oct::math::Vector<datatype> gradient_unit;
+	//oct::math::Vector<datatype> gradient_descent;
 };
 
 typedef std::vector<unsigned short> LayerWidth;
 
-typedef std::vector<std::vector<datatype>*> Datas;
+typedef oct::math::Vector<oct::math::Vector<datatype>*> Datas;
 
 /**
 *\brief red neuronal
@@ -100,7 +102,7 @@ public:
 	*/
 	Network(const LayerWidth& layerWidth,datatype (*FA)(datatype),unsigned short insP,unsigned short outsP);
 	~Network();
-	std::vector<datatype*>& spread(std::vector<datatype>&);
+	oct::math::Vector<datatype*>& spread(oct::math::Vector<datatype>&);
 	void learning(const Datas&);
 
 private:
@@ -112,9 +114,8 @@ private:
 	LayerWidth layerWidth;
 	datatype (*FA)(datatype);
 	unsigned short inputsPerpceptron;
-	datatype*** dendrities;
 	unsigned short outsPerpceptron;
-	std::vector<datatype*>* outs;
+	oct::math::Vector<datatype*>* outs;
 };
 
 }

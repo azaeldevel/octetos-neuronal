@@ -39,7 +39,7 @@ namespace oct::neu
 		weight.resize(ins);
 		for(unsigned short i = 0; i < weight.size(); i++)
 		{
-			weight[i] = 1.0;
+			weight[i] = 0.5;
 		}
 	}
 	
@@ -47,7 +47,7 @@ namespace oct::neu
 	{
 		return inputs;
 	}
-	std::vector<datatype>& Perceptron::get_weight()
+	oct::math::Vector<datatype>& Perceptron::get_weight()
 	{
 		return weight;
 	}
@@ -56,7 +56,7 @@ namespace oct::neu
 		return out;
 	}
 	
-	void Perceptron::set_inputs(const std::vector<datatype*>& v)
+	void Perceptron::set_inputs(const oct::math::Vector<datatype*>& v)
 	{
 		if(inputs.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 		for(unsigned short i = 0; i < v.size(); i++)
