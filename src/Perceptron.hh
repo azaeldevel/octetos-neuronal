@@ -8,16 +8,16 @@
 namespace oct::neu
 {
 	typedef double datatype;
-	struct Case
+
+
+	template<typename T> T sigmoide(T v)
 	{
-		std::vector<datatype> input;
-		datatype out;
-	};
-	typedef std::list<Case> Cases;
-
-
-	datatype sigmoide(datatype v);
-	datatype sigmoide_dev(datatype v);
+		return 1.0/(1.0 + exp(-1.0 * v));
+	}
+	template<typename T> T sigmoide_dev(T v)
+	{
+		return v*(1.0-v);
+	}
 
 
 	template<typename T> class Perceptron
@@ -62,7 +62,7 @@ namespace oct::neu
 			}
 		}
 
-		datatype spread(datatype (*F)(T))
+		T spread(T (*F)(T))
 		{
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 1\n";
 			datatype s = sigma();

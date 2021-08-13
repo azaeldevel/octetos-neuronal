@@ -8,7 +8,14 @@
 namespace oct::neu
 {
 	typedef std::vector<unsigned short> LayerWidth;
-	typedef oct::math::Vector<oct::math::Vector<datatype>*> Datas;
+	typedef std::vector<oct::math::Vector<datatype>*> Datas;
+
+	struct Case
+	{
+		std::vector<datatype> input;
+		datatype out;
+	};
+	typedef std::list<Case> Cases;
 
 	
 	/**
