@@ -7,8 +7,6 @@
 
 namespace oct::neu
 {
-	typedef double datatype;
-
 
 	template<typename T> T sigmoide(T v)
 	{
@@ -53,7 +51,7 @@ namespace oct::neu
 			return out;
 		}
 
-		void set_inputs(const oct::math::Vector<datatype*>& v)
+		void set_inputs(const oct::math::Vector<T*>& v)
 		{
 			if(inputs.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 			for(unsigned short i = 0; i < v.size(); i++)
@@ -65,7 +63,7 @@ namespace oct::neu
 		T spread(T (*F)(T))
 		{
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 1\n";
-			datatype s = sigma();
+			T s = sigma();
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 2\n";
 			out =  F(s);
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 3\n";
@@ -79,7 +77,7 @@ namespace oct::neu
 		
 	private:
 		std::vector<T*> inputs;
-		oct::math::Vector<T> weight;
+		math::Vector<T> weight;
 		T out;
 
 	private:
@@ -87,7 +85,7 @@ namespace oct::neu
 		T sigma()
 		{
 			//std::cout << "\tdatatype Perceptron::sigma step 1\n";
-			datatype val = 0;
+			T val = 0;
 			//std::cout << "\tdatatype Perceptron::sigma step 2\n";
 			if(inputs.size() != weight.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 			//std::cout << "\tdatatype Perceptron::sigma step 3\n";

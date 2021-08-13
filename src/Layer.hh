@@ -33,7 +33,6 @@ namespace oct::neu
 			}
 			gradient.resize(countP);
 			gradient_unit.resize(countP);
-			//gradient_descent.resize(countP);
 		}
 
 		oct::math::Vector<T>& get_gradient()
@@ -96,11 +95,6 @@ namespace oct::neu
 			{
 				gradient_unit[i] = gradient[i]/leght;
 			}
-			/*gradient_descent.resize(size());
-			for(unsigned short i = 0; i < size(); i++)
-			{
-				gradient_descent[i] = -1.0 * gradient_unit[i];
-			}*/
 			
 			//save outs
 			outputs.clear();
@@ -117,8 +111,8 @@ namespace oct::neu
 			if(outputs.size() != gradient_unit.size()) throw octetos::core::Exception("Los vectores son de diferente tamano",__FILE__,__LINE__);
 			
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 2\n";
-			oct::math::Vector<datatype> newdat(outputs.size());
-			std::list<oct::math::Vector<datatype>> options;
+			oct::math::Vector<T> newdat(outputs.size());
+			std::list<oct::math::Vector<T>> options;
 			bool running = true;
 			unsigned short countit = 0;
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 3\n";
@@ -126,7 +120,7 @@ namespace oct::neu
 			{
 				for(unsigned short i = 0; i < gradient_unit.size(); i++)
 				{
-					newdat[i] = *outputs[i] - (gradient_unit[i] * ratio * datatype(maxit));
+					newdat[i] = *outputs[i] - (gradient_unit[i] * ratio * T(maxit));
 				}	
 				//options.push_back(newdat);
 				countit++;
@@ -146,7 +140,6 @@ namespace oct::neu
 		oct::math::Vector<T*> outputs;
 		oct::math::Vector<T> gradient;
 		oct::math::Vector<T> gradient_unit;
-		//oct::math::Vector<datatype> gradient_descent;
 	};
 
 

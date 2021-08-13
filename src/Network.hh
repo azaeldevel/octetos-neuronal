@@ -8,14 +8,6 @@
 namespace oct::neu
 {
 	typedef std::vector<unsigned short> LayerWidth;
-	typedef std::vector<oct::math::Vector<datatype>*> Datas;
-
-	struct Case
-	{
-		std::vector<datatype> input;
-		datatype out;
-	};
-	typedef std::list<Case> Cases;
 
 	
 	/**
@@ -88,7 +80,7 @@ namespace oct::neu
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
 			return *outs;
 		}
-		void learning(const Datas& ds)
+		void learning(const std::vector<oct::math::Vector<T>*>& ds)
 		{
 			//std::cout << "void learning(const Datas& ds) Step 1\n";
 			spread(*ds[0]);

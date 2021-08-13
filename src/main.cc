@@ -26,11 +26,11 @@ int main()
 {
 	//std::cout << "Hello world!" << std::endl;
 	
-	oct::math::Vector<oct::neu::datatype> data(3);
+	oct::math::Vector<double> data(3);
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
-	oct::neu::Perceptron<oct::neu::datatype> per(3);
+	oct::neu::Perceptron<double> per(3);
 	per.get_inputs()[0] = &data[0];
 	per.get_inputs()[1] = &data[1];
 	per.get_inputs()[2] = &data[2];
@@ -40,11 +40,11 @@ int main()
 	per.spread(oct::neu::sigmoide);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
-	oct::math::Vector<oct::neu::datatype> value(3);
+	oct::math::Vector<double> value(3);
 	value[0] = 3.0;
 	value[1] = 4.0;
 	value[2] = -2.0;
-	oct::neu::Layer<oct::neu::datatype> layer(3,50,oct::neu::sigmoide);
+	oct::neu::Layer<double> layer(3,50,oct::neu::sigmoide);
 	//layer.spread(data);
 	//oct::neu::Layer::print(layer.get_gradient());
 	
@@ -55,10 +55,10 @@ int main()
 	layerWidth[3]=30;
 	layerWidth[4]=5;
 	layerWidth[5]=1;
-	oct::neu::Network<oct::neu::datatype> network(layerWidth,oct::neu::sigmoide,6,1);
+	oct::neu::Network<double> network(layerWidth,oct::neu::sigmoide,6,1);
 	//std::vector<oct::neu::datatype*>& out = network.spread(data);
 	//oct::neu::Layer::print(out);
-	oct::neu::Datas ds;
+	std::vector<oct::math::Vector<double>*> ds;
 	ds.push_back(&data);
 	std::cout << "\n";
 	network.learning(ds);
