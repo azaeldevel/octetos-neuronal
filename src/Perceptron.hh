@@ -7,12 +7,14 @@
 
 namespace oct::neu
 {
+	typedef unsigned short Index;
 
+	
 	template<typename T> T sigmoide(T v)
 	{
 		return 1.0/(1.0 + exp(-1.0 * v));
 	}
-	template<typename T> T sigmoide_dev(T v)
+	template<typename T> T sigmoide_D(T v)
 	{
 		return v*(1.0-v);
 	}
@@ -34,7 +36,7 @@ namespace oct::neu
 			weight.resize(ins);
 			for(unsigned short i = 0; i < weight.size(); i++)
 			{
-				weight[i] = 0.5;
+				weight[i] = 0.0;
 			}
 		}
 		
@@ -73,6 +75,10 @@ namespace oct::neu
 		{
 			inputs.resize(ins);
 			weight.resize(ins);
+		}
+		void gd(T )
+		{
+			
 		}
 		
 	private:

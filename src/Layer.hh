@@ -18,32 +18,30 @@ namespace oct::neu
 		*\param countP cantidad de perseptornes en la capa
 		*\param FA funcion de activavion
 		*/
-		Layer(unsigned short inputsP, unsigned short countP, T (*fa)(T)) : std::vector<Perceptron<T>>(countP),FA(fa)
+		Layer(unsigned short inputsP, unsigned short countP, T (*fa)(T),T (*d)(T)) : std::vector<Perceptron<T>>(countP),FA(fa),D(d)
 		{
-			set(inputsP,countP,fa);
+			set(inputsP,countP,fa,d);
 		}
-		void set(unsigned short inputsP, unsigned short countP, T (*fa)(T))
+		void set(unsigned short inputsP, unsigned short countP, T (*fa)(T),T (*d)(T))
 		{
 			if(std::vector<Perceptron<T>>::size() < countP) std::vector<Perceptron<T>>::resize(countP);
 			
 			FA = fa;
+			D = d;
 			for(Perceptron<T>& p : *this)
 			{
 				p.set(inputsP);
 			}
-			gradient.resize(countP);
-			gradient_unit.resize(countP);
+			
+			outputs.resize(std::vector<Perceptron<T>>::size());
+			//std::cout << "size = " << std::vector<Perceptron<T>>::size() << "\n";
+			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
+			{//asigna la salida de cada perceptor al vetor de salida
+				outputs[i] = &std::vector<Perceptron<T>>::at(i).get_out(); 
+			}
 		}
 
-		oct::math::Vector<T>& get_gradient()
-		{
-			return gradient;
-		}
-		oct::math::Vector<T>& get_gradient_unit()
-		{
-			return gradient_unit;
-		}
-		oct::math::Vector<T*>& get_outputs()
+		std::vector<T*>& get_outputs()
 		{
 			return outputs;
 		}
@@ -58,7 +56,7 @@ namespace oct::neu
 			}
 			std::cout << ")";
 		}
-		static void print(const oct::math::Vector<T*>& v)
+		static void print(const std::vector<T*>& v)
 		{
 			std::cout << "(";
 			for(unsigned short i = 0; i < v.size(); i++)
@@ -76,70 +74,56 @@ namespace oct::neu
 			{
 				//std::cout << "\tvoid Layer::spread(): step 1.1\n";
 				std::vector<Perceptron<T>>::at(i).spread(FA);			
-			}	
-			//std::cout << "\tvoid Layer::spread(): step 2\n";
-			gradient.resize(std::vector<Perceptron<T>>::size());
-			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{
-				gradient[i] = sigmoide_dev(std::vector<Perceptron<T>>::at(i).get_out());
 			}
-			//calculando vector unitario
-			T leght = 0;
-			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{
-				leght += std::pow(gradient[i],2.0);//suma de cuadrados
-			}
-			leght = std::sqrt(leght);
-			gradient_unit.resize(std::vector<Perceptron<T>>::size());
-			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{
-				gradient_unit[i] = gradient[i]/leght;
-			}
-			
-			//save outs
-			outputs.clear();
-			outputs.resize(std::vector<Perceptron<T>>::size());
-			//std::cout << "size = " << size() << "\n";
-			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{
-				outputs[i] = &std::vector<Perceptron<T>>::at(i).get_out(); 
-			}
+			//std::cout << "\tvoid Layer::spread(): step 2 \n";
 		}
-		void minimize(unsigned short maxit, T ratio,oct::math::Vector<T>& out, Layer& prevL)
+		void gd(unsigned short maxit, T ratio, Layer& prevL, std::vector<T>& expected)
 		{
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 1\n";
-			if(outputs.size() != gradient_unit.size()) throw octetos::core::Exception("Los vectores son de diferente tamano",__FILE__,__LINE__);
+			//if(outputs.size() != gradient_unit.size()) throw octetos::core::Exception("Los vectores son de diferente tamano",__FILE__,__LINE__);
 			
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 2\n";
-			oct::math::Vector<T> newdat(outputs.size());
-			std::list<oct::math::Vector<T>> options;
 			bool running = true;
 			unsigned short countit = 0;
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 3\n";
+			
 			do
 			{
-				for(unsigned short i = 0; i < gradient_unit.size(); i++)
-				{
-					newdat[i] = *outputs[i] - (gradient_unit[i] * ratio * T(maxit));
-				}	
-				//options.push_back(newdat);
+				gd(prevL,ratio,expected);
 				countit++;
 				if(maxit > 0) if(countit >= maxit) running = false;				
 			}
 			while(running);
 			
 			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 4\n";
-			out = newdat;
-			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 5\n";
+			
 		}
+
+		void gd(Layer& prevL, T ratio, std::vector<T>& expected)
+		{
+			for(Index i = 0; i < prevL.size(); i++)
+			{
+				(*prevL.get_outputs()[i]) = (*prevL.get_outputs()[i]) - (ratio * D(*prevL.get_outputs()[i]));
+			}	
+			
+			spread();
+			
+			for(Index i = 0; i < std::vector<Perceptron<T>>::size(); i++)
+			{
+				std::vector<Perceptron<T>>::at(i).gd(expected[i]);
+			}
+			
+			print(outputs);
+			std::cout << "\n";		
+		}
+		
 
 	private:
 		T (*FA)(T);
+		T (*D)(T);
 
 	private:
-		oct::math::Vector<T*> outputs;
-		oct::math::Vector<T> gradient;
-		oct::math::Vector<T> gradient_unit;
+		std::vector<T*> outputs;
 	};
 
 
