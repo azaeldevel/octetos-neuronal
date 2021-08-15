@@ -77,7 +77,10 @@ namespace oct::neu
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
 			//return *outs;
 		}
-		void learning(const std::vector<std::vector<T>*>& ds)
+		/**
+		*\brief Algoritmo de back-propagation
+		*/
+		void bp(const std::vector<std::vector<T>*>& ds)
 		{
 			//std::cout << "void learning(const Datas& ds) Step 1\n";
 			//for(unsigned short i = 0; i < std::vector<Layer<T>>::size(); i++)

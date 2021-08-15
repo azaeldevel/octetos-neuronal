@@ -26,7 +26,7 @@ int main()
 {
 	//std::cout << "Hello world!" << std::endl;
 	
-	oct::math::Vector<double> data(3);
+	std::vector<double> data(3);
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
@@ -40,7 +40,7 @@ int main()
 	per.spread(oct::neu::sigmoide);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
-	oct::math::Vector<double> value(3);
+	std::vector<double> value(3);
 	value[0] = 3.0;
 	value[1] = 4.0;
 	value[2] = -2.0;
@@ -61,7 +61,7 @@ int main()
 	std::vector<std::vector<double>*> ds;
 	ds.push_back(&data);
 	std::cout << "\n";
-	network.learning(ds);
+	network.bp(ds);
 	
 	return 0;
 }

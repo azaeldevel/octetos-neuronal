@@ -3,6 +3,7 @@
 
 #include <Perceptron.hh>
 #include <list>
+#include <iostream>
 
 namespace oct::neu
 {
@@ -46,7 +47,7 @@ namespace oct::neu
 			return outputs;
 		}
 
-		static void print(const oct::math::Vector<T>& v)
+		static void print(const std::vector<T>& v)
 		{
 			std::cout << "(";
 			for(unsigned short i = 0; i < v.size(); i++)
@@ -110,7 +111,7 @@ namespace oct::neu
 			
 			for(Index i = 0; i < std::vector<Perceptron<T>>::size(); i++)
 			{
-				std::vector<Perceptron<T>>::at(i).gd(expected[i]);
+				std::vector<Perceptron<T>>::at(i).gd(expected[i], ratio);
 			}
 			
 			print(outputs);

@@ -3,7 +3,8 @@
 #define OCTETOS_NEURONAL_PERCEPTRON_HH
 
 #include <vector>
-#include <octetos/math/Vector.hh>
+#include <octetos/core/Exception.hh>
+#include <cmath>
 
 namespace oct::neu
 {
@@ -19,6 +20,25 @@ namespace oct::neu
 		return v*(1.0-v);
 	}
 
+	template<typename T> T scalon(T v, T umbral)
+	{
+		return v > umbral? 1 : 0;
+	}
+
+	template<typename T> T relu(T v)
+	{
+		return v > 0 ? v : 0;
+	}
+
+	//T tanh(T v);
+	enum ActivationFuntion
+	{
+		NONE,
+		SIGMOIDEA,
+		TANH,
+		RELU,
+		SCALON
+	};
 
 	template<typename T> class Perceptron
 	{
@@ -34,17 +54,13 @@ namespace oct::neu
 		{
 			inputs.resize(ins);
 			weight.resize(ins);
-			for(unsigned short i = 0; i < weight.size(); i++)
-			{
-				weight[i] = 0.0;
-			}
 		}
 		
 		std::vector<T*>& get_inputs()
 		{
 			return inputs;
 		}
-		oct::math::Vector<T>& get_weight()
+		std::vector<T>& get_weight()
 		{
 			return weight;
 		}
@@ -53,7 +69,7 @@ namespace oct::neu
 			return out;
 		}
 
-		void set_inputs(const oct::math::Vector<T*>& v)
+		void set_inputs(const std::vector<T*>& v)
 		{
 			if(inputs.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 			for(unsigned short i = 0; i < v.size(); i++)
@@ -76,15 +92,21 @@ namespace oct::neu
 			inputs.resize(ins);
 			weight.resize(ins);
 		}
-		void gd(T )
+		void gd(T expected,T ratio)
 		{
-			
+			T newval = 0;
+			for(Index i = 0; i < inputs.size(); i++)
+			{
+				//weight[i] = expected/(T(inputs.size()) * (*inputs[i]));				
+			}			
 		}
 		
 	private:
 		std::vector<T*> inputs;
-		math::Vector<T> weight;
+		std::vector<T> weight;
 		T out;
+		T umbral;
+		T sesgo;
 
 	private:
 		
