@@ -2,14 +2,10 @@
 #ifndef OCTETOS_NEURONAL_PERCEPTRON_HH
 #define OCTETOS_NEURONAL_PERCEPTRON_HH
 
-#include <vector>
-#include <octetos/core/Exception.hh>
-#include <cmath>
+#include "neuronal.hh"
 
 namespace oct::neu
 {
-	typedef unsigned short Index;
-
 	
 	template<typename T> T sigmoide(T v)
 	{
@@ -94,11 +90,7 @@ namespace oct::neu
 		}
 		void gd(T expected,T ratio)
 		{
-			T newval = 0;
-			for(Index i = 0; i < inputs.size(); i++)
-			{
-				//weight[i] = expected/(T(inputs.size()) * (*inputs[i]));				
-			}			
+						
 		}
 		
 	private:

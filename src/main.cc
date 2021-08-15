@@ -19,8 +19,8 @@
 
 #include <iostream>
 
-#include "neuronal.hh"
-
+#include "Network.hh"
+#include "Line.hh"
 
 int main()
 {
@@ -48,6 +48,10 @@ int main()
 	//layer.spread(data);
 	//oct::neu::Layer::print(layer.get_gradient());
 	
+	oct::neu::Line<double> line1(0.43,3.6,0.5,0.3,500,0,50);
+	line1.print();
+	//line1.dating();
+	//line1.plot();
 	oct::neu::LayerWidth layerWidth(6);
 	layerWidth[0]=3;
 	layerWidth[1]=18;
@@ -62,6 +66,8 @@ int main()
 	ds.push_back(&data);
 	std::cout << "\n";
 	network.bp(ds);
+	
+	
 	
 	return 0;
 }

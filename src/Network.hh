@@ -51,18 +51,18 @@ namespace oct::neu
 			//std::cout << "Network::Network(---) = step 4\n";
 			conecting();
 		}
-		void spread()
+		const std::vector<T*>& spread(const std::vector<T>& ds)
 		{
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 1\n";
-			//if(std::vector<Layer<T>>::at(0).size() != out.size()) throw octetos::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
-			
+			if(std::vector<Layer<T>>::at(0).size() != ds.size()) throw oct::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
+			ins = ds;
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 2\n";
-			/*for(unsigned short i = 0; i < std::vector<Layer<T>>::at(0).size(); i++)
+			for(unsigned short i = 0; i < std::vector<Layer<T>>::at(0).size(); i++)
 			{
 				//std::cout << "\tEntradas por neuraona = " << at(0).at(i).get_inputs().size << "\n";
-				if(std::vector<Layer<T>>::at(0).at(i).get_inputs().size() != 1) throw octetos::core::Exception("La cantidad de entradas por neurona deve ser 1 en la primer capa.",__FILE__,__LINE__);
-				std::vector<Layer<T>>::at(0).at(i).get_inputs()[0] = &out[i];
-			}*/
+				if(std::vector<Layer<T>>::at(0).at(i).get_inputs().size() != 1) throw oct::core::Exception("La cantidad de entradas por neurona deve ser 1 en la primer capa.",__FILE__,__LINE__);
+				std::vector<Layer<T>>::at(0).at(i).get_inputs()[0] = &ins[i];//se asigna cada dato a cada entrada
+			}
 			
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 3\n";
 			for(unsigned short i = 0; i < std::vector<Layer<T>>::size(); i++)
@@ -72,35 +72,28 @@ namespace oct::neu
 			}
 			
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4\n";		
-			//outs = &(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size() - 1).get_outputs());
+			outs = &(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size() - 1).get_outputs());//se usa la salida de la ultima capa
 			
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
-			//return *outs;
+			return *outs;
 		}
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
 		void bp(const std::vector<std::vector<T>*>& ds)
 		{
-			//std::cout << "void learning(const Datas& ds) Step 1\n";
-			//for(unsigned short i = 0; i < std::vector<Layer<T>>::size(); i++)
+			std::vector<T*> pdt;
+			for(Index i = 0; i < ds.size(); i++)
 			{
-				//oct::neu::Layer::print(at(i).get_gradient());
-				//oct::neu::Layer::print(at(i).get_outputs());
-				//std::cout << "\n";
+				pdt.resize(ds[i]->size());
+				for(Index j = 0; j < pdt.size(); j++)
+				{
+					pdt[j] = &ds[i]->at(j);
+				}
+				spread(*ds[i]);
+				Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
+				std::vector<Layer<T>>::at(lastlayer).gd(50,0.01,std::vector<Layer<T>>::at(lastlayer-1),pdt);//aplicando el algoritmo de back-propagation a la capa i-esim
 			}
-			//std::cout << "void learning(const Datas& ds) Step 2\n";
-			//oct::neu::Layer<T>::print(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs());
-			//std::cout << "\n";
-			//std::cout << "void learning(const Datas& ds) Step 3\n";
-			unsigned short lastlayer = std::vector<Layer<T>>::size()-1;
-			//oct::math::Vector<T> newvect;
-			//std::cout << "void learning(const Datas& ds) Step 4\n";
-			std::vector<Layer<T>>::at(lastlayer).gd(50,0.01,std::vector<Layer<T>>::at(lastlayer-1),*ds[0]);
-			//std::cout << "void learning(const Datas& ds) Step 5\n";
-			//oct::neu::Layer<T>::print(newvect);
-			//std::cout << "\n";
-			//std::cout << "void learning(const Datas& ds) Step 6\n";
 		}
 
 	private:
@@ -144,6 +137,8 @@ namespace oct::neu
 		unsigned short inputsPerpceptron;
 		unsigned short outsPerpceptron;
 		std::vector<T*>* outs;
+		std::vector<T> ins;
+		std::vector<std::vector<T>*> ds;
 	};
 }
 

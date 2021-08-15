@@ -3,7 +3,6 @@
 
 #include <Perceptron.hh>
 #include <list>
-#include <iostream>
 
 namespace oct::neu
 {
@@ -78,28 +77,22 @@ namespace oct::neu
 			}
 			//std::cout << "\tvoid Layer::spread(): step 2 \n";
 		}
-		void gd(unsigned short maxit, T ratio, Layer& prevL, std::vector<T>& expected)
+		/**
+		*\brief 
+		*/
+		void gd(unsigned short maxit, T ratio, Layer& prevL, std::vector<T*>& expected)
 		{
-			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 1\n";
-			//if(outputs.size() != gradient_unit.size()) throw octetos::core::Exception("Los vectores son de diferente tamano",__FILE__,__LINE__);
-			
-			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 2\n";
-			bool running = true;
-			unsigned short countit = 0;
-			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 3\n";
-			
-			do
+			//calcular el error medio
+			T me = 0;
+			for(Index i = 0; i < outputs.size(); i++)
 			{
-				gd(prevL,ratio,expected);
-				countit++;
-				if(maxit > 0) if(countit >= maxit) running = false;				
+				me += std::pow(*expected[i] - *outputs[i],T(2.0));
 			}
-			while(running);
-			
-			//std::cout << "void minimize(unsigned short maxit, datatype ratio,oct::math::Vector<datatype>& out) Step 4\n";
-			
-		}
+			me /= 2.0;
 
+			//
+									
+		}
 		void gd(Layer& prevL, T ratio, std::vector<T>& expected)
 		{
 			for(Index i = 0; i < prevL.size(); i++)
