@@ -14,7 +14,7 @@ namespace oct::neu
 	/**
 	*\brief Genera una distribucion de que podria interpretarse como una recta
 	*/
-	template<typename T> class Line
+	template<typename T> class Line : public std::vector<std::vector<T>>
 	{
 	public:
 		/**
@@ -23,8 +23,8 @@ namespace oct::neu
 		*/
 		Line(T m, T b, T maxerr, T minerr, Index count, T xmin, T xmax)
 		{
-			ds.resize(count);
-			for(std::vector<T>& d : ds)
+			std::vector<std::vector<T>>::resize(count);
+			for(std::vector<T>& d : *this)
 			{
 				d.resize(2);
 			}
@@ -32,7 +32,7 @@ namespace oct::neu
 			//
 			T distr = T(1) / (maxerr - minerr);
 			T randPos;
-			for(std::vector<T>& d : ds)
+			for(std::vector<T>& d : *this)
 			{
 				d[0] = randNumber(xmin,xmax);
 				d[1] = (m * d[0]) + b;
@@ -44,7 +44,7 @@ namespace oct::neu
 
 		void print() const
 		{
-			for(const std::vector<T>& d : ds)
+			for(const std::vector<T>& d : *this)
 			{			
 				std::cout << "(";
 				std::cout << d[0];
@@ -56,7 +56,7 @@ namespace oct::neu
 		void dating() const
 		{
 			std::ofstream out("Line.data");
-			for(const std::vector<T>& d : ds)
+			for(const std::vector<T>& d : *this)
 			{
 				out << d[0] << " " << d[1] << "\n";
 			}
@@ -77,8 +77,6 @@ namespace oct::neu
 
 	  		pclose(p);
 		}
-	private:
-		std::vector<std::vector<T>> ds;
 	};
 }
 

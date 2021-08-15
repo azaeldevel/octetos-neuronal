@@ -7,26 +7,7 @@
 namespace oct::neu
 {
 	
-	template<typename T> T sigmoide(T v)
-	{
-		return 1.0/(1.0 + exp(-1.0 * v));
-	}
-	template<typename T> T sigmoide_D(T v)
-	{
-		return v*(1.0-v);
-	}
-
-	template<typename T> T scalon(T v, T umbral)
-	{
-		return v > umbral? 1 : 0;
-	}
-
-	template<typename T> T relu(T v)
-	{
-		return v > 0 ? v : 0;
-	}
-
-	//T tanh(T v);
+	
 	enum ActivationFuntion
 	{
 		NONE,
@@ -67,19 +48,27 @@ namespace oct::neu
 
 		void set_inputs(const std::vector<T*>& v)
 		{
-			if(inputs.size() != v.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+			if(inputs.size() != v.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
 			for(unsigned short i = 0; i < v.size(); i++)
 			{
 				inputs[i] = v[i];
 			}
 		}
 
-		T spread(T (*F)(T))
+		T spread(ActivationFuntion af)
 		{
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 1\n";
 			T s = sigma();
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 2\n";
-			out =  F(s);
+			switch(af)
+			{
+				case ActivationFuntion::SIGMOIDEA:
+					out =  sigmoide(s);
+				break;
+				default:
+					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+			};
+			
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 3\n";
 			return out;
 		}
@@ -93,6 +82,15 @@ namespace oct::neu
 						
 		}
 		
+		static T sigmoide(T v)
+		{
+			return T(1)/(T(1) + exp(T(-1) * v));
+		}
+		static T sigmoide_D(T v)
+		{
+			return v * (T(1) - v);
+		}
+
 	private:
 		std::vector<T*> inputs;
 		std::vector<T> weight;

@@ -37,14 +37,14 @@ int main()
 	per.get_weight()[0] = 0.2;
 	per.get_weight()[1] = 0.6;
 	per.get_weight()[2] = 0.01;
-	per.spread(oct::neu::sigmoide);
+	per.spread(oct::neu::ActivationFuntion::SIGMOIDEA);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	std::vector<double> value(3);
 	value[0] = 3.0;
 	value[1] = 4.0;
 	value[2] = -2.0;
-	oct::neu::Layer<double> layer(3,50,oct::neu::sigmoide,oct::neu::sigmoide_D);
+	oct::neu::Layer<double> layer(3,50,oct::neu::ActivationFuntion::SIGMOIDEA);
 	//layer.spread(data);
 	//oct::neu::Layer::print(layer.get_gradient());
 	
@@ -59,13 +59,13 @@ int main()
 	layerWidth[3]=30;
 	layerWidth[4]=5;
 	layerWidth[5]=1;
-	oct::neu::Network<double> network(layerWidth,oct::neu::sigmoide,6,1,oct::neu::sigmoide_D);
+	oct::neu::Network<double> network(layerWidth,6,1,oct::neu::ActivationFuntion::SIGMOIDEA);
 	//std::vector<oct::neu::datatype*>& out = network.spread(data);
 	//oct::neu::Layer::print(out);
-	std::vector<std::vector<double>*> ds;
-	ds.push_back(&data);
-	std::cout << "\n";
-	network.bp(ds);
+	//std::vector<std::vector<double>*> ds;
+	//ds.push_back(&data);
+	//std::cout << "\n";
+	network.bp(line1);
 	
 	
 	

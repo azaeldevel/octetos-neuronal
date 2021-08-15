@@ -21,8 +21,8 @@ namespace oct::neu
 		*\param FA Funcion de activacion
 		*\param insP Inidca la canitdad de entradas de cada neurona
 		*/
-		Network(const LayerWidth& lw,T (*fa)(T),unsigned short insP,unsigned short outsP,T (*d)(T)) 
-		: FA(fa),inputsPerpceptron(insP),outsPerpceptron(outsP),D(d)
+		Network(const LayerWidth& lw,unsigned short insP,unsigned short outsP,ActivationFuntion af) 
+		: inputsPerpceptron(insP),outsPerpceptron(outsP),AF(af)
 		{
 			//std::cout << "Network::Network(---) = step 1\n";
 			//validacion de entradas
@@ -40,11 +40,11 @@ namespace oct::neu
 			std::vector<Layer<T>>::resize(layerWidth.size());
 			
 			//std::cout << "Network::Network(---) = step 3 - " << size() << "\n";
-			std::vector<Layer<T>>::at(0).set(1,layerWidth[0],fa,d);
+			std::vector<Layer<T>>::at(0).set(1,layerWidth[0],af);
 			//std::cout << "Network::Network(---) = step 3.1 - " << 0 << " - " << at(0).size() << "\n";
 			for(unsigned short i = 1; i < layerWidth.size(); i++)
 			{
-				std::vector<Layer<T>>::at(i).set(insP,layerWidth[i],fa,d);//configurar cada capa
+				std::vector<Layer<T>>::at(i).set(insP,layerWidth[i],af);//configurar cada capa
 				//std::cout << "Network::Network(---) = step 3.1 - " << i << " - " << at(i).size() << "\n";
 			}
 			
@@ -80,19 +80,13 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<std::vector<T>*>& ds)
+		void bp(const std::vector<std::vector<T>>& datas)
 		{
-			std::vector<T*> pdt;
-			for(Index i = 0; i < ds.size(); i++)
+			for(Index i = 0; i < datas.size(); i++)
 			{
-				pdt.resize(ds[i]->size());
-				for(Index j = 0; j < pdt.size(); j++)
-				{
-					pdt[j] = &ds[i]->at(j);
-				}
-				spread(*ds[i]);
+				spread(datas[i]);
 				Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
-				std::vector<Layer<T>>::at(lastlayer).gd(50,0.01,std::vector<Layer<T>>::at(lastlayer-1),pdt);//aplicando el algoritmo de back-propagation a la capa i-esim
+				std::vector<Layer<T>>::at(lastlayer).gd(50,0.01,std::vector<Layer<T>>::at(lastlayer-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
 			}
 		}
 
@@ -138,7 +132,7 @@ namespace oct::neu
 		unsigned short outsPerpceptron;
 		std::vector<T*>* outs;
 		std::vector<T> ins;
-		std::vector<std::vector<T>*> ds;
+		ActivationFuntion AF;
 	};
 }
 

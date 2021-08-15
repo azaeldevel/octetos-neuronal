@@ -18,16 +18,15 @@ namespace oct::neu
 		*\param countP cantidad de perseptornes en la capa
 		*\param FA funcion de activavion
 		*/
-		Layer(unsigned short inputsP, unsigned short countP, T (*fa)(T),T (*d)(T)) : std::vector<Perceptron<T>>(countP),FA(fa),D(d)
+		Layer(unsigned short inputsP, unsigned short countP, ActivationFuntion af)
 		{
-			set(inputsP,countP,fa,d);
+			set(inputsP,countP,AF);
 		}
-		void set(unsigned short inputsP, unsigned short countP, T (*fa)(T),T (*d)(T))
+		void set(unsigned short inputsP, unsigned short countP, ActivationFuntion af)
 		{
 			if(std::vector<Perceptron<T>>::size() < countP) std::vector<Perceptron<T>>::resize(countP);
 			
-			FA = fa;
-			D = d;
+			AF = af;
 			for(Perceptron<T>& p : *this)
 			{
 				p.set(inputsP);
@@ -73,42 +72,25 @@ namespace oct::neu
 			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
 			{
 				//std::cout << "\tvoid Layer::spread(): step 1.1\n";
-				std::vector<Perceptron<T>>::at(i).spread(FA);			
+				std::vector<Perceptron<T>>::at(i).spread(AF);			
 			}
 			//std::cout << "\tvoid Layer::spread(): step 2 \n";
 		}
 		/**
 		*\brief 
 		*/
-		void gd(unsigned short maxit, T ratio, Layer& prevL, std::vector<T*>& expected)
+		void gd(unsigned short maxit, T ratio, Layer& prevL, const std::vector<T>& expected)
 		{
 			//calcular el error medio
 			T me = 0;
 			for(Index i = 0; i < outputs.size(); i++)
 			{
-				me += std::pow(*expected[i] - *outputs[i],T(2.0));
+				me += std::pow(expected[i] - *outputs[i],T(2.0));
 			}
 			me /= 2.0;
 
 			//
-									
-		}
-		void gd(Layer& prevL, T ratio, std::vector<T>& expected)
-		{
-			for(Index i = 0; i < prevL.size(); i++)
-			{
-				(*prevL.get_outputs()[i]) = (*prevL.get_outputs()[i]) - (ratio * D(*prevL.get_outputs()[i]));
-			}	
-			
-			spread();
-			
-			for(Index i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{
-				std::vector<Perceptron<T>>::at(i).gd(expected[i], ratio);
-			}
-			
-			print(outputs);
-			std::cout << "\n";		
+			T dFdA = 0;					
 		}
 		
 
@@ -118,6 +100,7 @@ namespace oct::neu
 
 	private:
 		std::vector<T*> outputs;
+		ActivationFuntion AF;
 	};
 
 
