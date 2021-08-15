@@ -86,7 +86,7 @@ namespace oct::neu
 		/**
 		*\brief 
 		*/
-		void gd(unsigned short maxit, T ratio, Layer& prevL, const std::vector<T>& expected)
+		void gd(unsigned short maxit, T ratio, Layer& prevL, const Data<T>& expected)
 		{
 			//std::cout << "\tvoid Layer::gd(..) : step 1\n";
 			for(Index it = 0; it < maxit; it++)
@@ -95,7 +95,7 @@ namespace oct::neu
 				//derivada partcial respecto a la funcion de activacion			
 				for(Index i = 0; i < dEdR.size(); i++)
 				{
-					dEdR[i] = *outputs[i] - expected[i];
+					dEdR[i] = *outputs[i] - expected.outputs[i];
 				}
 			
 				//std::cout << "\tvoid Layer::gd(..) : step 2\n";
@@ -105,6 +105,7 @@ namespace oct::neu
 					switch(AF)
 					{
 						case ActivationFuntion::SIGMOIDEA:
+							//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
 							dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Perceptron<T>>::at(i).get_sigma());
 						break;
 						default:
@@ -151,13 +152,22 @@ namespace oct::neu
 				//std::cout << "\tvoid Layer::gd(..) : step 9\n";
 				wlakingDown(highIndex,ratio);
 				//std::cout << "\tvoid Layer::gd(..) : step 10\n";
-				//std::cout << "\n";
-				Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
+				std::cout << "dEdR = ";
+				Layer<T>::print(dEdR);
 				std::cout << "\n";
+				std::cout << "dRdZ = ";
+				Layer<T>::print(dRdZ);
+				std::cout << "\n";
+				//std::cout << "dEdW = ";
+				//Layer<T>::print(dEdW);
+				//std::cout << "\n";
+				//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
+				//std::cout << "\n";
 				Layer<T>::print(Layer<T>::at(highIndex).get_weight());
 				std::cout << "\n";
-				Layer<T>::print(outputs);
-				std::cout << "\n";
+				//Layer<T>::print(outputs);
+				//std::cout << "\n";
+				spread();
 			}
 		}
 		Index max(std::vector<T>& data)

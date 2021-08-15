@@ -14,7 +14,7 @@ namespace oct::neu
 	/**
 	*\brief Genera una distribucion de que podria interpretarse como una recta
 	*/
-	template<typename T> class Line : public std::vector<std::vector<T>>
+	template<typename T> class Line : public std::vector<Data<T>>
 	{
 	public:
 		/**
@@ -23,22 +23,24 @@ namespace oct::neu
 		*/
 		Line(T m, T b, T maxerr, T minerr, Index count, T xmin, T xmax)
 		{
-			std::vector<std::vector<T>>::resize(count);
-			for(std::vector<T>& d : *this)
+			std::vector<Data<T>>::resize(count);
+			for(Data<T>& d : *this)
 			{
-				d.resize(2);
+				d.inputs.resize(2);
+				d.outputs.resize(1);
 			}
 
 			//
 			T distr = T(1) / (maxerr - minerr);
 			T randPos;
-			for(std::vector<T>& d : *this)
+			for(Data<T>& d : *this)
 			{
-				d[0] = randNumber(xmin,xmax);
-				d[1] = (m * d[0]) + b;
+				d.inputs[0] = randNumber(xmin,xmax);
+				d.inputs[1] = (m * d.inputs[0]) + b;
+				d.outputs[0] = d.inputs[1];
 				randPos = randNumber();
-				if(randPos > 0.5) d[1] = d[1] + (randNumber() * distr);
-				else d[1] = d[1] - (randNumber() * distr);
+				if(randPos > 0.5) d.inputs[1] = d.inputs[1] + (randNumber() * distr);
+				else d.inputs[1] = d.inputs[1] - (randNumber() * distr);
 			}
 		}
 

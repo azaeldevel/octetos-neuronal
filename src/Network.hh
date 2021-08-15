@@ -81,7 +81,7 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<std::vector<T>>& datas,unsigned short maxit, T ratio)
+		void bp(const std::vector<Data<T>>& datas,unsigned short maxit, T ratio)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
@@ -90,9 +90,9 @@ namespace oct::neu
 			{
 				//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 				std::cout << "Data :";
-				Layer<T>::print(datas[i]);
+				Layer<T>::print(datas[i].inputs);
 				std::cout << "\n";
-				spread(datas[i]);
+				spread(datas[i].inputs);
 				for(Index j = lastlayer; j > 0; j--)
 				{
 					std::vector<Layer<T>>::at(j).gd(maxit,ratio,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim

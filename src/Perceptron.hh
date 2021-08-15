@@ -31,6 +31,10 @@ namespace oct::neu
 		{
 			inputs.resize(ins);
 			weight.resize(ins);
+			for(Index i = 0; i < weight.size(); i++)
+			{
+				weight[1] = randNumber();
+			}
 		}
 		
 		std::vector<T*>& get_inputs()
