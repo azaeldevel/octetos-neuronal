@@ -21,7 +21,7 @@ namespace oct::neu
 		*\param maxerr
 		*\param minerr
 		*/
-		Line(T m, T b, T maxerr, T minerr, Index count, T xmin, T xmax)
+		Line(T m, T b, T derr, Index count, T xmin, T xmax)
 		{
 			std::vector<Data<T>>::resize(count);
 			for(Data<T>& d : *this)
@@ -31,16 +31,25 @@ namespace oct::neu
 			}
 
 			//
-			T distr = T(1) / (maxerr - minerr);
-			T randPos;
-			for(Data<T>& d : *this)
+			T randPos,randSensor,errOut;
+			for(Index i = 0; i < std::vector<Data<T>>::size(); i++)
 			{
-				d.inputs[0] = randNumber(xmin,xmax);
-				d.inputs[1] = (m * d.inputs[0]) + b;
-				d.outputs[0] = d.inputs[1];
+				//valores aceptables
+				std::vector<Data<T>>::at(i).inputs[0] = randNumber(xmin,xmax);
+				std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + b;
+				std::vector<Data<T>>::at(i).outputs[0] = 1.0;//aceptable
 				randPos = randNumber();
-				if(randPos > 0.5) d.inputs[1] = d.inputs[1] + (randNumber() * distr);
-				else d.inputs[1] = d.inputs[1] - (randNumber() * distr);
+				randSensor = randNumber();
+				if(randPos > 0.5) std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] + (derr * randSensor);
+				else std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] - (derr * randSensor);
+				//valores no aceptables
+				i++;
+				errOut = randNumber(1.0,20.0);
+				std::vector<Data<T>>::at(i).inputs[0] = std::vector<Data<T>>::at(i-1).inputs[0];
+				std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1];//la misma ordena pero cun error fuera de rango
+				std::vector<Data<T>>::at(i).outputs[0] = 0.0;//no captable		
+				if(randPos > 0.5) std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] + (derr * errOut);
+				else std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] - (derr * errOut);		
 			}
 		}
 
@@ -58,9 +67,9 @@ namespace oct::neu
 		void dating() const
 		{
 			std::ofstream out("Line.data");
-			for(const std::vector<T>& d : *this)
+			for(const Data<T>& d : *this)
 			{
-				out << d[0] << " " << d[1] << "\n";
+				out << d.inputs[0] << " " << d.inputs[1] << "\n";
 			}
 			out.flush();
 			out.close();

@@ -45,6 +45,8 @@ namespace oct::neu
 			dEdZ.resize(outputs.size());
 			gradientDescent.resize(outputs.size());
 			dRdW.resize(outputs.size());
+			En.resize(outputs.size());
+			En1.resize(outputs.size());
 		}
 
 		std::vector<T*>& get_outputs()
@@ -91,7 +93,11 @@ namespace oct::neu
 			//std::cout << "\tvoid Layer::gd(..) : step 1\n";
 			for(Index it = 0; it < maxit; it++)
 			{
-				std::cout << "Iteracion : " << it << "\n";
+				//std::cout << "Iteracion : " << it << "\n";
+				for(Index i = 0; i < En.size(); i++)
+				{
+					En[i] = expected.outputs[i] - *outputs[i];
+				}
 				//derivada partcial respecto a la funcion de activacion			
 				for(Index i = 0; i < dEdR.size(); i++)
 				{
@@ -107,6 +113,9 @@ namespace oct::neu
 						case ActivationFuntion::SIGMOIDEA:
 							//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
 							dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Perceptron<T>>::at(i).get_sigma());
+						break;
+						case ActivationFuntion::IDENTITY:
+							dRdZ[i] =  Perceptron<T>::identity_D(std::vector<Perceptron<T>>::at(i).get_sigma());
 						break;
 						default:
 							throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -163,11 +172,18 @@ namespace oct::neu
 				//std::cout << "\n";
 				//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
 				//std::cout << "\n";
+				std::cout << "weight : ";
 				Layer<T>::print(Layer<T>::at(highIndex).get_weight());
 				std::cout << "\n";
-				//Layer<T>::print(outputs);
-				//std::cout << "\n";
+				std::cout << "outputs : ";
+				Layer<T>::print(outputs);
+				std::cout << "\n";
+				
 				spread();
+				for(Index i = 0; i < En1.size(); i++)
+				{
+					En1[i] = expected.outputs[i] - *outputs[i];
+				}
 			}
 		}
 		Index max(std::vector<T>& data)
@@ -201,7 +217,7 @@ namespace oct::neu
 	private:
 		std::vector<T*> outputs;
 		ActivationFuntion AF;
-		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ,dRdW,gradientDescent;
+		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ,dRdW,gradientDescent,En,En1;
 	};
 
 

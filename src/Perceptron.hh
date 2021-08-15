@@ -14,7 +14,8 @@ namespace oct::neu
 		SIGMOIDEA,
 		TANH,
 		RELU,
-		SCALON
+		SCALON,
+		IDENTITY
 	};
 
 	template<typename T> class Perceptron
@@ -73,6 +74,9 @@ namespace oct::neu
 				case ActivationFuntion::SIGMOIDEA:
 					out =  sigmoide(sigma);
 				break;
+				case ActivationFuntion::IDENTITY:
+					out =  identity(sigma);
+				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 			};
@@ -120,6 +124,14 @@ namespace oct::neu
 		static T sigmoide_D(T v)
 		{
 			return v * (T(1) - v);
+		}
+		static T identity(T v)
+		{
+			return v;
+		}
+		static T identity_D(T v)
+		{
+			return T(1);
 		}
 
 	private:

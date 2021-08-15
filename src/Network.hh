@@ -85,6 +85,7 @@ namespace oct::neu
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
+			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			for(Index i = 0; i < datas.size(); i++)
 			{
@@ -92,11 +93,15 @@ namespace oct::neu
 				std::cout << "Data :";
 				Layer<T>::print(datas[i].inputs);
 				std::cout << "\n";
+				Layer<T>::print(*outs);
+				std::cout << "\n";
 				spread(datas[i].inputs);
 				for(Index j = lastlayer; j > 0; j--)
 				{
 					std::vector<Layer<T>>::at(j).gd(maxit,ratio,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
 				}
+				Layer<T>::print(*outs);
+				std::cout << "\n";
 				std::cout << "\n";
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";

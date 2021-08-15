@@ -40,17 +40,10 @@ int main()
 	per.spread(oct::neu::ActivationFuntion::SIGMOIDEA);
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
-	std::vector<double> value(3);
-	value[0] = 3.0;
-	value[1] = 4.0;
-	value[2] = -2.0;
-	oct::neu::Layer<double> layer(3,50,oct::neu::ActivationFuntion::SIGMOIDEA);
-	//layer.spread(data);
-	//oct::neu::Layer::print(layer.get_gradient());
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.5,0.3,500,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,500,0,50);
 	//line1.print();
-	//line1.dating();
+	line1.dating();
 	//line1.plot();
 	oct::neu::LayerWidth layerWidth(6);
 	layerWidth[0]=2;
@@ -59,7 +52,7 @@ int main()
 	layerWidth[3]=30;
 	layerWidth[4]=5;
 	layerWidth[5]=1;
-	oct::neu::Network<double> network(layerWidth,6,1,oct::neu::ActivationFuntion::SIGMOIDEA);
+	oct::neu::Network<double> network(layerWidth,6,1,oct::neu::ActivationFuntion::IDENTITY);
 	//std::vector<oct::neu::datatype*>& out = network.spread(data);
 	//oct::neu::Layer::print(out);
 	//std::vector<std::vector<double>*> ds;
