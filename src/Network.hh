@@ -73,6 +73,7 @@ namespace oct::neu
 			
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 4\n";		
 			outs = &(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size() - 1).get_outputs());//se usa la salida de la ultima capa
+
 			
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 5\n";
 			return *outs;
@@ -82,12 +83,24 @@ namespace oct::neu
 		*/
 		void bp(const std::vector<std::vector<T>>& datas)
 		{
+			std::cout << "\tvoid Network::bp(..) : step 1\n";
+			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
+			std::cout << "\tvoid Network::bp(..) : step 2\n";
 			for(Index i = 0; i < datas.size(); i++)
 			{
+				std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 				spread(datas[i]);
-				Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
-				std::vector<Layer<T>>::at(lastlayer).gd(50,0.01,std::vector<Layer<T>>::at(lastlayer-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+				for(Index j = lastlayer; j > 0; j--)
+				{
+					std::cout << "\tvoid Network::bp(..) : step 2.2\n";
+					Layer<T>::print(std::vector<Layer<T>>::at(j).get_outputs());
+					std::cout << "\n";
+					std::cout << "\tvoid Network::bp(..) : step 2.3\n";
+					std::vector<Layer<T>>::at(j).gd(50,0.01,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+				}
+				std::cout << "\tvoid Network::bp(..) : step 2.4\n";
 			}
+			std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
 
 	private:
@@ -126,8 +139,6 @@ namespace oct::neu
 	private:
 		//Dendrities dendrities;
 		LayerWidth layerWidth;
-		T (*FA)(T);
-		T (*D)(T);
 		unsigned short inputsPerpceptron;
 		unsigned short outsPerpceptron;
 		std::vector<T*>* outs;

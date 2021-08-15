@@ -45,6 +45,10 @@ namespace oct::neu
 		{
 			return out;
 		}
+		T& get_sigma()
+		{
+			return sigma;
+		}
 
 		void set_inputs(const std::vector<T*>& v)
 		{
@@ -55,15 +59,15 @@ namespace oct::neu
 			}
 		}
 
-		T spread(ActivationFuntion af)
+		T spread(ActivationFuntion AF)
 		{
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 1\n";
-			T s = sigma();
+			sigma = sum();
 			//std::cout << "\tvoid datatype Perceptron::spread(datatype (*F)(datatype)) step 2\n";
-			switch(af)
+			switch(AF)
 			{
 				case ActivationFuntion::SIGMOIDEA:
-					out =  sigmoide(s);
+					out =  sigmoide(sigma);
 				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -77,11 +81,34 @@ namespace oct::neu
 			inputs.resize(ins);
 			weight.resize(ins);
 		}
-		void gd(T expected,T ratio)
+		T sum()
 		{
-						
+			//std::cout << "\tdatatype Perceptron::sigma step 1\n";
+			T val = 0;
+			//std::cout << "\tdatatype Perceptron::sigma step 2\n";
+			if(inputs.size() != weight.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+			//std::cout << "\tdatatype Perceptron::sigma step 3\n";
+			
+			for(unsigned short i = 0; i < inputs.size(); i++)
+			{
+				//std::cout << "\tdatatype Perceptron::sigma step 3.1 - " << i << "\n";
+				val += (*inputs[i]) * weight[i];
+			}
+			
+			//std::cout << "\tdatatype Perceptron::sigma step 4\n";
+			return val;
 		}
-		
+		T derivade()
+		{
+			T val = 0;
+			for(unsigned short i = 0; i < inputs.size(); i++)
+			{
+				val += (*inputs[i]);
+			}
+
+			return val;
+		}
+
 		static T sigmoide(T v)
 		{
 			return T(1)/(T(1) + exp(T(-1) * v));
@@ -95,28 +122,13 @@ namespace oct::neu
 		std::vector<T*> inputs;
 		std::vector<T> weight;
 		T out;
-		T umbral;
-		T sesgo;
+		//T umbral;
+		//T sesgo;
+		T sigma;
 
 	private:
 		
-		T sigma()
-		{
-			//std::cout << "\tdatatype Perceptron::sigma step 1\n";
-			T val = 0;
-			//std::cout << "\tdatatype Perceptron::sigma step 2\n";
-			if(inputs.size() != weight.size()) throw octetos::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
-			//std::cout << "\tdatatype Perceptron::sigma step 3\n";
-			
-			for(unsigned short i = 0; i < inputs.size(); i++)
-			{
-				//std::cout << "\tdatatype Perceptron::sigma step 3.1 - " << i << "\n";
-				val += (*inputs[i]) * weight[i];
-			}
-			
-			//std::cout << "\tdatatype Perceptron::sigma step 4\n";
-			return val;
-		}
+		
 	};
 
 }

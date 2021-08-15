@@ -49,11 +49,11 @@ int main()
 	//oct::neu::Layer::print(layer.get_gradient());
 	
 	oct::neu::Line<double> line1(0.43,3.6,0.5,0.3,500,0,50);
-	line1.print();
+	//line1.print();
 	//line1.dating();
 	//line1.plot();
 	oct::neu::LayerWidth layerWidth(6);
-	layerWidth[0]=3;
+	layerWidth[0]=2;
 	layerWidth[1]=18;
 	layerWidth[2]=60;
 	layerWidth[3]=30;
