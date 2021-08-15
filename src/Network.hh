@@ -81,26 +81,25 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<std::vector<T>>& datas)
+		void bp(const std::vector<std::vector<T>>& datas,unsigned short maxit, T ratio)
 		{
-			std::cout << "\tvoid Network::bp(..) : step 1\n";
+			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
-			std::cout << "\tvoid Network::bp(..) : step 2\n";
+			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			for(Index i = 0; i < datas.size(); i++)
 			{
-				std::cout << "\tvoid Network::bp(..) : step 2.1\n";
+				//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
+				std::cout << "Data :";
+				Layer<T>::print(datas[i]);
+				std::cout << "\n";
 				spread(datas[i]);
 				for(Index j = lastlayer; j > 0; j--)
 				{
-					std::cout << "\tvoid Network::bp(..) : step 2.2\n";
-					Layer<T>::print(std::vector<Layer<T>>::at(j).get_outputs());
-					std::cout << "\n";
-					std::cout << "\tvoid Network::bp(..) : step 2.3\n";
-					std::vector<Layer<T>>::at(j).gd(50,0.01,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+					std::vector<Layer<T>>::at(j).gd(maxit,ratio,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
 				}
-				std::cout << "\tvoid Network::bp(..) : step 2.4\n";
+				std::cout << "\n";
 			}
-			std::cout << "\tvoid Network::bp(..) : step 3\n";
+			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
 
 	private:

@@ -65,7 +65,7 @@ int main()
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	network.bp(line1);
+	network.bp(line1,10,0.09);
 	
 	
 	
