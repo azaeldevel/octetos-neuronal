@@ -106,7 +106,7 @@ namespace oct::neu
 			//std::cout << "\tdatatype Perceptron::sigma step 4\n";
 			return val;
 		}
-		T derivade()
+		T derivade(std::vector<T>&)
 		{
 			T val = 0;
 			for(unsigned short i = 0; i < inputs.size(); i++)

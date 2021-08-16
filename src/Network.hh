@@ -87,10 +87,10 @@ namespace oct::neu
 		*/
 		void bp(const std::vector<Data<T>>& datas,unsigned short maxit, T ratio)
 		{
-			std::cout << "\tvoid Network::bp(..) : step 1\n";
+			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
-			std::cout << "\tvoid Network::bp(..) : step 2\n";
+			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			for(Index di = 0; di < datas.size(); di++)
 			{
 				for(Index it = 0; it < maxit; it++)
@@ -98,28 +98,35 @@ namespace oct::neu
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					std::cout << ">>Data :";
 					Layer<T>::print(datas[di].inputs);
+					if(datas[di].outputs[0] > 0.5) std::cout << " - Aceptado";
+					else std::cout << " - Rechazado";
 					std::cout << "\n";
 					std::cout << "prev :";
 					Layer<T>::print(*outs);
 					std::cout << "\n";
+					
 					spread(datas[di].inputs);
-										
+
+					dEdR.resize(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs().size());								
+					//derivada partcial respecto a la funcion de activacion			
+					for(Index i = 0; i < dEdR.size(); i++)
+					{
+						dEdR[i] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[di].outputs[i];
+					}
+			
 					for(Index j = lastlayer; j > 0; j--)
 					{
 						//std::cout << ">>>>Capa :" << j << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
-						dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());	
-						dRdZ.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-						dZdW.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-						dEdW.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-						dEdZ.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.2\n";
-						
-						//derivada partcial respecto a la funcion de activacion			
-						for(Index i = 0; i < dEdR.size(); i++)
+						dEdW.resize(std::vector<Layer<T>>::at(j).get_outputs().size());
+						dRdZ.resize(std::vector<Layer<T>>::at(j).get_outputs().size());
+						dEdZ.resize(std::vector<Layer<T>>::at(j).get_outputs().size());
+						dZdW.resize(std::vector<Layer<T>>::at(j).get_outputs().size());
+						for(Index l = 0; l < dZdW.size(); l++)
 						{
-							dEdR[i] = *std::vector<Layer<T>>::at(j).get_outputs()[i] - datas[di].outputs[i];
+							dZdW[l].resize(std::vector<Layer<T>>::at(j).at(l).get_weight().size());
 						}
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.2\n";						
 					
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.3\n";
 						//derivada de la activacion respecto a la suman ponderada
@@ -145,14 +152,18 @@ namespace oct::neu
 						for(Index i = 0; i < dZdW.size(); i++)
 						{
 							//if(dZdW.size() != std::vector<Perceptron<T>>::at(i).get_inputs().size()) dZdW.resize(std::vector<Perceptron<T>>::at(i).get_inputs().size());
-							dZdW[i] = std::vector<Layer<T>>::at(j).at(i).derivade();
+							std::vector<Layer<T>>::at(j).at(i).derivade(dZdW[i]);
 						}
 						
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";
 						//derivada parcial del error repecto de los pesos
 						for(Index i = 0; i < dEdW.size(); i++)
 						{
-							dEdW[i] =  dEdR[i] * dRdZ[i] * dZdW[i];
+							for(Index k = 0; k < dZdW[i].size(); k++)
+							{
+								dRdZ[i] += dRdZ[i] * dZdW[i][k];
+							}	
+							dEdW[i] =  dEdR[i] * dRdZ[i];
 						}
 						
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
@@ -190,7 +201,7 @@ namespace oct::neu
 					std::cout << "\n";
 				}
 			}
-			std::cout << "\tvoid Network::bp(..) : step 3\n";
+			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
 
 		Index max(std::vector<T>& data)
@@ -252,7 +263,8 @@ namespace oct::neu
 		std::vector<T> ins;
 		ActivationFuntion AF;
 		const Topology& topology;
-		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ;
+		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
+		std::vector<std::vector<T>> dZdW;
 	};
 }
 

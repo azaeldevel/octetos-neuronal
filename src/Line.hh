@@ -37,19 +37,19 @@ namespace oct::neu
 				//valores aceptables
 				std::vector<Data<T>>::at(i).inputs[0] = randNumber(xmin,xmax);
 				std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + b;
-				std::vector<Data<T>>::at(i).outputs[0] = 0.75;//aceptable
+				std::vector<Data<T>>::at(i).outputs[0] = 0.9;//aceptable
 				randPos = randNumber();
 				randSensor = randNumber();
 				if(randPos > 0.5) std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] + (derr * randSensor);
 				else std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] - (derr * randSensor);
 				//valores no aceptables
-				i++;
+				/*i++;
 				errOut = randNumber(1.0,20.0);
 				std::vector<Data<T>>::at(i).inputs[0] = std::vector<Data<T>>::at(i-1).inputs[0];
 				std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1];//la misma ordena pero cun error fuera de rango
 				std::vector<Data<T>>::at(i).outputs[0] = 0.25;//no captable		
 				if(randPos > 0.5) std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] + (derr * errOut);
-				else std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] - (derr * errOut);		
+				else std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] - (derr * errOut);*/		
 			}
 		}
 
