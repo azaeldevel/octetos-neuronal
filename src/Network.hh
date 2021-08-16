@@ -7,9 +7,13 @@
 
 namespace oct::neu
 {
-	typedef std::vector<unsigned short> LayerWidth;
-
+	//typedef std::vector<unsigned short> LayerWidth;
 	
+	struct Topology : public std::vector<Model>
+	{
+		Topology(Index size);
+	};
+
 	/**
 	*\brief red neuronal
 	*/	
@@ -21,30 +25,30 @@ namespace oct::neu
 		*\param FA Funcion de activacion
 		*\param insP Inidca la canitdad de entradas de cada neurona
 		*/
-		Network(const LayerWidth& lw,unsigned short insP,unsigned short outsP,ActivationFuntion af) 
-		: inputsPerpceptron(insP),outsPerpceptron(outsP),AF(af)
+		Network(const Topology& t,unsigned short insP,unsigned short outsP,ActivationFuntion af) 
+		: inputsPerpceptron(insP),outsPerpceptron(outsP),AF(af),topology(t)
 		{
 			//std::cout << "Network::Network(---) = step 1\n";
 			//validacion de entradas
-			for(unsigned short i = 2; i < lw.size(); i++)
+			for(unsigned short i = 2; i < topology.size(); i++)
 			{
-				if(lw[i] * insP < lw[i-1]) errorToMuchInputsRequiered(i,__FILE__,__LINE__);
+				if(topology[i].height * insP < topology[i-1].height) errorToMuchInputsRequiered(i,__FILE__,__LINE__);
 			}
-			layerWidth.resize(lw.size());
-			for(unsigned short i = 0; i < lw.size(); i++)
+			//layerWidth.resize(topology.size());
+			/*for(unsigned short i = 0; i < topology.size(); i++)
 			{
 				layerWidth[i] = lw[i];
-			}
+			}*/
 			//std::cout << "Network::Network(---) = step 2\n";
 			
-			std::vector<Layer<T>>::resize(layerWidth.size());
+			std::vector<Layer<T>>::resize(topology.size());
 			
-			//std::cout << "Network::Network(---) = step 3 - " << size() << "\n";
-			std::vector<Layer<T>>::at(0).set(1,layerWidth[0],af);
-			//std::cout << "Network::Network(---) = step 3.1 - " << 0 << " - " << at(0).size() << "\n";
-			for(unsigned short i = 1; i < layerWidth.size(); i++)
+			//std::cout << "Network::Network(---) = step 3 - " << std::vector<Layer<T>>::size() << "\n";
+			std::vector<Layer<T>>::at(0).set(1,topology[0].height,af);
+			//std::cout << "Network::Network(---) = step 3.1 - " << 0 << " - " << std::vector<Layer<T>>::at(0).size() << "\n";
+			for(unsigned short i = 1; i < topology.size(); i++)
 			{
-				std::vector<Layer<T>>::at(i).set(insP,layerWidth[i],af);//configurar cada capa
+				std::vector<Layer<T>>::at(i).set(insP,topology[i].height,af);//configurar cada capa
 				//std::cout << "Network::Network(---) = step 3.1 - " << i << " - " << at(i).size() << "\n";
 			}
 			
@@ -90,16 +94,19 @@ namespace oct::neu
 			for(Index i = 0; i < datas.size(); i++)
 			{
 				//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-				std::cout << "Data :";
+				std::cout << ">>Data :";
 				Layer<T>::print(datas[i].inputs);
 				std::cout << "\n";
+				std::cout << "prev :";
 				Layer<T>::print(*outs);
 				std::cout << "\n";
 				spread(datas[i].inputs);
 				for(Index j = lastlayer; j > 0; j--)
 				{
-					std::vector<Layer<T>>::at(j).gd(maxit,ratio,std::vector<Layer<T>>::at(j-1),datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+					//std::cout << ">>>>Capa :" << j << "\n";
+					std::vector<Layer<T>>::at(j).gd(maxit,ratio,datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
 				}
+				std::cout << "post :";
 				Layer<T>::print(*outs);
 				std::cout << "\n";
 				std::cout << "\n";
@@ -135,19 +142,20 @@ namespace oct::neu
 		void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l)
 		{
 			std::string msg = "La capa '";
-			msg += std::to_string(i) + "' soporta un maximo de " + std::to_string(layerWidth[i] * inputsPerpceptron) + ", sin embargo la capa '";
-			msg += std::to_string(i-1) + "' requiere " + std::to_string(layerWidth[i-1]);
+			msg += std::to_string(i) + "' soporta un maximo de " + std::to_string(topology[i].height * inputsPerpceptron) + ", sin embargo la capa '";
+			msg += std::to_string(i-1) + "' requiere " + std::to_string(topology[i-1].height);
 			throw octetos::core::Exception(msg,f,l);
 		}
 
 	private:
 		//Dendrities dendrities;
-		LayerWidth layerWidth;
+		//LayerWidth layerWidth;
 		unsigned short inputsPerpceptron;
 		unsigned short outsPerpceptron;
 		std::vector<T*>* outs;
 		std::vector<T> ins;
 		ActivationFuntion AF;
+		const Topology& topology;
 	};
 }
 

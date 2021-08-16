@@ -6,7 +6,11 @@
 
 namespace oct::neu
 {
-
+	struct Model
+	{
+		unsigned short height;
+		ActivationFuntion AF;
+	};
 	template<typename T> class Layer : public std::vector<Perceptron<T>>
 	{
 	public:
@@ -43,10 +47,10 @@ namespace oct::neu
 			dZdW.resize(outputs.size());
 			dEdW.resize(outputs.size());
 			dEdZ.resize(outputs.size());
-			gradientDescent.resize(outputs.size());
+			//gradientDescent.resize(outputs.size());
 			dRdW.resize(outputs.size());
-			En.resize(outputs.size());
-			En1.resize(outputs.size());
+			//En.resize(outputs.size());
+			//En1.resize(outputs.size());
 		}
 
 		std::vector<T*>& get_outputs()
@@ -88,16 +92,16 @@ namespace oct::neu
 		/**
 		*\brief 
 		*/
-		void gd(unsigned short maxit, T ratio, Layer& prevL, const Data<T>& expected)
+		void gd(unsigned short maxit, T ratio, const Data<T>& expected)
 		{
 			//std::cout << "\tvoid Layer::gd(..) : step 1\n";
 			for(Index it = 0; it < maxit; it++)
 			{
 				//std::cout << "Iteracion : " << it << "\n";
-				for(Index i = 0; i < En.size(); i++)
+				/*for(Index i = 0; i < En.size(); i++)
 				{
 					En[i] = expected.outputs[i] - *outputs[i];
-				}
+				}*/
 				//derivada partcial respecto a la funcion de activacion			
 				for(Index i = 0; i < dEdR.size(); i++)
 				{
@@ -145,10 +149,10 @@ namespace oct::neu
 				}
 				
 				//std::cout << "\tvoid Layer::gd(..) : step 6\n";
-				for(Index i = 0; i < gradientDescent.size(); i++)
+				/*for(Index i = 0; i < gradientDescent.size(); i++)
 				{
 					gradientDescent[i] = dEdW[i] * T(-1.0);
-				}
+				}*/
 					
 				//std::cout << "\tvoid Layer::gd(..) : step 7\n";
 				for(Index i = 0; i < dRdW.size(); i++)
@@ -159,31 +163,31 @@ namespace oct::neu
 				//std::cout << "\tvoid Layer::gd(..) : step 8\n";
 				Index highIndex = max(dEdZ);//neurona de mayor responsabilidad
 				//std::cout << "\tvoid Layer::gd(..) : step 9\n";
-				wlakingDown(highIndex,ratio);
+				//wlakingDown(highIndex,ratio);
 				//std::cout << "\tvoid Layer::gd(..) : step 10\n";
-				std::cout << "dEdR = ";
-				Layer<T>::print(dEdR);
-				std::cout << "\n";
-				std::cout << "dRdZ = ";
-				Layer<T>::print(dRdZ);
-				std::cout << "\n";
+				//std::cout << "dEdR = ";
+				//Layer<T>::print(dEdR);
+				//std::cout << "\n";
+				//std::cout << "dRdZ = ";
+				//Layer<T>::print(dRdZ);
+				//std::cout << "\n";
 				//std::cout << "dEdW = ";
 				//Layer<T>::print(dEdW);
 				//std::cout << "\n";
 				//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
 				//std::cout << "\n";
-				std::cout << "weight : ";
-				Layer<T>::print(Layer<T>::at(highIndex).get_weight());
-				std::cout << "\n";
-				std::cout << "outputs : ";
-				Layer<T>::print(outputs);
-				std::cout << "\n";
+				//std::cout << "weight : ";
+				//Layer<T>::print(Layer<T>::at(highIndex).get_weight());
+				//std::cout << "\n";
+				//std::cout << "outputs : ";
+				//Layer<T>::print(outputs);
+				//std::cout << "\n";
 				
 				spread();
-				for(Index i = 0; i < En1.size(); i++)
+				/*for(Index i = 0; i < En1.size(); i++)
 				{
 					En1[i] = expected.outputs[i] - *outputs[i];
-				}
+				}*/
 			}
 		}
 		Index max(std::vector<T>& data)
@@ -202,7 +206,7 @@ namespace oct::neu
 
 			return maxIndex;
 		}
-		void wlakingDown(Index n, T ratio)
+		void wlakingDown(Index n, T ratio, T expected)
 		{
 			std::vector<T>& ws = std::vector<Perceptron<T>>::at(n).get_weight();
 			for(Index i = 0; i < ws.size(); i++)
@@ -217,9 +221,9 @@ namespace oct::neu
 	private:
 		std::vector<T*> outputs;
 		ActivationFuntion AF;
-		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ,dRdW,gradientDescent,En,En1;
+		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ,dRdW;
+		//std::vector<T> En,En1,,gradientDescent
 	};
-
 
 }
 

@@ -4,13 +4,15 @@
 #include <iostream>
 
 
-#include "neuronal.hh"
+#include "Network.hh"
 
 namespace oct::neu
 {
 	
 	
-	
+	Topology::Topology(Index s) : std::vector<Model>(s)
+	{
+	}
 	
 	
 	
