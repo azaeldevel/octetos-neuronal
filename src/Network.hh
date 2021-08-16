@@ -91,25 +91,29 @@ namespace oct::neu
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
-			for(Index i = 0; i < datas.size(); i++)
+			for(Index it = 0; it < maxit; it++)
 			{
-				//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-				std::cout << ">>Data :";
-				Layer<T>::print(datas[i].inputs);
-				std::cout << "\n";
-				std::cout << "prev :";
-				Layer<T>::print(*outs);
-				std::cout << "\n";
-				spread(datas[i].inputs);
-				for(Index j = lastlayer; j > 0; j--)
+				//std::cout << "Iteracion : " << it << "\n";
+				for(Index i = 0; i < datas.size(); i++)
 				{
-					//std::cout << ">>>>Capa :" << j << "\n";
-					std::vector<Layer<T>>::at(j).gd(maxit,ratio,datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
+					std::cout << ">>Data :";
+					Layer<T>::print(datas[i].inputs);
+					std::cout << "\n";
+					std::cout << "prev :";
+					Layer<T>::print(*outs);
+					std::cout << "\n";
+					spread(datas[i].inputs);
+					for(Index j = lastlayer; j > 0; j--)
+					{
+						//std::cout << ">>>>Capa :" << j << "\n";
+						std::vector<Layer<T>>::at(j).gd(maxit,ratio,datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+					}
+					std::cout << "post :";
+					Layer<T>::print(*outs);
+					std::cout << "\n";
+					std::cout << "\n";
 				}
-				std::cout << "post :";
-				Layer<T>::print(*outs);
-				std::cout << "\n";
-				std::cout << "\n";
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}

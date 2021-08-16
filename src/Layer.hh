@@ -95,9 +95,9 @@ namespace oct::neu
 		void gd(unsigned short maxit, T ratio, const Data<T>& expected)
 		{
 			//std::cout << "\tvoid Layer::gd(..) : step 1\n";
-			for(Index it = 0; it < maxit; it++)
+			//for(Index it = 0; it < maxit; it++)
 			{
-				//std::cout << "Iteracion : " << it << "\n";
+				
 				/*for(Index i = 0; i < En.size(); i++)
 				{
 					En[i] = expected.outputs[i] - *outputs[i];
@@ -119,7 +119,8 @@ namespace oct::neu
 							dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Perceptron<T>>::at(i).get_sigma());
 						break;
 						case ActivationFuntion::IDENTITY:
-							dRdZ[i] =  Perceptron<T>::identity_D(std::vector<Perceptron<T>>::at(i).get_sigma());
+							//dRdZ[i] =  Perceptron<T>::identity_D(std::vector<Perceptron<T>>::at(i).get_sigma());
+							dRdZ[i] = T(1);
 						break;
 						default:
 							throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -163,7 +164,7 @@ namespace oct::neu
 				//std::cout << "\tvoid Layer::gd(..) : step 8\n";
 				Index highIndex = max(dEdZ);//neurona de mayor responsabilidad
 				//std::cout << "\tvoid Layer::gd(..) : step 9\n";
-				//wlakingDown(highIndex,ratio);
+				wlakingDown(highIndex,ratio);
 				//std::cout << "\tvoid Layer::gd(..) : step 10\n";
 				//std::cout << "dEdR = ";
 				//Layer<T>::print(dEdR);
@@ -206,7 +207,7 @@ namespace oct::neu
 
 			return maxIndex;
 		}
-		void wlakingDown(Index n, T ratio, T expected)
+		void wlakingDown(Index n, T ratio)
 		{
 			std::vector<T>& ws = std::vector<Perceptron<T>>::at(n).get_weight();
 			for(Index i = 0; i < ws.size(); i++)

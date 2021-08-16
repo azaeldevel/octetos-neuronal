@@ -34,7 +34,7 @@ namespace oct::neu
 			weight.resize(ins);
 			for(Index i = 0; i < weight.size(); i++)
 			{
-				weight[1] = randNumber();
+				weight[i] = randNumber();
 			}
 		}
 		
