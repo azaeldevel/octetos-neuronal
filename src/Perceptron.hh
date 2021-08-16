@@ -116,6 +116,14 @@ namespace oct::neu
 
 			return val;
 		}
+		void bp(T ratio, T dEdW)
+		{
+			//std::cout << "\tvoid Perceptron::bp(..) : step 1\n";
+			for(Index i = 0; i < weight.size(); i++)
+			{
+				weight[i] = weight[i]  - (dEdW * ratio);
+			}
+		}
 
 		static T sigmoide(T v)
 		{

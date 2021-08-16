@@ -51,7 +51,7 @@ namespace oct::neu
 				std::vector<Layer<T>>::at(i).set(insP,topology[i].height,af);//configurar cada capa
 				//std::cout << "Network::Network(---) = step 3.1 - " << i << " - " << at(i).size() << "\n";
 			}
-			
+
 			//std::cout << "Network::Network(---) = step 4\n";
 			conecting();
 		}
@@ -87,27 +87,102 @@ namespace oct::neu
 		*/
 		void bp(const std::vector<Data<T>>& datas,unsigned short maxit, T ratio)
 		{
-			//std::cout << "\tvoid Network::bp(..) : step 1\n";
+			std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
-			//std::cout << "\tvoid Network::bp(..) : step 2\n";
-			for(Index it = 0; it < maxit; it++)
+			std::cout << "\tvoid Network::bp(..) : step 2\n";
+			for(Index di = 0; di < datas.size(); di++)
 			{
-				//std::cout << "Iteracion : " << it << "\n";
-				for(Index i = 0; i < datas.size(); i++)
+				for(Index it = 0; it < maxit; it++)
 				{
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					std::cout << ">>Data :";
-					Layer<T>::print(datas[i].inputs);
+					Layer<T>::print(datas[di].inputs);
 					std::cout << "\n";
 					std::cout << "prev :";
 					Layer<T>::print(*outs);
 					std::cout << "\n";
-					spread(datas[i].inputs);
+					spread(datas[di].inputs);
+										
 					for(Index j = lastlayer; j > 0; j--)
 					{
 						//std::cout << ">>>>Capa :" << j << "\n";
-						std::vector<Layer<T>>::at(j).gd(maxit,ratio,datas[i]);//aplicando el algoritmo de back-propagation a la capa i-esim
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
+						dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());	
+						dRdZ.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+						dZdW.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+						dEdW.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+						dEdZ.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.2\n";
+						
+						//derivada partcial respecto a la funcion de activacion			
+						for(Index i = 0; i < dEdR.size(); i++)
+						{
+							dEdR[i] = *std::vector<Layer<T>>::at(j).get_outputs()[i] - datas[di].outputs[i];
+						}
+					
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.3\n";
+						//derivada de la activacion respecto a la suman ponderada
+						for(Index i = 0; i < dRdZ.size(); i++)
+						{
+							switch(AF)
+							{
+								case ActivationFuntion::SIGMOIDEA:
+									//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
+									dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Layer<T>>::at(j).at(i).get_sigma());
+								break;
+								case ActivationFuntion::IDENTITY:
+									//dRdZ[i] =  Perceptron<T>::identity_D(std::vector<Perceptron<T>>::at(i).get_sigma());
+									dRdZ[i] = T(1);
+								break;
+								default:
+									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+							};
+						}
+
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
+						//la derivada parcial de  la suman ponderada respecto de los pesos
+						for(Index i = 0; i < dZdW.size(); i++)
+						{
+							//if(dZdW.size() != std::vector<Perceptron<T>>::at(i).get_inputs().size()) dZdW.resize(std::vector<Perceptron<T>>::at(i).get_inputs().size());
+							dZdW[i] = std::vector<Layer<T>>::at(j).at(i).derivade();
+						}
+						
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";
+						//derivada parcial del error repecto de los pesos
+						for(Index i = 0; i < dEdW.size(); i++)
+						{
+							dEdW[i] =  dEdR[i] * dRdZ[i] * dZdW[i];
+						}
+						
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
+						//error imputado
+						for(Index i = 0; i < dEdZ.size(); i++)
+						{
+							dEdZ[i] =  dEdR[i] * dRdZ[i];
+						}
+						//std::cout << "dEdR = ";
+						//Layer<T>::print(dEdR);
+						//std::cout << "\n";
+						//std::cout << "dRdZ = ";
+						//Layer<T>::print(dRdZ);
+						//std::cout << "\n";
+						//std::cout << "dEdW = ";
+						//Layer<T>::print(dEdW);
+						//std::cout << "\n";
+						//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
+						//std::cout << "\n";
+						//std::cout << "weight : ";
+						//Layer<T>::print(Layer<T>::at(highIndex).get_weight());
+						//std::cout << "\n";
+						//std::cout << "outputs : ";
+						//Layer<T>::print(outputs);
+						//std::cout << "\n";
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.7\n";
+						Index highIndex = max(dEdZ);
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
+						std::vector<Layer<T>>::at(j).at(highIndex).bp(ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
 					std::cout << "post :";
 					Layer<T>::print(*outs);
@@ -115,9 +190,26 @@ namespace oct::neu
 					std::cout << "\n";
 				}
 			}
-			//std::cout << "\tvoid Network::bp(..) : step 3\n";
+			std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
 
+		Index max(std::vector<T>& data)
+		{
+			if(data.empty()) throw oct::core::Exception("Arreglo vacio",__FILE__,__LINE__);
+			Index maxIndex = 0;
+			T maxFound = data[maxIndex];
+			for(Index i = 0; i < data.size(); i++)
+			{
+				if(data[i] > maxFound) 
+				{
+					maxFound = data[i];
+					maxIndex = i;
+				}
+			}
+
+			return maxIndex;
+		}
+		
 	private:
 		void conecting()
 		{
@@ -160,6 +252,7 @@ namespace oct::neu
 		std::vector<T> ins;
 		ActivationFuntion AF;
 		const Topology& topology;
+		std::vector<T> dEdR,dRdZ,dZdW,dEdW,dEdZ;
 	};
 }
 
