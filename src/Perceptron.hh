@@ -106,15 +106,13 @@ namespace oct::neu
 			//std::cout << "\tdatatype Perceptron::sigma step 4\n";
 			return val;
 		}
-		T derivade(std::vector<T>&)
+		void derivade(std::vector<T>& d)
 		{
 			T val = 0;
-			for(unsigned short i = 0; i < inputs.size(); i++)
+			for(unsigned short i = 0; i < weight.size(); i++)
 			{
-				val += (*inputs[i]);
+				d[i] = (*inputs[i]);
 			}
-
-			return val;
 		}
 		void bp(T ratio, T dEdW)
 		{

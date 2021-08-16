@@ -59,7 +59,7 @@ int main()
 	topology[4].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
 	topology[5].height=1;
 	topology[5].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
-	oct::neu::Network<double> network(topology,6,1,oct::neu::ActivationFuntion::SIGMOIDEA);
+	oct::neu::Network<double> network(topology,6,1);
 	//std::vector<oct::neu::datatype*>& out = network.spread(data);
 	//oct::neu::Layer::print(out);
 	//std::vector<std::vector<double>*> ds;
