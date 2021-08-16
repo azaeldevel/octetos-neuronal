@@ -96,14 +96,13 @@ namespace oct::neu
 				for(Index it = 0; it < maxit; it++)
 				{
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-					std::cout << ">>Data :";
-					Layer<T>::print(datas[indexData].inputs);
-					if(datas[indexData].outputs[0] > 0.5) std::cout << " - Aceptado";
-					else std::cout << " - Rechazado";
-					std::cout << "\n";
-					std::cout << "prev :";
-					Layer<T>::print(*outs);
-					std::cout << "\n";
+					//std::cout << ">>Data :";
+					//Layer<T>::print(datas[indexData].inputs);
+					
+					//std::cout << "\n";
+					//std::cout << "prev :";
+					//Layer<T>::print(*outs);
+					//std::cout << "\n";
 					
 					spread(datas[indexData].inputs);
 
@@ -178,9 +177,9 @@ namespace oct::neu
 						//std::cout << "dRdZ = ";
 						//Layer<T>::print(dRdZ);
 						//std::cout << "\n";
-						std::cout << "dEdW = ";
-						Layer<T>::print(dEdW);
-						std::cout << "\n";
+						//std::cout << "dEdW = ";
+						//Layer<T>::print(dEdW);
+						//std::cout << "\n";
 						//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
 						//std::cout << "\n";
 						//std::cout << "weight : ";
@@ -195,10 +194,10 @@ namespace oct::neu
 						std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
-					std::cout << "post :";
-					Layer<T>::print(*outs);
-					std::cout << "\n";
-					std::cout << "\n";
+					//std::cout << "post :";
+					//Layer<T>::print(*outs);
+					//std::cout << "\n";
+					//std::cout << "\n";
 				}
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";

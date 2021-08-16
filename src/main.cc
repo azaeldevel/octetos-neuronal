@@ -60,13 +60,27 @@ int main()
 	topology[5].height=1;
 	topology[5].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
 	oct::neu::Network<double> network(topology,6,1);
-	//std::vector<oct::neu::datatype*>& out = network.spread(data);
-	//oct::neu::Layer::print(out);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	network.bp(line1,10,0.01);
-	
+	network.bp(line1,10,0.01);	
+	double out;
+	for(oct::neu::Data<double>& d : line1)
+	{
+		out = *network.spread(d.inputs)[0];
+		if(out < 0.5) 
+		{
+			std::cout << "Fallo para : ";
+			oct::neu::Layer<double>::print(d.inputs);
+			std::cout << "\n";
+		}
+		else
+		{
+			std::cout << "Aceptable : ";
+			oct::neu::Layer<double>::print(d.inputs);
+			std::cout << "\n";
+		}
+	}
 	
 	
 	return 0;
