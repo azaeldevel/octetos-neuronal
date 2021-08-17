@@ -63,21 +63,26 @@ int main()
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	network.bp(line1,10,0.01);	
+	network.bp(line1,10,0.001);	
 	double out;
+	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line1)
 	{
 		out = *network.spread(d.inputs)[0];
-		if(out < 0.5) 
+		if(out < 0.50 and d.outputs[0] < 0.50) 
 		{
-			std::cout << "Fallo para : ";
-			oct::neu::Layer<double>::print(d.inputs);
-			std::cout << "\n";
+		}
+		else if(out > 0.50 and d.outputs[0] > 0.50) 
+		{
 		}
 		else
 		{
-			std::cout << "Aceptable : ";
+			counFail++;
+			std::cout << "Fallo(" << counFail << ") en ";
 			oct::neu::Layer<double>::print(d.inputs);
+			std::cout << ", la prediccion es " << out << ", sin embargo el valor esperado es ";
+			if(d.outputs[0] > 0.5) std::cout << " > 0.5";
+			else std::cout << " < 0.5";
 			std::cout << "\n";
 		}
 	}
