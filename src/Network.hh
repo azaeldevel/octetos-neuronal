@@ -11,6 +11,9 @@ namespace oct::neu
 	
 	struct Topology : public std::vector<Model>
 	{
+		float inputsNeurona;
+
+		
 		Topology(Index size);
 	};
 
@@ -25,31 +28,24 @@ namespace oct::neu
 		*\param FA Funcion de activacion
 		*\param insP Inidca la canitdad de entradas de cada neurona
 		*/
-		Network(const Topology& t,unsigned short insP,unsigned short outsP) 
-		: inputsPerpceptron(insP),outsPerpceptron(outsP),topology(t)
+		Network(const Topology& t,unsigned short countInputs,unsigned short countOutputs) : topology(t)
 		{
 			//std::cout << "Network::Network(---) = step 1\n";
-			//validacion de entradas
-			for(unsigned short i = 2; i < topology.size(); i++)
-			{
-				if(topology[i].height * insP < topology[i-1].height) errorToMuchInputsRequiered(i,__FILE__,__LINE__);
-			}
-			//layerWidth.resize(topology.size());
-			/*for(unsigned short i = 0; i < topology.size(); i++)
-			{
-				layerWidth[i] = lw[i];
-			}*/
+			if(topology.size() < 3) throw oct::core::Exception("La red deve tener 1 capa de entrada, al menos 1 capa oculta y 1 de salida",__FILE__,__LINE__);
+			if(topology.at(0).height != countInputs) throw oct::core::Exception("La cantidad de entradas no coincide",__FILE__,__LINE__);
+			if(topology.at(topology.size() - 1).height != countOutputs) throw oct::core::Exception("La cantidad de salidas no coincide",__FILE__,__LINE__);
 			//std::cout << "Network::Network(---) = step 2\n";
 			
 			std::vector<Layer<T>>::resize(topology.size());
 			
 			//std::cout << "Network::Network(---) = step 3 - " << std::vector<Layer<T>>::size() << "\n";
-			std::vector<Layer<T>>::at(0).set(1,topology[0].height,topology[0].AF);
-			//std::cout << "Network::Network(---) = step 3.1 - " << 0 << " - " << std::vector<Layer<T>>::at(0).size() << "\n";
+			//cada neurona se conecta con todas las salidas de la capa anterior
+			topology.at(0).inputsNeurona = 1;
+			std::vector<Layer<T>>::at(0).set(topology.at(0));
 			for(unsigned short i = 1; i < topology.size(); i++)
 			{
-				std::vector<Layer<T>>::at(i).set(insP,topology[i].height,topology[i].AF);//configurar cada capa
-				//std::cout << "Network::Network(---) = step 3.1 - " << i << " - " << at(i).size() << "\n";
+				topology.at(i).inputsNeurona = topology.at(i-1).height;
+				std::vector<Layer<T>>::at(i).set(topology.at(i));
 			}
 
 			//std::cout << "Network::Network(---) = step 4\n";
@@ -58,7 +54,8 @@ namespace oct::neu
 		const std::vector<T*>& spread(const std::vector<T>& ds)
 		{
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 1\n";
-			if(std::vector<Layer<T>>::at(0).size() != ds.size()) throw oct::core::Exception("La cantidad de entradas en la red no coincide con la cantidad de datos de entradas",__FILE__,__LINE__);
+			//std::cout << std::vector<Layer<T>>::at(0).size() << " != " << ds.size() << "\n";
+			if(std::vector<Layer<T>>::at(0).size() != ds.size()) throw oct::core::Exception("Los vectores de datos no coinciden",__FILE__,__LINE__);
 			ins = ds;
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 2\n";
 			for(unsigned short i = 0; i < std::vector<Layer<T>>::at(0).size(); i++)
@@ -174,9 +171,9 @@ namespace oct::neu
 						//std::cout << "dEdR = ";
 						//Layer<T>::print(dEdR);
 						//std::cout << "\n";
-						//std::cout << "dRdZ = ";
-						//Layer<T>::print(dRdZ);
-						//std::cout << "\n";
+						std::cout << "dRdZ = ";
+						Layer<T>::print(dRdZ);
+						std::cout << "\n";
 						//std::cout << "dEdW = ";
 						//Layer<T>::print(dEdW);
 						//std::cout << "\n";
@@ -224,23 +221,15 @@ namespace oct::neu
 		void conecting()
 		{
 			//std::cout << "\n";
-			for(unsigned short i = 1; i < std::vector<Layer<T>>::size(); i++)
+			for(unsigned short i = 1; i < std::vector<Layer<T>>::size(); i++)//cada capa
 			{
 				//std::cout << "Cantidd de Layers = " << size() << "\n";
-				for(unsigned short j = 0; j < std::vector<Layer<T>>::at(i).size(); j++)
+				for(unsigned short j = 0; j < std::vector<Layer<T>>::at(i).size(); j++)//cada neurona de la capa i
 				{
 					//std::cout << "\tCantidd de neuraonas = " << at(i).size() << "\n";
-					for(unsigned short k = 0; k < std::vector<Layer<T>>::at(i).at(j).get_inputs().size(); k++)
+					for(unsigned short k = 0; k < topology.at(i).inputsNeurona; k++)
 					{
-						if(k < std::vector<Layer<T>>::at(i-1).size()) 
-						{
-							std::vector<Layer<T>>::at(i).at(j).get_inputs().at(k) = &(std::vector<Layer<T>>::at(i-1).at(k).get_out());
-						}
-						else 
-						{
-							std::vector<Layer<T>>::at(i).at(j).resize(k);
-							break;
-						}
+						std::vector<Layer<T>>::at(i).at(j).get_inputs().at(k) = &(std::vector<Layer<T>>::at(i-1).at(k).get_out());						
 					}
 				}	
 			}
@@ -261,7 +250,7 @@ namespace oct::neu
 		std::vector<T*>* outs;
 		std::vector<T> ins;
 		//ActivationFuntion AF;
-		const Topology& topology;
+		Topology topology;
 		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
 		std::vector<std::vector<T>> dZdW;
 	};

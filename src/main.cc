@@ -46,7 +46,6 @@ int main()
 	//line1.dating();
 	//line1.plot();
 	oct::neu::Topology topology(6);
-	//oct::neu::LayerWidth layerWidth(6);
 	topology[0].height=2;
 	topology[0].AF = oct::neu::ActivationFuntion::IDENTITY;
 	topology[1].height=18;
@@ -59,7 +58,16 @@ int main()
 	topology[4].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
 	topology[5].height=1;
 	topology[5].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
-	oct::neu::Network<double> network(topology,6,1);
+	/*topology[0].height=2;
+	topology[0].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
+	topology[1].height=4;
+	topology[1].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
+	topology[2].height=4;
+	topology[2].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
+	topology[3].height=1;
+	topology[3].AF = oct::neu::ActivationFuntion::SIGMOIDEA;
+	topology.inputsNeurona = 0.5;*/
+	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
