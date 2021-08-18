@@ -19,29 +19,6 @@ namespace oct::neu
 		Layer()
 		{		
 		}
-		void set(unsigned short inputsP, unsigned short countP, ActivationFuntion af)
-		{
-			if(std::vector<Perceptron<T>>::size() < countP) std::vector<Perceptron<T>>::resize(countP);
-			
-			//AF = af;
-			for(Perceptron<T>& p : *this)
-			{
-				p.set(inputsP);
-			}
-			
-			outputs.resize(std::vector<Perceptron<T>>::size());
-			//std::cout << "size = " << std::vector<Perceptron<T>>::size() << "\n";
-			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
-			{//asigna la salida de cada perceptor al vetor de salida
-				outputs[i] = &std::vector<Perceptron<T>>::at(i).get_out(); 
-			}
-			//dEdW.resize(outputs.size());
-			//dEdZ.resize(outputs.size());
-			//gradientDescent.resize(outputs.size());
-			//dRdW.resize(outputs.size());
-			//En.resize(outputs.size());
-			//En1.resize(outputs.size());
-		}
 		void set(Model& model)
 		{
 			this->model = &model;

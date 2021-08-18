@@ -15,6 +15,8 @@ namespace oct::neu
 
 		
 		Topology(Index size);
+		Topology(Index size, ActivationFuntion AF);
+		Topology(const Topology&);
 	};
 
 	/**
@@ -33,6 +35,7 @@ namespace oct::neu
 			//std::cout << "Network::Network(---) = step 1\n";
 			if(topology.size() < 3) throw oct::core::Exception("La red deve tener 1 capa de entrada, al menos 1 capa oculta y 1 de salida",__FILE__,__LINE__);
 			if(topology.at(0).height != countInputs) throw oct::core::Exception("La cantidad de entradas no coincide",__FILE__,__LINE__);
+			std::cout << topology.at(topology.size() - 1).height << " != " << countOutputs << "\n";
 			if(topology.at(topology.size() - 1).height != countOutputs) throw oct::core::Exception("La cantidad de salidas no coincide",__FILE__,__LINE__);
 			//std::cout << "Network::Network(---) = step 2\n";
 			
