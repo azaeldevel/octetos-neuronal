@@ -41,10 +41,23 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,500,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,1000,0,50);
 	//line1.print();
 	//line1.dating();
 	//line1.plot();
+	oct::neu::Network<double>::Learning learnig;
+	learnig.ratio = 1.0e-6;
+	learnig.dEdR_range = 1.0e-2;
+	learnig.iterations = 200;
+	oct::neu::Topology topology(8,oct::neu::ActivationFuntion::SIGMOIDEA);
+	topology[0].height=2;
+	topology[1].height=18;
+	topology[2].height=30;
+	topology[3].height=30;
+	topology[4].height=80;
+	topology[5].height=20;
+	topology[6].height=5;
+	topology[7].height=1;
 	/*oct::neu::Topology topology(6,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=18;
@@ -52,26 +65,26 @@ int main()
 	topology[3].height=30;
 	topology[4].height=5;
 	topology[5].height=1;*/
-	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
+	/*oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
-	topology[1].height=4;
-	topology[2].height=4;
-	topology[3].height=1;
+	topology[1].height=8;
+	topology[2].height=8;
+	topology[3].height=1;*/
 	topology.inputsNeurona = 0.5;
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	network.bp(line1,10,0.001);	
+	network.bp(line1,learnig);	
 	double out;
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line1)
 	{
 		out = *network.spread(d.inputs)[0];
-		if(out < 0.50 and d.outputs[0] < 0.50) 
+		if(out < 1.0e-6 and d.outputs[0] < 1.0e-6) 
 		{
 		}
-		else if(out > 0.50 and d.outputs[0] > 0.50) 
+		else if(out > 9.0e-6 and d.outputs[0] > 9.0e-6) 
 		{
 		}
 		else
@@ -80,13 +93,10 @@ int main()
 			std::cout << "Fallo(" << counFail << ") en ";
 			oct::neu::Layer<double>::print(d.inputs);
 			std::cout << ", la prediccion es " << out << ", sin embargo el valor esperado es ";
-			if(d.outputs[0] > 0.5) std::cout << " > 0.5";
-			else std::cout << " < 0.5";
+			std::cout << d.outputs[0];
 			std::cout << "\n";
 		}
 	}
-	
-	
 	return 0;
 }
 

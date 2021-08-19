@@ -19,11 +19,19 @@ namespace oct::neu
 		Topology(const Topology&);
 	};
 
+
 	/**
 	*\brief red neuronal
 	*/	
 	template<typename T> class Network : public std::vector<Layer<T>>
 	{
+	public:	
+		struct Learning
+		{
+			T ratio;
+			T dEdR_range; 
+			unsigned int iterations;
+		};
 	public:
 		/**
 		*\param layerWidth Inidca la caxntidad de neuronal para la capa i-esima, deve de tener 1 para la primer capa
@@ -35,7 +43,7 @@ namespace oct::neu
 			//std::cout << "Network::Network(---) = step 1\n";
 			if(topology.size() < 3) throw oct::core::Exception("La red deve tener 1 capa de entrada, al menos 1 capa oculta y 1 de salida",__FILE__,__LINE__);
 			if(topology.at(0).height != countInputs) throw oct::core::Exception("La cantidad de entradas no coincide",__FILE__,__LINE__);
-			std::cout << topology.at(topology.size() - 1).height << " != " << countOutputs << "\n";
+			//std::cout << topology.at(topology.size() - 1).height << " != " << countOutputs << "\n";
 			if(topology.at(topology.size() - 1).height != countOutputs) throw oct::core::Exception("La cantidad de salidas no coincide",__FILE__,__LINE__);
 			//std::cout << "Network::Network(---) = step 2\n";
 			
@@ -85,7 +93,7 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas,unsigned short maxit, T ratio)
+		void bp(const std::vector<Data<T>>& datas, const Learning& learning)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
@@ -93,16 +101,18 @@ namespace oct::neu
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			for(Index indexData = 0; indexData < datas.size(); indexData++)
 			{
-				for(Index it = 0; it < maxit; it++)
+				for(Index it = 0; it < learning.iterations; it++)
 				{
+					std::cout << "Iteracion : " << it << "\n";;
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-					//std::cout << ">>Data :";
-					//Layer<T>::print(datas[indexData].inputs);
-					
-					//std::cout << "\n";
-					//std::cout << "prev :";
-					//Layer<T>::print(*outs);
-					//std::cout << "\n";
+					std::cout << "\t>>Data :";
+					Layer<T>::print(datas[indexData].inputs);
+					std::cout << " - ";	
+					Layer<T>::print(datas[indexData].outputs);				
+					std::cout << "\n";
+					std::cout << "\tprev :";
+					Layer<T>::print(*outs);
+					std::cout << "\n";
 					
 					spread(datas[indexData].inputs);
 
@@ -110,12 +120,13 @@ namespace oct::neu
 					//derivada partcial respecto a la funcion de activacion			
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
+						//std::cout << "\t>>dEdR[i] = " << *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] << " - " << datas[indexData].outputs[i] << "\n";
 						dEdR[i] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[indexData].outputs[i];
 					}
-			
+
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
-						//std::cout << ">>>>Capa :" << j << "\n";
+						//std::cout << "\t\t>>Capa :" << indexLayer << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
 						dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
@@ -158,11 +169,12 @@ namespace oct::neu
 						//derivada parcial del error repecto de los pesos
 						for(Index i = 0; i < dEdW.size(); i++)
 						{
+							T dRdW = dRdZ[i];
 							for(Index k = 0; k < dZdW[i].size(); k++)
 							{
-								dRdZ[i] += dRdZ[i] * dZdW[i][k];
+								dRdW += dRdZ[i] * dZdW[i][k];
 							}	
-							dEdW[i] =  dEdR[i] * dRdZ[i];
+							dEdW[i] =  dEdR[i] * dRdZ[i] * dRdW;
 						}
 						
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
@@ -171,33 +183,53 @@ namespace oct::neu
 						{
 							dEdZ[i] =  dEdR[i] * dRdZ[i];
 						}
+						Index highIndex = max(dEdZ);
+
+						//std::cout << "dRdZ = ";
+						//Layer<T>::print(dRdZ);
+						//std::cout << "\n";
+						//std::cout << "\t\tdEdW = ";
+						//Layer<T>::print(dEdW);
+						//std::cout << "\n";
 						//std::cout << "dEdR = ";
 						//Layer<T>::print(dEdR);
 						//std::cout << "\n";
-						std::cout << "dRdZ = ";
-						Layer<T>::print(dRdZ);
-						std::cout << "\n";
-						//std::cout << "dEdW = ";
-						//Layer<T>::print(dEdW);
+						//std::cout << "dZdW = ";
+						//Layer<T>::print(dZdW);
 						//std::cout << "\n";
 						//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
 						//std::cout << "\n";
-						//std::cout << "weight : ";
-						//Layer<T>::print(Layer<T>::at(highIndex).get_weight());
+						//std::cout << "\t\t\tweight : ";
+						//Layer<T>::print(Layer<T>::at(indexLayer).get_weight());
 						//std::cout << "\n";
 						//std::cout << "outputs : ";
 						//Layer<T>::print(outputs);
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.7\n";
-						Index highIndex = max(dEdZ);
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
-						std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
+						std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(learning.ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
-					//std::cout << "post :";
-					//Layer<T>::print(*outs);
-					//std::cout << "\n";
-					//std::cout << "\n";
+					
+					std::cout << "\tpost :";
+					Layer<T>::print(*outs);
+					//std::cout << " - ";	
+					//Layer<T>::print(datas[indexData].outputs);
+					std::cout << "\n";
+
+					T mdEdR = 0;//promedio de las derivadas
+					for(Index i = 0; i < dEdR.size(); i++)
+					{
+						mdEdR += dEdR[i];
+					}
+					mdEdR /= T(dEdR.size());
+					std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
+					if( std::abs(mdEdR) < learning.dEdR_range) 
+					{
+						std::cout << "\tBreak\n";
+						break;
+					}
+
 				}
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
@@ -256,6 +288,7 @@ namespace oct::neu
 		Topology topology;
 		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
 		std::vector<std::vector<T>> dZdW;
+
 	};
 }
 
