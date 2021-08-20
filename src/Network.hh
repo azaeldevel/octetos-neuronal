@@ -29,7 +29,7 @@ namespace oct::neu
 		struct Learning
 		{
 			T ratio;
-			T dEdR_range; 
+			T dEdR; 
 			unsigned int iterations;
 		};
 	public:
@@ -103,9 +103,10 @@ namespace oct::neu
 			{
 				for(Index it = 0; it < learning.iterations; it++)
 				{
-					std::cout << "Iteracion : " << it << "\n";;
+					std::cout << "Iteracion : " << it << " - Dato : " << indexData << "\n";;
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-					std::cout << "\t>>Data :";
+					//std::cout << "\t>>Data :";
+					std::cout << "\t";
 					Layer<T>::print(datas[indexData].inputs);
 					std::cout << " - ";	
 					Layer<T>::print(datas[indexData].outputs);				
@@ -122,6 +123,19 @@ namespace oct::neu
 					{
 						//std::cout << "\t>>dEdR[i] = " << *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] << " - " << datas[indexData].outputs[i] << "\n";
 						dEdR[i] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[indexData].outputs[i];
+					}
+
+					T mdEdR = 0;//promedio de las derivadas
+					for(Index i = 0; i < dEdR.size(); i++)
+					{
+						mdEdR += dEdR[i];
+					}
+					mdEdR /= T(dEdR.size());
+					std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
+					if( std::abs(mdEdR) < learning.dEdR) 
+					{
+						std::cout << "\tBreak\n";
+						break;
 					}
 
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
@@ -216,19 +230,6 @@ namespace oct::neu
 					//std::cout << " - ";	
 					//Layer<T>::print(datas[indexData].outputs);
 					std::cout << "\n";
-
-					T mdEdR = 0;//promedio de las derivadas
-					for(Index i = 0; i < dEdR.size(); i++)
-					{
-						mdEdR += dEdR[i];
-					}
-					mdEdR /= T(dEdR.size());
-					std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
-					if( std::abs(mdEdR) < learning.dEdR_range) 
-					{
-						std::cout << "\tBreak\n";
-						break;
-					}
 
 				}
 			}

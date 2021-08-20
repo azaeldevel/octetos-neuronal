@@ -36,7 +36,7 @@ namespace oct::neu
 			for(Index i = 0; i < std::vector<Data<T>>::size(); i++) //uno si y uno no
 			{
 				randCerteza = randNumber();
-				certeza = randCerteza > 0.3 ? true : false;
+				certeza = randCerteza > 0.5 ? true : false;
 				//std::cout << "bool " << certeza << "\n";
 				if(certeza)
 				{
