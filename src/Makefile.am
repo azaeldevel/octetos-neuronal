@@ -8,10 +8,13 @@ AM_CFLAGS =\
 	 -Wall\
 	 -g
 
-bin_PROGRAMS = develop
+bin_PROGRAMS = develop plotting
 
 develop_SOURCES = main.cc neuronal.cc perceptron.cc layer.cc Network.cc
 develop_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
 develop_LDADD = $(OCTETOS_CORE_LIBS)
 
+plotting_SOURCES = plot.cc Plot.cc
+plotting_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
+plotting_LDADD = $(OCTETOS_CORE_LIBS)
 
