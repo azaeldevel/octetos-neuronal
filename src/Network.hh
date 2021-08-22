@@ -289,6 +289,7 @@ namespace oct::neu
 		Topology topology;
 		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
 		std::vector<std::vector<T>> dZdW;
+		
 
 	};
 }

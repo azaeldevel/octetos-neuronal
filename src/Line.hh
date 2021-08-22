@@ -52,8 +52,8 @@ namespace oct::neu
 				else
 				{
 					//errOut = randNumber(1.0,100.0);
-					std::vector<Data<T>>::at(i).inputs[0] = randNumber(xmin - (xmin *10.0),xmax * 10.0);
-					std::vector<Data<T>>::at(i).inputs[1] = randNumber(xmin - (xmin *10.0),xmax * 10.0);//la misma ordena pero cun error fuera de rango
+					std::vector<Data<T>>::at(i).inputs[0] = randNumber(xmin - (xmin * 10.0),xmax * 10.0);
+					std::vector<Data<T>>::at(i).inputs[1] = randNumber(xmin - (xmin * 10.0),xmax * 10.0);//la misma ordena pero cun error fuera de rango
 					T tmepPoint = (m * std::vector<Data<T>>::at(i).inputs[0]) + b;
 					if(std::abs(tmepPoint - std::vector<Data<T>>::at(i).inputs[1]) < 0.01)
 					{
