@@ -103,21 +103,27 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plot* plot)
+		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plot* plotByIt)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			std::list<std::vector<T>> errDataPlot;
-			for(Index indexData = 0; indexData < datas.size(); indexData++)
+			if(plotByIt != NULL)
 			{
-				errDataPlot.clear();
-				plot->set_terminal("qt");
-				std::string titleplot = "out = ";
-				Layer<T>::print(datas[indexData].outputs,titleplot);
-				plot->set_title(titleplot);
-				for(Index it = 0; it < learning.iterations; it++)
+				plotByIt->set_terminal("qt");
+				std::string titleplot = "dEdR";
+				plotByIt->set_title(titleplot);
+				std::string labelRatio = "ratio = ";
+				labelRatio += std::to_string(learning.ratio);
+				plotByIt->set_label(labelRatio,0,0.35);
+			}
+			for(Index it = 0; it < learning.iterations; it++)
+			{
+				
+				T mdEdR_Set = 0;//promedio de las derivadas
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					//std::cout << "Iteracion : " << it << " - Dato : " << indexData << "\n";;
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
@@ -141,32 +147,19 @@ namespace oct::neu
 						dEdR[i] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[indexData].outputs[i];
 					}
 
-					T mdEdR = 0;//promedio de las derivadas
+					T mdEdR_Data = 0;//promedio de las derivadas
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						mdEdR += dEdR[i];
+						mdEdR_Data += dEdR[i];
 					}
-					mdEdR /= T(dEdR.size());
-					Progress prog;
-					prog.x = 0;
-					prog.y = 0;
-					prog.m = mdEdR;
-					progress.push_back(prog);
-					if(plot != NULL)
-					{
-						std::vector<T> vecerr(2);
-						vecerr[0] = it;
-						vecerr[1] = mdEdR;
-						errDataPlot.push_back(vecerr);
-						plot->plotting(errDataPlot);
-					}
-
+					mdEdR_Data /= T(dEdR.size());
+					//Progress prog;
+					//prog.x = 0;
+					//7prog.y = 0;
+					//prog.m = mdEdR;
+					//progress.push_back(prog);
+					mdEdR_Set += mdEdR_Data;
 					//std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
-					if( std::abs(mdEdR) < learning.dEdR) 
-					{
-						//std::cout << "\tBreak\n";
-						break;
-					}
 
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
@@ -262,14 +255,28 @@ namespace oct::neu
 					//std::cout << "\n";
 
 				}
-				if(plot != NULL)
+				mdEdR_Set /= T(datas.size());
+				//std::cout << "mdEdR = " << mdEdR_Set << "\n";
+				if(plotByIt != NULL)
 				{
-					std::string output = "output-";
-					output += std::to_string(indexData) + ".svg";
-					plot->set_terminal("svg");
-					plot->set_output(output);
-					plot->plotting(errDataPlot);
+					std::vector<T> vecerr(2);
+					vecerr[0] = it;
+					vecerr[1] = mdEdR_Set;
+					errDataPlot.push_back(vecerr);
+					plotByIt->plotting(errDataPlot);
 				}
+				if( std::abs(mdEdR_Set) < learning.dEdR) 
+				{
+					break;
+				}
+			}
+			if(plotByIt != NULL)
+			{
+				std::string output = "output";
+				//output += std::to_string(indexData) + ".svg";
+				plotByIt->set_terminal("svg");
+				plotByIt->set_output(output);
+				plotByIt->plotting(errDataPlot);
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}

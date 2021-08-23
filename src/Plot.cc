@@ -77,4 +77,12 @@ namespace oct::math
 	{
 		fprintf(gnuplotPipe,"set output '%s'\n",out.c_str());
 	}
+	void Plot::set_label(const std::string& text, unsigned int x, unsigned int y)
+	{
+		fprintf(gnuplotPipe,"set label \"%s\" at %i,%i\n",text.c_str(),x,y);
+	}
+	void Plot::set_label(const std::string& text, double x, double y)
+	{
+		fprintf(gnuplotPipe,"set label \"%s\" at %f,%f\n",text.c_str(),x,y);
+	}
 }

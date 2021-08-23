@@ -68,7 +68,7 @@ int main()
 	oct::neu::Network<double>::Learning learnig;
 	learnig.ratio = 1.0e-6;
 	learnig.dEdR = 1.0e-2;
-	learnig.iterations = 100;
+	learnig.iterations = 2000;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
