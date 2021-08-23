@@ -68,7 +68,7 @@ int main()
 	oct::neu::Network<double>::Learning learnig;
 	learnig.ratio = 1.0e-6;
 	learnig.dEdR = 1.0e-2;
-	learnig.iterations = 20;
+	learnig.iterations = 100;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
@@ -79,7 +79,9 @@ int main()
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	network.bp(line1,learnig);	
+	oct::math::Plot plot;
+	plot.set_noautotitles();
+	network.bp(line1,learnig,&plot);	
 	double out;
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line1)

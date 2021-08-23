@@ -114,12 +114,24 @@ namespace oct::neu
 				d[i] = (*inputs[i]);
 			}
 		}
-		void bp(T ratio, T dEdW)
+		/**
+		*\brief Gradient Stteping
+		*/
+		void gs(T ratio, T dEdW, bool direction)
 		{
-			//std::cout << "\tvoid Perceptron::bp(..) : step 1\n";
-			for(Index i = 0; i < weight.size(); i++)
+			if(direction)
 			{
-				weight[i] = weight[i]  - (dEdW * ratio);
+				for(Index i = 0; i < weight.size(); i++)
+				{
+					weight[i] = weight[i]  + (dEdW * ratio);
+				}
+			}
+			else
+			{
+				for(Index i = 0; i < weight.size(); i++)
+				{
+					weight[i] = weight[i]  - (dEdW * ratio);
+				}
 			}
 		}
 

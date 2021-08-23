@@ -19,10 +19,10 @@ int main()
 	std::vector<double> point4(2);
 	point4[0] = 4;
 	point4[1] = 5;
-	plot1.plotting(point4);
+	/*plot1.plotting(point4);
 	std::vector<double> point5(2);
 	point5[0] = 4;
 	point5[1] = 5;
-	plot1.plotting(point5);
+	plot1.plotting(point5);*/
 	return 0;
 }

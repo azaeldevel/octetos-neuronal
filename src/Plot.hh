@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <list>
 
 namespace oct::math
 {
@@ -20,11 +21,13 @@ public:
 	
 	void plotting(const std::string& datafile);
 	void plotting(const std::vector<std::vector<double>>&);
-	void plotting(const std::vector<double>&);
-	void plotting(const std::vector<std::vector<float>>&);
-
+	void plotting(const std::list<std::vector<double>>&);
+		
 	void set_title(const std::string& title);
 	void set_styleline(unsigned int);
+	void set_noautotitles();
+	void set_terminal(const std::string& term);
+	void set_output(const std::string& out);
 private:
 	FILE* gnuplotPipe;
 	unsigned int sl;

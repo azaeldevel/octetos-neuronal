@@ -5,6 +5,9 @@
 #include <Layer.hh>
 #include <list>
 
+#include "Plot.hh"
+
+
 namespace oct::neu
 {
 	//typedef std::vector<unsigned short> LayerWidth;
@@ -31,6 +34,13 @@ namespace oct::neu
 			T ratio;
 			T dEdR; 
 			unsigned int iterations;
+		};
+		struct Progress
+		{
+			T x;
+			T y;
+			T m;
+
 		};
 	public:
 		/**
@@ -93,27 +103,33 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas, const Learning& learning)
+		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plot* plot)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
+			std::list<std::vector<T>> errDataPlot;
 			for(Index indexData = 0; indexData < datas.size(); indexData++)
 			{
+				errDataPlot.clear();
+				plot->set_terminal("qt");
+				std::string titleplot = "out = ";
+				Layer<T>::print(datas[indexData].outputs,titleplot);
+				plot->set_title(titleplot);
 				for(Index it = 0; it < learning.iterations; it++)
 				{
-					std::cout << "Iteracion : " << it << " - Dato : " << indexData << "\n";;
+					//std::cout << "Iteracion : " << it << " - Dato : " << indexData << "\n";;
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					//std::cout << "\t>>Data :";
-					std::cout << "\t";
-					Layer<T>::print(datas[indexData].inputs);
-					std::cout << " - ";	
-					Layer<T>::print(datas[indexData].outputs);				
-					std::cout << "\n";
-					std::cout << "\tprev :";
-					Layer<T>::print(*outs);
-					std::cout << "\n";
+					//std::cout << "\t";
+					//Layer<T>::print(datas[indexData].inputs);
+					//std::cout << " - ";	
+					//Layer<T>::print(datas[indexData].outputs);				
+					//std::cout << "\n";
+					//std::cout << "\tprev :";
+					//Layer<T>::print(*outs);
+					//std::cout << "\n";
 					
 					spread(datas[indexData].inputs);
 
@@ -131,10 +147,24 @@ namespace oct::neu
 						mdEdR += dEdR[i];
 					}
 					mdEdR /= T(dEdR.size());
-					std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
+					Progress prog;
+					prog.x = 0;
+					prog.y = 0;
+					prog.m = mdEdR;
+					progress.push_back(prog);
+					if(plot != NULL)
+					{
+						std::vector<T> vecerr(2);
+						vecerr[0] = it;
+						vecerr[1] = mdEdR;
+						errDataPlot.push_back(vecerr);
+						plot->plotting(errDataPlot);
+					}
+
+					//std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
 					if( std::abs(mdEdR) < learning.dEdR) 
 					{
-						std::cout << "\tBreak\n";
+						//std::cout << "\tBreak\n";
 						break;
 					}
 
@@ -221,21 +251,28 @@ namespace oct::neu
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.7\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
-						std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(learning.ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
+						//std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(learning.ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
+						std::vector<Layer<T>>::at(indexLayer).gd(highIndex,learning.ratio,dEdW[highIndex]);
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
-					
-					std::cout << "\tpost :";
-					Layer<T>::print(*outs);
+					//std::cout << "\tpost :";
+					//Layer<T>::print(*outs);
 					//std::cout << " - ";	
 					//Layer<T>::print(datas[indexData].outputs);
-					std::cout << "\n";
+					//std::cout << "\n";
 
+				}
+				if(plot != NULL)
+				{
+					std::string output = "output-";
+					output += std::to_string(indexData) + ".svg";
+					plot->set_terminal("svg");
+					plot->set_output(output);
+					plot->plotting(errDataPlot);
 				}
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
-
 		Index max(std::vector<T>& data)
 		{
 			if(data.empty()) throw oct::core::Exception("Arreglo vacio",__FILE__,__LINE__);
@@ -289,8 +326,7 @@ namespace oct::neu
 		Topology topology;
 		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
 		std::vector<std::vector<T>> dZdW;
-		
-
+		std::vector<Progress> progress;
 	};
 }
 
