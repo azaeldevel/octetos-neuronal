@@ -5,7 +5,7 @@
 
 int main() 
 {
-	oct::math::Plot plot1;
+	oct::math::Plotter plot1;
 	plot1.set_title("Testing plot..");
 	std::vector<std::vector<double>> ps(10);
 	for(unsigned int i = 0; i < ps.size(); i++)

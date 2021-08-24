@@ -103,13 +103,14 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plot* plotByIt)
+		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plotter* plotByIt)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
 			std::list<std::vector<T>> errDataPlot;
+			std::list<std::vector<T>> fDataPlot;
 			if(plotByIt != NULL)
 			{
 				plotByIt->set_terminal("qt");
@@ -117,11 +118,18 @@ namespace oct::neu
 				plotByIt->set_title(titleplot);
 				std::string labelRatio = "ratio = ";
 				labelRatio += std::to_string(learning.ratio);
-				plotByIt->set_label(labelRatio,0,0.35);
+				plotByIt->set_label(labelRatio,100,0.15);
+				std::string labeldEdR = "max dEdR = ";
+				labeldEdR += std::to_string(learning.dEdR);
+				plotByIt->set_label(labeldEdR,100,0.10);
+				std::string labelCountData = "Data = ";
+				labelCountData += std::to_string(datas.size());
+				plotByIt->set_label(labelCountData,100,0.05);
 			}
+			dEdR.resize(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs().size());
+			T dEdR_signed = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{
-				
 				T mdEdR_Set = 0;//promedio de las derivadas
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
@@ -138,8 +146,7 @@ namespace oct::neu
 					//std::cout << "\n";
 					
 					spread(datas[indexData].inputs);
-
-					dEdR.resize(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs().size());								
+													
 					//derivada partcial respecto a la funcion de activacion			
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
@@ -153,6 +160,7 @@ namespace oct::neu
 						mdEdR_Data += dEdR[i];
 					}
 					mdEdR_Data /= T(dEdR.size());
+					if(std::abs(mdEdR_Data) < learning.dEdR) break;
 					//Progress prog;
 					//prog.x = 0;
 					//7prog.y = 0;
@@ -245,7 +253,12 @@ namespace oct::neu
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.7\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
 						//std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(learning.ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
-						std::vector<Layer<T>>::at(indexLayer).gd(highIndex,learning.ratio,dEdW[highIndex]);
+						T dEdR_signed_post = 0;
+						if(mdEdR_Data > 0) dEdR_signed_post = 1.0;
+						else if(mdEdR_Data < 0) dEdR_signed_post = -1.0;
+						T dNull = dEdR_signed/dEdR_signed_post;
+						if(dNull > 0) std::vector<Layer<T>>::at(indexLayer).gd(highIndex,learning.ratio,dEdW[highIndex]);
+						else break;
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
 					//std::cout << "\tpost :";
@@ -256,6 +269,16 @@ namespace oct::neu
 
 				}
 				mdEdR_Set /= T(datas.size());
+				if(it == 0)
+				{
+					if(mdEdR_Set > 0) dEdR_signed = 1.0;
+					else if(mdEdR_Set < 0) dEdR_signed = -1.0;
+				}
+				if(std::abs(mdEdR_Set) < learning.dEdR) break;
+				/*if( std::abs(mdEdR_Set) < learning.dEdR) 
+				{
+					break;
+				}*/
 				//std::cout << "mdEdR = " << mdEdR_Set << "\n";
 				if(plotByIt != NULL)
 				{
@@ -265,14 +288,10 @@ namespace oct::neu
 					errDataPlot.push_back(vecerr);
 					plotByIt->plotting(errDataPlot);
 				}
-				if( std::abs(mdEdR_Set) < learning.dEdR) 
-				{
-					break;
-				}
 			}
 			if(plotByIt != NULL)
 			{
-				std::string output = "output";
+				std::string output = "output.svg";
 				//output += std::to_string(indexData) + ".svg";
 				plotByIt->set_terminal("svg");
 				plotByIt->set_output(output);
@@ -295,6 +314,26 @@ namespace oct::neu
 			}
 
 			return maxIndex;
+		}
+		void display(const Data<T>& data,oct::math::Plotter* plotGraph, const Learning& learning)
+		{
+
+			plotGraph->set_terminal("qt");
+			std::string titleplot = "funcion";
+			plotGraph->set_title(titleplot);
+			std::string labelRatio = "ratio = ";
+			labelRatio += std::to_string(learning.ratio);
+			plotGraph->set_label(labelRatio,100,0.15);
+			std::string labeldEdR = "max dEdR = ";
+			labeldEdR += std::to_string(learning.dEdR);
+			plotGraph->set_label(labeldEdR,100,0.10);
+			if(data.inputs.size() < 2 or data.inputs.size() > 3) throw oct::core::Exception("Dimension no manejable",__FILE__,__LINE__);
+
+			std::vector<T> vecdat(data.inputs.size() + 1);
+			if(data.inputs.size() > 1) vecdat[0] = data.inputs[0];
+			if(data.inputs.size() > 2) vecdat[1] = data.inputs[1];
+			if(std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs().size() == 1) vecdat[2] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[0];
+			else throw oct::core::Exception("Dimension no manejable",__FILE__,__LINE__);
 		}
 		
 	private:

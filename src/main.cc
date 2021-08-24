@@ -41,7 +41,7 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,100,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,10000,0,50);
 	//line1.print();
 	//line1.dating();
 	//line1.plot();
@@ -66,9 +66,9 @@ int main()
 	topology[4].height=5;
 	topology[5].height=1;*/
 	oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-6;
-	learnig.dEdR = 1.0e-2;
-	learnig.iterations = 2000;
+	learnig.ratio = 1.0e-4;
+	learnig.dEdR = 1.0e-6;
+	learnig.iterations = 1000;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
@@ -79,7 +79,8 @@ int main()
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	oct::math::Plot plot;
+	oct::math::Plotter plot;
+	oct::math::Plotter plotGraph;
 	plot.set_noautotitles();
 	network.bp(line1,learnig,&plot);	
 	double out;
@@ -87,10 +88,10 @@ int main()
 	for(oct::neu::Data<double>& d : line1)
 	{
 		out = *network.spread(d.inputs)[0];
-		if(out < 1.0e-6 and d.outputs[0] < 1.0e-6) 
+		if(out < 0.1 and d.outputs[0] < 0.1) 
 		{
 		}
-		else if(out > 9.0e-6 and d.outputs[0] > 9.0e-6) 
+		else if(out > 0.9 and d.outputs[0] > 0.9) 
 		{
 		}
 		else

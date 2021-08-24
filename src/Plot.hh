@@ -12,11 +12,11 @@
 namespace oct::math
 {
 
-class Plot
+class Plotter
 {
 public:
-	Plot();
-	~Plot();
+	Plotter();
+	~Plotter();
 
 	
 	void plotting(const std::string& datafile);
