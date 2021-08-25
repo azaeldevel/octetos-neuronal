@@ -37,10 +37,7 @@ namespace oct::neu
 		};
 		struct Progress
 		{
-			T x;
-			T y;
-			T m;
-
+			std::vector<T> dEdR;
 		};
 	public:
 		/**
@@ -130,10 +127,11 @@ namespace oct::neu
 			T dEdR_signed = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{
+				//std::cout << "\tIteracion : " << it << "\n";;
 				T mdEdR_Set = 0;//promedio de las derivadas
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
-					//std::cout << "Iteracion : " << it << " - Dato : " << indexData << "\n";;
+					//std::cout << "\t\tDato : " << indexData << "\n";;
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					//std::cout << "\t>>Data :";
 					//std::cout << "\t";
@@ -150,24 +148,19 @@ namespace oct::neu
 					//derivada partcial respecto a la funcion de activacion			
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						//std::cout << "\t>>dEdR[i] = " << *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] << " - " << datas[indexData].outputs[i] << "\n";
+						//T val = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[indexData].outputs[i];
+						//std::cout << "\tdEdR[i] = " << val << " = " << *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] << " - " << datas[indexData].outputs[i] << "\n";
 						dEdR[i] = *std::vector<Layer<T>>::at(std::vector<Layer<T>>::size()-1).get_outputs()[i] - datas[indexData].outputs[i];
 					}
 
 					T mdEdR_Data = 0;//promedio de las derivadas
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						mdEdR_Data += dEdR[i];
+						mdEdR_Data += std::abs(dEdR[i]);
 					}
 					mdEdR_Data /= T(dEdR.size());
-					if(std::abs(mdEdR_Data) < learning.dEdR) break;
-					//Progress prog;
-					//prog.x = 0;
-					//7prog.y = 0;
-					//prog.m = mdEdR;
-					//progress.push_back(prog);
+					//std::cout << "\tMedia del dato de dEdR : " << mdEdR_Data << "\n";
 					mdEdR_Set += mdEdR_Data;
-					//std::cout << "\tMedia de mdEdR : " << mdEdR<< "\n";
 
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
@@ -253,12 +246,7 @@ namespace oct::neu
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.7\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
 						//std::vector<Layer<T>>::at(indexLayer).at(highIndex).bp(learning.ratio,dEdW[highIndex]);//aplicando el algoritmo de back-propagation a la capa i-esima
-						T dEdR_signed_post = 0;
-						if(mdEdR_Data > 0) dEdR_signed_post = 1.0;
-						else if(mdEdR_Data < 0) dEdR_signed_post = -1.0;
-						T dNull = dEdR_signed/dEdR_signed_post;
-						if(dNull > 0) std::vector<Layer<T>>::at(indexLayer).gd(highIndex,learning.ratio,dEdW[highIndex]);
-						else break;
+						std::vector<Layer<T>>::at(indexLayer).gd(highIndex,learning.ratio,dEdW[highIndex]);
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.9\n";
 					}
 					//std::cout << "\tpost :";
@@ -269,12 +257,13 @@ namespace oct::neu
 
 				}
 				mdEdR_Set /= T(datas.size());
-				if(it == 0)
+				/*if(it == 0)
 				{
 					if(mdEdR_Set > 0) dEdR_signed = 1.0;
 					else if(mdEdR_Set < 0) dEdR_signed = -1.0;
-				}
-				if(std::abs(mdEdR_Set) < learning.dEdR) break;
+				}*/
+				//std::cout << "\tMedia de mdEdR : " << mdEdR_Set << "\n";
+				if(mdEdR_Set < learning.dEdR) break;
 				/*if( std::abs(mdEdR_Set) < learning.dEdR) 
 				{
 					break;
@@ -372,7 +361,7 @@ namespace oct::neu
 		Topology topology;
 		std::vector<T> dEdR,dRdZ,dEdW,dEdZ;
 		std::vector<std::vector<T>> dZdW;
-		std::vector<Progress> progress;
+		std::list<Progress> progress;
 	};
 }
 

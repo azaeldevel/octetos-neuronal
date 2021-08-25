@@ -41,14 +41,14 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,10000,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,1000,0,50);
 	//line1.print();
 	//line1.dating();
 	//line1.plot();
 	/*oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-6;
-	learnig.dEdR = 1.0e-2;
-	learnig.iterations = 1000000;
+	learnig.ratio = 1.0e-9;
+	learnig.dEdR = 1.0e-6;
+	learnig.iterations = 5000;
 	oct::neu::Topology topology(8,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=18;
@@ -68,7 +68,7 @@ int main()
 	oct::neu::Network<double>::Learning learnig;
 	learnig.ratio = 1.0e-4;
 	learnig.dEdR = 1.0e-6;
-	learnig.iterations = 1000;
+	learnig.iterations = 2000;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
