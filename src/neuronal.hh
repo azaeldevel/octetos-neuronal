@@ -11,10 +11,6 @@ namespace oct::neu
 {
 	typedef unsigned short Index;
 
-	double randNumber();
-	double randNumber(double max);
-	double randNumber(double min, double max);
-
 	template<typename T> struct Data
 	{
 		std::vector<T> inputs;
