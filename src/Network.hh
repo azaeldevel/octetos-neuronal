@@ -2,7 +2,7 @@
 #ifndef OCTETOS_NEURONAL_NETWORK_HH
 #define OCTETOS_NEURONAL_NETWORK_HH
 
-#include <Layer.hh>
+#include <layer.hh>
 #include <list>
 
 #include "Plot.hh"
