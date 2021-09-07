@@ -34,10 +34,10 @@ namespace oct::neu
 			weight.resize(ins);
 			for(Index i = 0; i < weight.size(); i++)
 			{
-				/*double randS = core::randNumber();
+				double randS = core::randNumber();
 				if(randS > 0.5) weight[i] = core::randNumber();
-				else weight[i] = core::randNumber() * -1.0;*/
-				weight[i] = core::randNumber();
+				else weight[i] = core::randNumber() * -1.0;
+				//weight[i] = core::randNumber();
 			}
 		}
 		

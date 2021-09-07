@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-#include "Network.hh"
+#include "network.hh"
 
 namespace oct::neu
 {

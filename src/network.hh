@@ -5,7 +5,7 @@
 #include <layer.hh>
 #include <list>
 
-#include "Plot.hh"
+#include "plot.hh"
 
 
 namespace oct::neu

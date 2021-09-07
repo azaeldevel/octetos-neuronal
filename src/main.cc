@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-#include "Network.hh"
+#include "network.hh"
 #include "Line.hh"
 
 int main()
