@@ -22,7 +22,7 @@ namespace oct::neu
 	}
 	Topology::Topology(const Topology& t) : std::vector<Model>(t)
 	{
-		inputsNeurona = t.inputsNeurona;
+		//inputsNeurona = t.inputsNeurona;
 		
 	}
 	

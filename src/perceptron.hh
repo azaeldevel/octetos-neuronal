@@ -37,7 +37,6 @@ namespace oct::neu
 				double randS = core::randNumber();
 				if(randS > 0.5) weight[i] = core::randNumber();
 				else weight[i] = core::randNumber() * -1.0;
-				//weight[i] = core::randNumber();
 			}
 		}
 		
@@ -120,22 +119,27 @@ namespace oct::neu
 		/**
 		*\brief Gradient Stteping
 		*/
-		void gs(T ratio, T dEdW, bool direction)
+		void gd(T ratio, T dEdW)
 		{
-			if(direction)
-			{
-				for(Index i = 0; i < weight.size(); i++)
-				{
-					weight[i] = weight[i]  + (dEdW * ratio);
-				}
-			}
-			else
+			std::cout << "weight : ";
+			print(weight);
+			if(dEdW > 0)
 			{
 				for(Index i = 0; i < weight.size(); i++)
 				{
 					weight[i] = weight[i]  - (dEdW * ratio);
 				}
 			}
+			else
+			{
+				for(Index i = 0; i < weight.size(); i++)
+				{
+					weight[i] = weight[i]  + (dEdW * ratio);
+				}
+			}
+			std::cout << " -> ";
+			print(weight);
+			std::cout << "\n";
 		}
 
 		static T sigmoide(T v)

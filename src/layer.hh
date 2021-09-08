@@ -38,47 +38,6 @@ namespace oct::neu
 			return outputs;
 		}
 
-		static void print(const std::vector<T>& v)
-		{
-			std::cout << "(";
-			for(unsigned short i = 0; i < v.size(); i++)
-			{
-				std::cout << v[i];
-				if(i < v.size() - 1) std::cout << ",";
-			}
-			std::cout << ")";
-		}
-		static void print(const std::vector<T>& v,std::string& out)
-		{
-			out += "(";
-			for(unsigned short i = 0; i < v.size(); i++)
-			{
-				out += std::to_string(v[i]);
-				if(i < v.size() - 1) out += ",";
-			}
-			out += ")";
-		}
-		static void print(const std::vector<T*>& v)
-		{
-			std::cout << "(";
-			for(unsigned short i = 0; i < v.size(); i++)
-			{
-				std::cout << *v[i];
-				if(i < v.size() - 1) std::cout << ",";
-			}
-			std::cout << ")";
-		}
-		static void print(const std::vector<T*>& v, std::string& out)
-		{
-			out += "(";
-			for(unsigned short i = 0; i < v.size(); i++)
-			{
-				out += std::to_string(*v[i]);
-				if(i < v.size() - 1) out += ",";
-			}
-			out += ")";
-		}
-
 		void spread()
 		{
 			//std::cout << "\tvoid Layer::spread(): step 1 \n";
@@ -88,15 +47,6 @@ namespace oct::neu
 				std::vector<Perceptron<T>>::at(i).spread(model->AF);			
 			}
 			//std::cout << "\tvoid Layer::spread(): step 2 \n";
-		}		
-		/**
-		*\brief Gradient Decent
-		*/
-		void gd(Index neurona,T ratio,T dEdW)
-		{
-			if(dEdW > 0) std::vector<Perceptron<T>>::at(neurona).gs(ratio,dEdW,false);
-			else if(dEdW < 0) std::vector<Perceptron<T>>::at(neurona).gs(ratio,dEdW,true);
-			
 		}
 
 	private:

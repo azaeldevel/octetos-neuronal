@@ -41,14 +41,14 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,1000,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,100,0,50);
 	//line1.print();
 	//line1.dating();
 	//line1.plot();
 	/*oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-9;
+	learnig.ratio = 1.0e-8;
 	learnig.dEdR = 1.0e-6;
-	learnig.iterations = 5000;
+	learnig.iterations = 2000;
 	oct::neu::Topology topology(8,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=18;
@@ -65,16 +65,23 @@ int main()
 	topology[3].height=30;
 	topology[4].height=5;
 	topology[5].height=1;*/
-	oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-4;
-	learnig.dEdR = 1.0e-6;
-	learnig.iterations = 2000;
+	/*oct::neu::Network<double>::Learning learnig;
+	learnig.ratio = 1.6e-6;
+	learnig.dEdR = 0.1;
+	learnig.iterations = 10000;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
 	topology[2].height=8;
-	topology[3].height=1;
-	topology.inputsNeurona = 0.5;
+	topology[3].height=1;*/
+	oct::neu::Network<double>::Learning learnig;
+	learnig.ratio = 1.0e-6;
+	learnig.dEdR = 0.1;
+	learnig.iterations = 10000;
+	oct::neu::Topology topology(3,oct::neu::ActivationFuntion::SIGMOIDEA);
+	topology[0].height=2;
+	topology[1].height=2;
+	topology[2].height=1;
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
@@ -82,7 +89,10 @@ int main()
 	oct::math::Plotter plot;
 	oct::math::Plotter plotGraph;
 	plot.set_noautotitles();
-	network.bp(line1,learnig,&plot);	
+	for(unsigned int i = 0 ; i < 3; i++)
+	{
+		network.bp(line1,learnig,&plot);
+	}
 	double out;
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line1)
@@ -98,7 +108,7 @@ int main()
 		{
 			counFail++;
 			std::cout << "Fallo(" << counFail << ") en ";
-			oct::neu::Layer<double>::print(d.inputs);
+			oct::neu::print(d.inputs);
 			std::cout << ", la prediccion es " << out << ", sin embargo el valor esperado es ";
 			std::cout << d.outputs[0];
 			std::cout << "\n";
