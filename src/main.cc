@@ -1,23 +1,4 @@
 
-/*
- * main.cc
- * Copyright (C) 2021 Azael R. <azael.devel@gmail.com>
- * 
- * octetos-neuronal is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * octetos-neuronal is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#include <iostream>
 
 #include "network.hh"
 #include "Line.hh"
@@ -41,14 +22,11 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,200,0,50);
-	//line1.print();
-	//line1.dating();
-	//line1.plot();
-	/*oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-8;
-	learnig.dEdR = 1.0e-6;
-	learnig.iterations = 2000;
+	oct::neu::Line<double> line1(1,1,10,10,0.3,100,1);
+	oct::neu::Network<double>::Learning learnig;	
+	learnig.ratio = 1.0e-4;
+	learnig.dEdR = 0.1;
+	learnig.iterations = 1000;
 	oct::neu::Topology topology(8,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=18;
@@ -57,40 +35,53 @@ int main()
 	topology[4].height=80;
 	topology[5].height=20;
 	topology[6].height=5;
-	topology[7].height=1;*/
-	/*oct::neu::Topology topology(6,oct::neu::ActivationFuntion::SIGMOIDEA);
+	topology[7].height=1;
+	/*learnig.ratio = 1.0e-5;
+	learnig.dEdR = 0.1;
+	learnig.iterations = 1000;
+	oct::neu::Topology topology(6,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=18;
 	topology[2].height=60;
 	topology[3].height=30;
 	topology[4].height=5;
 	topology[5].height=1;*/
-	/*oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.6e-6;
+	/*learnig.ratio = 1.6e-4;
 	learnig.dEdR = 0.1;
-	learnig.iterations = 10000;
+	learnig.iterations = 1000;
 	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=8;
 	topology[2].height=8;
 	topology[3].height=1;*/
-	oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-4;
+	/*learnig.ratio = 1.0e-4;
 	learnig.dEdR = 0.1;
 	learnig.iterations = 1000;
 	oct::neu::Topology topology(3,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
 	topology[1].height=3;
-	topology[2].height=1;
-	oct::neu::Network<double> network(topology,2,1,1);
+	topology[2].height=1;*/
+	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
 	oct::neu::Network<double>::Plotting plotting;
 	//oct::math::Plotter plotGraph;
 	plotting.plotter.set_noautotitles();
+	std::ofstream dat;
 	for(unsigned int i = 0 ; i < 10; i++)
 	{
+		std::string fnNeuranl = "neuronal-";
+		fnNeuranl += std::to_string(i) + ".dat";
+		dat.open(fnNeuranl);
+		for(oct::neu::Data<double>& d : line1)
+		{
+			double out = *network.spread(d.inputs)[0];
+			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
+		}
+		dat.flush();
+		dat.close();
+		
 		std::string wintitle = "dEdR : ";
 		wintitle += std::to_string( i + 1);
 		plotting.plotter.set_title(wintitle);

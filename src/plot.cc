@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include <octetos/core/Exception.hh>
 
 #include "plot.hh"
@@ -104,5 +105,18 @@ namespace oct::math
 	void Plotter::set_label(const std::string& text, double x, double y)
 	{
 		fprintf(gnuplotPipe,"set label \"%s\" at %f,%f\n",text.c_str(),x,y);
+	}
+	
+	
+	
+	
+	
+	void Plotter::save(std::ofstream& file, double x, double y)
+	{
+		file << x << "\t" << y << "\n";
+	}
+	void Plotter::save(std::ofstream& file, double x, double y, double z)
+	{
+		file << x << "\t" << y << "\t" << z<< "\n";
 	}
 }

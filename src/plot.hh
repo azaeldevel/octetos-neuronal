@@ -31,6 +31,9 @@ public:
 	void set_label(const std::string& , unsigned int, unsigned int );
 	void set_label(const std::string& , double, double );
 	void set_window_title(const std::string& title);
+	
+	static void save(std::ofstream& file, double x, double y);
+	static void save(std::ofstream& file, double x, double y, double z);
 private:
 	FILE* gnuplotPipe;
 	unsigned int sl;

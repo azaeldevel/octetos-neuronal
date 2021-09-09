@@ -77,7 +77,7 @@ namespace oct::neu
 					out =  sigmoide(sigma);
 				break;
 				case ActivationFuntion::IDENTITY:
-					out =  identity(sigma);
+					out =  sigma;
 				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -115,10 +115,25 @@ namespace oct::neu
 		{
 			//std::cout << "weight : ";
 			//print(weight);
+			/*if(dEdW > 0)
+			{
+				for(Index i = 0; i < weight.size(); i++)
+				{
+					weight[i] = weight[i]  - (dEdW * ratio);
+				}
+			}
+			else if(dEdW < 0)
+			{
+				for(Index i = 0; i < weight.size(); i++)
+				{
+					weight[i] = weight[i]  + (dEdW * ratio);
+				}
+			}*/
 			for(Index i = 0; i < weight.size(); i++)
 			{
 				weight[i] = weight[i]  - (dEdW * ratio);
 			}
+
 			//std::cout << " -> ";
 			//print(weight);
 			//std::cout << "\n";

@@ -56,7 +56,7 @@ namespace oct::neu
 		*\param FA Funcion de activacion
 		*\param insP Inidca la canitdad de entradas de cada neurona
 		*/
-		Network(const Topology& t,unsigned short countInputs,unsigned short counHidden,unsigned short countOutputs) : topology(t)
+		Network(const Topology& t,unsigned short countInputs,unsigned short countOutputs) : topology(t)
 		{
 			//std::cout << "Network::Network(---) = step 1\n";
 			if(topology.size() < 3) throw oct::core::Exception("La red deve tener 1 capa de entrada, al menos 1 capa oculta y 1 de salida",__FILE__,__LINE__);
@@ -173,8 +173,9 @@ namespace oct::neu
 					{
 						mdEdR_Data += std::abs(dEdR[i]);
 					}
-					if(dEdR.size() > 1) mdEdR_Data /= T(dEdR.size());				
+					mdEdR_Data /= T(dEdR.size());				
 					mdEdR_Set += mdEdR_Data;
+					if(mdEdR_Data < learning.dEdR) continue;
 					
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{

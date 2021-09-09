@@ -7,10 +7,11 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 namespace oct::neu
 {
-	typedef unsigned short Index;
+	typedef unsigned int Index;
 
 	template<typename T> struct Data
 	{
@@ -58,6 +59,12 @@ namespace oct::neu
 			}
 			std::cout << ")";
 		}
+	
+
+}
+namespace oct::core
+{
+	
 }
 
 #endif
