@@ -41,7 +41,7 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	oct::neu::Line<double> line1(0.43,3.6,0.36,100,0,50);
+	oct::neu::Line<double> line1(0.43,3.6,0.36,200,0,50);
 	//line1.print();
 	//line1.dating();
 	//line1.plot();
@@ -75,23 +75,26 @@ int main()
 	topology[2].height=8;
 	topology[3].height=1;*/
 	oct::neu::Network<double>::Learning learnig;
-	learnig.ratio = 1.0e-6;
+	learnig.ratio = 1.0e-4;
 	learnig.dEdR = 0.1;
-	learnig.iterations = 10000;
+	learnig.iterations = 1000;
 	oct::neu::Topology topology(3,oct::neu::ActivationFuntion::SIGMOIDEA);
 	topology[0].height=2;
-	topology[1].height=2;
+	topology[1].height=3;
 	topology[2].height=1;
-	oct::neu::Network<double> network(topology,2,1);
+	oct::neu::Network<double> network(topology,2,1,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	oct::math::Plotter plot;
-	oct::math::Plotter plotGraph;
-	plot.set_noautotitles();
-	for(unsigned int i = 0 ; i < 3; i++)
+	oct::neu::Network<double>::Plotting plotting;
+	//oct::math::Plotter plotGraph;
+	plotting.plotter.set_noautotitles();
+	for(unsigned int i = 0 ; i < 10; i++)
 	{
-		network.bp(line1,learnig,&plot);
+		std::string wintitle = "dEdR : ";
+		wintitle += std::to_string( i + 1);
+		plotting.plotter.set_title(wintitle);
+		network.bp(line1,learnig,&plotting);
 	}
 	double out;
 	unsigned int counFail = 0;

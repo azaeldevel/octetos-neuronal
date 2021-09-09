@@ -30,6 +30,7 @@ public:
 	void set_output(const std::string& out);
 	void set_label(const std::string& , unsigned int, unsigned int );
 	void set_label(const std::string& , double, double );
+	void set_window_title(const std::string& title);
 private:
 	FILE* gnuplotPipe;
 	unsigned int sl;

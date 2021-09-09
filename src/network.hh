@@ -39,13 +39,24 @@ namespace oct::neu
 		{
 			std::vector<T> dEdR;
 		};
+		struct Plotting
+		{
+			oct::math::Plotter plotter;
+			std::list<std::vector<T>> data;
+			T last;
+			
+			Plotting()
+			{
+				last = T(0);
+			}
+		};
 	public:
 		/**
 		*\param layerWidth Inidca la caxntidad de neuronal para la capa i-esima, deve de tener 1 para la primer capa
 		*\param FA Funcion de activacion
 		*\param insP Inidca la canitdad de entradas de cada neurona
 		*/
-		Network(const Topology& t,unsigned short countInputs,unsigned short countOutputs) : topology(t)
+		Network(const Topology& t,unsigned short countInputs,unsigned short counHidden,unsigned short countOutputs) : topology(t)
 		{
 			//std::cout << "Network::Network(---) = step 1\n";
 			if(topology.size() < 3) throw oct::core::Exception("La red deve tener 1 capa de entrada, al menos 1 capa oculta y 1 de salida",__FILE__,__LINE__);
@@ -53,6 +64,7 @@ namespace oct::neu
 			//std::cout << topology.at(topology.size() - 1).height << " != " << countOutputs << "\n";
 			if(topology.at(topology.size() - 1).height != countOutputs) throw oct::core::Exception("La cantidad de salidas no coincide",__FILE__,__LINE__);
 			//std::cout << "Network::Network(---) = step 2\n";
+			//if(topology.size() - 2 == counHidden) throw oct::core::Exception("La cantidad de capaz oculpas es incorrecta.",__FILE__,__LINE__);
 			
 			std::vector<Layer<T>>::resize(topology.size());
 			
@@ -75,6 +87,8 @@ namespace oct::neu
 			//std::cout << std::vector<Layer<T>>::at(0).size() << " != " << ds.size() << "\n";
 			if(std::vector<Layer<T>>::at(0).size() != ds.size()) throw oct::core::Exception("Los vectores de datos no coinciden",__FILE__,__LINE__);
 			ins = ds;
+			//print(ins);
+			//std::cout << "\n";
 			//std::cout << "\tstd::vector<datatype>& Network::spread(std::vector<datatype>& out) : step 2\n";
 			for(unsigned short i = 0; i < std::vector<Layer<T>>::at(0).size(); i++)
 			{
@@ -100,28 +114,28 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas, const Learning& learning, oct::math::Plotter* plotByIt)
+		void bp(const std::vector<Data<T>>& datas, const Learning& learning, Plotting* plotting)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
 			//std::cout << "\tvoid Network::bp(..) : step 2\n";
-			std::list<std::vector<T>> errDataPlot;
-			std::list<std::vector<T>> fDataPlot;
-			if(plotByIt != NULL)
+			//std::list<std::vector<T>> errDataPlot;
+			//std::list<std::vector<T>> fDataPlot;
+			if(plotting != NULL)
 			{
-				plotByIt->set_terminal("qt");
-				std::string titleplot = "dEdR";
-				plotByIt->set_title(titleplot);
+				plotting->plotter.set_terminal("qt");
+				//std::string titleplot = "dEdR";
+				//plotByIt->set_title(titleplot);
 				std::string labelRatio = "ratio = ";
 				labelRatio += std::to_string(learning.ratio);
-				plotByIt->set_label(labelRatio,100,0.15);
+				plotting->plotter.set_label(labelRatio,10,0.15);
 				std::string labeldEdR = "max dEdR = ";
 				labeldEdR += std::to_string(learning.dEdR);
-				plotByIt->set_label(labeldEdR,100,0.10);
+				plotting->plotter.set_label(labeldEdR,10,0.10);
 				std::string labelCountData = "Data = ";
 				labelCountData += std::to_string(datas.size());
-				plotByIt->set_label(labelCountData,100,0.05);
+				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 						
 			std::vector<T> dEdR,dRdZ,dEdZ,dZdW,dEdW;
@@ -133,15 +147,14 @@ namespace oct::neu
 
 			T dEdR_signed = 0;
 			
-			for(Index indexData = 0; indexData < datas.size(); indexData++)
+			
+			for(Index it = 0; it < learning.iterations; it++)
 			{
-				spread(datas[indexData].inputs);
-
 				//std::cout << "\tIteracion : " << it << "\n";
 				T mdEdR_Set = 0;//promedio de las derivadas
-
-				for(Index it = 0; it < learning.iterations; it++)
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
+					spread(datas[indexData].inputs);
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					//std::cout << "\t>>Data :";
 					//std::cout << "\t";
@@ -158,22 +171,20 @@ namespace oct::neu
 					T mdEdR_Data = 0;//promedio de las derivadas
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						mdEdR_Data += dEdR[i];
+						mdEdR_Data += std::abs(dEdR[i]);
 					}
-					mdEdR_Data /= T(dEdR.size());					
-					if(mdEdR_Data < learning.dEdR) break;
-					mdEdR_Set = mdEdR_Data;
-
+					if(dEdR.size() > 1) mdEdR_Data /= T(dEdR.size());				
+					mdEdR_Set += mdEdR_Data;
 					
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
-						std::cout << ">Capa :" << indexLayer << "\n";
-						std::cout << "Dato : " << indexData << "\n";
-						std::cout << "Media dEdR : " << mdEdR_Data << "\n";
-						print(std::vector<Layer<T>>::at(lastlayer).get_outputs());
-						std::cout << " | ";	
-						print(datas[indexData].outputs);				
-						std::cout << "\n";
+						//std::cout << ">Capa :" << indexLayer << "\n";
+						//std::cout << "Dato : " << indexData << "\n";
+						//std::cout << "Media dEdR : " << mdEdR_Data << "\n";
+						//print(std::vector<Layer<T>>::at(lastlayer).get_outputs());
+						//std::cout << " | ";	
+						//print(datas[indexData].outputs);				
+						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
 						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dEdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
@@ -212,7 +223,11 @@ namespace oct::neu
 						//error imputado
 						for(Index i = 0; i < dEdZ.size(); i++)
 						{
-							dEdZ[i] =  dEdR[i] * dRdZ[i];
+							dEdZ[i] = 0;
+							for(Index j = 0; j < dEdR.size(); j++)
+							{
+								dEdZ[i] +=  dEdR[j] * dRdZ[i];
+							}
 						}
 
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
@@ -226,21 +241,21 @@ namespace oct::neu
 						
 						Index highIndex = max(dEdZ);
 						
-						std::cout << "dEdR = ";
-						print(dEdR);
-						std::cout << "\n";
-						std::cout << "dRdZ = ";
-						print(dRdZ);
-						std::cout << "\n";
-						std::cout << "dZdW = ";
-						print(dZdW);
-						std::cout << "\n";
-						std::cout << "dEdW = ";
-						print(dEdW);
-						std::cout << "\n";
-						std::cout << "dEdZ = ";
-						print(dEdZ);
-						std::cout << "\n";
+						//std::cout << "dEdR = ";
+						//print(dEdR);
+						//std::cout << "\n";
+						//std::cout << "dRdZ = ";
+						//print(dRdZ);
+						//std::cout << "\n";
+						//std::cout << "dZdW = ";
+						//print(dZdW);
+						//std::cout << "\n";
+						//std::cout << "dEdW = ";
+						//print(dEdW);
+						//std::cout << "\n";
+						//std::cout << "dEdZ = ";
+						//print(dEdZ);
+						//std::cout << "\n";
 						//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
 						//std::cout << "\n";
 						//std::cout << "\t\t\tweight : ";
@@ -258,35 +273,27 @@ namespace oct::neu
 					//std::cout << " - ";	
 					//Layer<T>::print(datas[indexData].outputs);
 					//std::cout << "\n";
-
 				}
-				/*if(it == 0)
-				{
-					if(mdEdR_Set > 0) dEdR_signed = 1.0;
-					else if(mdEdR_Set < 0) dEdR_signed = -1.0;
-				}*/
-				//std::cout << "\tMedia de mdEdR : " << mdEdR_Set << "\n";
-				/*if( std::abs(mdEdR_Set) < learning.dEdR) 
-				{
-					break;
-				}*/
+				mdEdR_Set /= T(datas.size());
+				if(mdEdR_Set < learning.dEdR) break;
 				//std::cout << "mdEdR = " << mdEdR_Set << "\n";
-				if(plotByIt != NULL)
+				if(plotting != NULL)
 				{
+					plotting->last++;
 					std::vector<T> vecerr(2);
-					vecerr[0] = indexData;
+					vecerr[0] = plotting->last;
 					vecerr[1] = mdEdR_Set;
-					errDataPlot.push_back(vecerr);
-					plotByIt->plotting(errDataPlot);
+					plotting->data.push_back(vecerr);
+					plotting->plotter.plotting(plotting->data);
 				}
 			}
-			if(plotByIt != NULL)
+			if(plotting != NULL)
 			{
 				std::string output = "output.svg";
 				//output += std::to_string(indexData) + ".svg";
-				plotByIt->set_terminal("svg");
-				plotByIt->set_output(output);
-				plotByIt->plotting(errDataPlot);
+				plotting->plotter.set_terminal("svg");
+				plotting->plotter.set_output(output);
+				plotting->plotter.plotting(plotting->data);
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
 		}
@@ -310,8 +317,8 @@ namespace oct::neu
 		{
 
 			plotGraph->set_terminal("qt");
-			std::string titleplot = "funcion";
-			plotGraph->set_title(titleplot);
+			//std::string titleplot = "funcion";
+			//plotGraph->set_title(titleplot);
 			std::string labelRatio = "ratio = ";
 			labelRatio += std::to_string(learning.ratio);
 			plotGraph->set_label(labelRatio,100,0.15);

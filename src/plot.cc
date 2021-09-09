@@ -75,6 +75,12 @@ namespace oct::math
 		cmd += "\"" + title + "\"\n";		
 		fprintf(gnuplotPipe,"%s\n",cmd.c_str());
 	}
+	void Plotter::set_window_title(const std::string& title)
+	{
+		std::string cmd = "set terminal windows title ";
+		cmd += "\"" + title + "\"\n";		
+		fprintf(gnuplotPipe,"%s\n",cmd.c_str());
+	}
 	void Plotter::set_styleline(unsigned int sl)
 	{
 		this->sl = sl;

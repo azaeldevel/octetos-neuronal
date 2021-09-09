@@ -108,38 +108,20 @@ namespace oct::neu
 			//std::cout << "\tdatatype Perceptron::sigma step 4\n";
 			return val;
 		}
-		void derivade(std::vector<T>& d)
-		{
-			T val = 0;
-			for(unsigned short i = 0; i < weight.size(); i++)
-			{
-				d[i] = (*inputs[i]);
-			}
-		}
 		/**
 		*\brief Gradient Stteping
 		*/
 		void gd(T ratio, T dEdW)
 		{
-			std::cout << "weight : ";
-			print(weight);
-			if(dEdW > 0)
+			//std::cout << "weight : ";
+			//print(weight);
+			for(Index i = 0; i < weight.size(); i++)
 			{
-				for(Index i = 0; i < weight.size(); i++)
-				{
-					weight[i] = weight[i]  - (dEdW * ratio);
-				}
+				weight[i] = weight[i]  - (dEdW * ratio);
 			}
-			else
-			{
-				for(Index i = 0; i < weight.size(); i++)
-				{
-					weight[i] = weight[i]  + (dEdW * ratio);
-				}
-			}
-			std::cout << " -> ";
-			print(weight);
-			std::cout << "\n";
+			//std::cout << " -> ";
+			//print(weight);
+			//std::cout << "\n";
 		}
 
 		static T sigmoide(T v)
@@ -148,7 +130,7 @@ namespace oct::neu
 		}
 		static T sigmoide_D(T v)
 		{
-			return v * (T(1) - v);
+			return sigmoide(v) * (T(1) - sigmoide(v));
 		}
 		static T identity(T v)
 		{
