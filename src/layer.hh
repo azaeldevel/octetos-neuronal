@@ -1,7 +1,7 @@
 #ifndef OCTETOS_NEURONAL_LAYER_HH
 #define OCTETOS_NEURONAL_LAYER_HH
 
-#include "perceptron.hh"
+#include "neurona.hh"
 #include <list>
 
 namespace oct::neu
