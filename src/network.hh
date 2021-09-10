@@ -138,7 +138,7 @@ namespace oct::neu
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 						
-			std::vector<T> dEdR,dRdZ,dEdZ,dZdW,dEdW;
+			std::vector<T> dEdR,dRdZ,dEdZ;//,dZdW,dEdW;
 			//std::vector<std::vector<T>> dEdZ,dZdW,dEdW;
 			dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
 			//dEdZ.resize(std::vector<Layer<T>>::size());
@@ -189,8 +189,8 @@ namespace oct::neu
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
 						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dEdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+						//dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+						//dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 											
 						//derivada de la activacion respecto a la suman ponderada
 						for(Index i = 0; i < dRdZ.size(); i++)
@@ -211,14 +211,14 @@ namespace oct::neu
 						}
 
 						//la derivada parcial de  la suman ponderada respecto de los pesos
-						for(Index i = 0; i < dZdW.size(); i++)
+						/*for(Index i = 0; i < dZdW.size(); i++)
 						{
 							dZdW[i] = 0;
 							for(Index j = 0; j < std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs().size(); j++)
 							{
 								dZdW[i] = dZdW[i] + *std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs()[j];
 							}
-						}
+						}*/
 						
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.3\n";
 						//error imputado
@@ -230,17 +230,19 @@ namespace oct::neu
 								dEdZ[i] +=  dEdR[j] * dRdZ[i];
 							}
 						}
+						
+						Index highIndex = max(dEdZ);
 
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
 						//derivada parcial del error repecto de los pesos
-						for(Index i = 0; i < dZdW.size(); i++)
+						/*for(Index i = 0; i < dZdW.size(); i++)
 						{
 							dEdW[i] =  dEdZ[i] * dZdW[i];
-						}
+						}*/
 							
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";				
 						
-						Index highIndex = max(dEdZ);
+						
 						
 						//std::cout << "dEdR = ";
 						//print(dEdR);
@@ -266,7 +268,7 @@ namespace oct::neu
 						//Layer<T>::print(outputs);
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
-						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdW[highIndex]);
+						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdZ[highIndex]);
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
 					}
 					//std::cout << "\tpost :";
@@ -276,7 +278,7 @@ namespace oct::neu
 					//std::cout << "\n";
 				}
 				mdEdR_Set /= T(datas.size());
-				if(mdEdR_Set < learning.dEdR) break;
+				if(mdEdR_Set < learning.dEdR) continue;
 				//std::cout << "mdEdR = " << mdEdR_Set << "\n";
 				if(plotting != NULL)
 				{

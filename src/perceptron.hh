@@ -111,7 +111,7 @@ namespace oct::neu
 		/**
 		*\brief Gradient Stteping
 		*/
-		void gd(T ratio, T dEdW)
+		void gd(T ratio, T dEdZ)
 		{
 			//std::cout << "weight : ";
 			//print(weight);
@@ -131,7 +131,7 @@ namespace oct::neu
 			}*/
 			for(Index i = 0; i < weight.size(); i++)
 			{
-				weight[i] = weight[i]  - (dEdW * ratio);
+				weight[i] = weight[i]  - ((*inputs[i]) * dEdZ * ratio);
 			}
 
 			//std::cout << " -> ";

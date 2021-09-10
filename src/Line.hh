@@ -17,7 +17,7 @@ namespace oct::neu
 	template<typename T> class Line : public std::vector<Data<T>>
 	{
 	public:
-		Line(T x0, T y0, T x1, T y1,T derr, Index count, unsigned char type)
+		Line(T x0, T y0, T x1, T y1,T derr, Index count, unsigned int type)
 		{
 			T m = (y1 - y0)/(x1 -x0);
 			T b = y0;
