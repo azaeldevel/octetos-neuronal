@@ -18,13 +18,13 @@ namespace oct::neu
 		IDENTITY
 	};
 
-	template<typename T> class Perceptron
+	template<typename T> class Neurona
 	{
 	public:
-		Perceptron()
+		Neurona()
 		{		
 		}
-		Perceptron(unsigned short ins)
+		Neurona(unsigned short ins)
 		{
 			set(ins);
 		}
@@ -115,18 +115,18 @@ namespace oct::neu
 		{
 			//std::cout << "weight : ";
 			//print(weight);
-			/*if(dEdZ > 0)
+			/*if(dEdW > 0)
 			{
 				for(Index i = 0; i < weight.size(); i++)
 				{
-					weight[i] = weight[i]  - ((*inputs[i]) * dEdZ * ratio);
+					weight[i] = weight[i]  - (dEdW * ratio);
 				}
 			}
-			else if(dEdZ < 0)
+			else if(dEdW < 0)
 			{
 				for(Index i = 0; i < weight.size(); i++)
 				{
-					weight[i] = weight[i]  + ((*inputs[i]) * dEdZ * ratio);
+					weight[i] = weight[i]  + (dEdW * ratio);
 				}
 			}*/
 			for(Index i = 0; i < weight.size(); i++)
@@ -156,6 +156,10 @@ namespace oct::neu
 			return T(1);
 		}
 
+		void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning,oct::math::Plotter* plotting)
+		{
+			
+		}
 	private:
 		std::vector<T*> inputs;
 		std::vector<T> weight;

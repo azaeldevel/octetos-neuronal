@@ -11,7 +11,7 @@ int main()
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
-	oct::neu::Perceptron<double> per(3);
+	oct::neu::Neurona<double> per(3);
 	per.get_inputs()[0] = &data[0];
 	per.get_inputs()[1] = &data[1];
 	per.get_inputs()[2] = &data[2];
@@ -22,14 +22,14 @@ int main()
 	std::cout << "Salida = " << per.get_out() << std::endl;	
 	
 	
-	//oct::neu::Line<double> line1(1,1,10,10,0.3,100,1);
-	//oct::neu::Line<double> line2(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line3(1,1,10,10,0.3,100,0);
-	oct::neu::Network<double>::Learning learnig;	
-	learnig.ratio = 1.0e-1;
+	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
+	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
+	oct::neu::Line<double> line(1,1,10,10,0.3,100,0);
+	oct::neu::Learning<double> learnig;	
+	learnig.ratio = 1.0e-2;
 	learnig.dEdR = 0.1;
 	learnig.iterations = 1000;
-	oct::neu::Topology topology(8,oct::neu::ActivationFuntion::SIGMOIDEA,2,5,1);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);
 	/*topology[0].height=2;
 	topology[1].height=18;
 	topology[2].height=30;
@@ -67,17 +67,17 @@ int main()
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";
-	oct::neu::Network<double>::Plotting plotting;
+	oct::neu::Plotting<double> plotting;
 	//oct::math::Plotter plotGraph;
 	plotting.plotter.set_noautotitles();
 	std::ofstream dat;
-	unsigned int i = 0;
-	/*for(unsigned int i = 0 ; i < 2; i++)
+	
+	for(unsigned int i = 0;i < 3; i++)
 	{
 		std::string fnNeuranl = "neuronal-";
 		fnNeuranl += std::to_string(i) + ".dat";
 		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line1)
+		for(oct::neu::Data<double>& d : line)
 		{
 			double out = *network.spread(d.inputs)[0];
 			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
@@ -88,47 +88,11 @@ int main()
 		std::string wintitle = "dEdR : ";
 		wintitle += std::to_string( i + 1);
 		plotting.plotter.set_title(wintitle);
-		network.bp(line1,learnig,&plotting);
-	}*/
-	/*for(unsigned int i = 2 ; i < 4; i++)
-	{
-		std::string fnNeuranl = "neuronal-";
-		fnNeuranl += std::to_string(i) + ".dat";
-		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line2)
-		{
-			double out = *network.spread(d.inputs)[0];
-			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
-		}
-		dat.flush();
-		dat.close();
-		
-		std::string wintitle = "dEdR : ";
-		wintitle += std::to_string( i + 1);
-		plotting.plotter.set_title(wintitle);
-		network.bp(line2,learnig,&plotting);
-	}*/
-	for(; i < 5; i++)
-	{
-		std::string fnNeuranl = "neuronal-";
-		fnNeuranl += std::to_string(i) + ".dat";
-		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line3)
-		{
-			double out = *network.spread(d.inputs)[0];
-			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
-		}
-		dat.flush();
-		dat.close();
-		
-		std::string wintitle = "dEdR : ";
-		wintitle += std::to_string( i + 1);
-		plotting.plotter.set_title(wintitle);
-		network.bp(line3,learnig,&plotting);
+		network.bp(line,learnig,&plotting);
 	}
 	double out;
 	unsigned int counFail = 0;
-	for(oct::neu::Data<double>& d : line3)
+	for(oct::neu::Data<double>& d : line)
 	{
 		out = *network.spread(d.inputs)[0];
 		if(out < 0.1 and d.outputs[0] < 0.1) 

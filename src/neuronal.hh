@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <fstream>
 
+#include "plot.hh"
+
 namespace oct::neu
 {
 	typedef unsigned int Index;
@@ -49,18 +51,34 @@ namespace oct::neu
 			}
 			out += ")";
 		}
-		template<typename T> void print(const std::vector<T>& v)
+	template<typename T> void print(const std::vector<T>& v)
+	{
+		std::cout << "(";
+		for(unsigned short i = 0; i < v.size(); i++)
 		{
-			std::cout << "(";
-			for(unsigned short i = 0; i < v.size(); i++)
-			{
-				std::cout << std::setprecision(10) << v[i];
-				if(i < v.size() - 1) std::cout << ",";
-			}
-			std::cout << ")";
+			std::cout << std::setprecision(10) << v[i];
+			if(i < v.size() - 1) std::cout << ",";
 		}
+		std::cout << ")";
+	}
 	
-
+	template<typename T> struct Learning
+	{
+		T ratio;
+		T dEdR; 
+		unsigned int iterations;
+	};
+	template<typename T> struct Plotting
+	{
+		oct::math::Plotter plotter;
+		std::list<std::vector<T>> data;
+		T last;
+			
+		Plotting()
+		{
+			last = T(0);
+		}
+	};
 }
 namespace oct::core
 {

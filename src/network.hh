@@ -15,10 +15,8 @@ namespace oct::neu
 	struct Topology : public std::vector<Model>
 	{
 		//float inputsNeurona;
-
-		
 		Topology(Index size);
-		Topology(Index size, ActivationFuntion AF, unsigned int inputs, Index heightLayer, unsigned int outputs);
+		Topology(ActivationFuntion AF,Index width, Index heightLayer, unsigned int inputs, unsigned int outputs);
 		Topology(const Topology&);
 	};
 
@@ -29,26 +27,9 @@ namespace oct::neu
 	template<typename T> class Network : public std::vector<Layer<T>>
 	{
 	public:	
-		struct Learning
-		{
-			T ratio;
-			T dEdR; 
-			unsigned int iterations;
-		};
 		struct Progress
 		{
 			std::vector<T> dEdR;
-		};
-		struct Plotting
-		{
-			oct::math::Plotter plotter;
-			std::list<std::vector<T>> data;
-			T last;
-			
-			Plotting()
-			{
-				last = T(0);
-			}
 		};
 	public:
 		/**
@@ -114,7 +95,7 @@ namespace oct::neu
 		/**
 		*\brief Algoritmo de back-propagation
 		*/
-		void bp(const std::vector<Data<T>>& datas, const Learning& learning, Plotting* plotting)
+		void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
@@ -142,15 +123,14 @@ namespace oct::neu
 			//std::vector<std::vector<T>> dRdZ_history;
 			//dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
 			//dRdZ_history.resize(std::vector<Layer<T>>::size());
-
-
+			dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+			
 			for(Index it = 0; it < learning.iterations; it++)
 			{
 				//std::cout << "\tIteracion : " << it << "\n";
-				T mdEdR_set = 0;//promedio de las derivadas
+				T mdEdR_set = 0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
-					spread(datas[indexData].inputs);
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					//std::cout << "\t>>Data :";
 					//std::cout << "\t";
@@ -158,8 +138,9 @@ namespace oct::neu
 					//std::cout << "\tprev :";
 					//Layer<T>::print(*outs);
 					//std::cout << "\n";
-							
-					dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+					
+					spread(datas[indexData].inputs);
+
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
 						dEdR[i] = (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];						
@@ -169,8 +150,9 @@ namespace oct::neu
 					{
 						mdEdR_Data += std::abs(dEdR[i]);
 					}
-					mdEdR_Data /= T(dEdR.size());				
-					mdEdR_set += mdEdR_Data;
+					if(dEdR.size() > 1) mdEdR_Data /= T(dEdR.size());				
+					mdEdR_set = mdEdR_Data;
+					//if(mdEdR_set < learning.dEdR) break;
 
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
@@ -182,9 +164,9 @@ namespace oct::neu
 						//print(datas[indexData].outputs);				
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
-						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dEdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 			
 						//derivada de la activacion respecto a la suman ponderada
@@ -194,7 +176,7 @@ namespace oct::neu
 							{
 								case ActivationFuntion::SIGMOIDEA:
 									//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
-									dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Layer<T>>::at(indexLayer).at(i).get_sigma());
+									dRdZ[i] =  Neurona<T>::sigmoide_D(std::vector<Layer<T>>::at(indexLayer).at(i).get_sigma());
 								break;
 								case ActivationFuntion::IDENTITY:
 									dRdZ[i] = T(1);
@@ -266,7 +248,7 @@ namespace oct::neu
 					//Layer<T>::print(datas[indexData].outputs);
 					//std::cout << "\n";
 				}
-				mdEdR_set /= T(datas.size());
+				//mdEdR_set /= T(datas.size());
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -304,7 +286,7 @@ namespace oct::neu
 
 			return maxIndex;
 		}
-		void display(const Data<T>& data,oct::math::Plotter* plotGraph, const Learning& learning)
+		void display(const Data<T>& data,oct::math::Plotter* plotGraph, const Learning<T>& learning)
 		{
 
 			plotGraph->set_terminal("qt");
