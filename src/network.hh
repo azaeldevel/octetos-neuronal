@@ -18,7 +18,7 @@ namespace oct::neu
 
 		
 		Topology(Index size);
-		Topology(Index size, ActivationFuntion AF);
+		Topology(Index size, ActivationFuntion AF, unsigned int inputs, Index heightLayer, unsigned int outputs);
 		Topology(const Topology&);
 	};
 
@@ -138,20 +138,16 @@ namespace oct::neu
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 						
-			std::vector<T> dEdR,dRdZ,dEdZ;//,dZdW,dEdW;
-			//std::vector<std::vector<T>> dEdZ,dZdW,dEdW;
-			dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-			//dEdZ.resize(std::vector<Layer<T>>::size());
-			//dZdW.resize(std::vector<Layer<T>>::size());
-			//dEdW.resize(std::vector<Layer<T>>::size());
+			std::vector<T> dEdR,dRdZ,dEdZ,dZdW,dEdW;
+			//std::vector<std::vector<T>> dRdZ_history;
+			//dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+			//dRdZ_history.resize(std::vector<Layer<T>>::size());
 
-			T dEdR_signed = 0;
-			
-			
+
 			for(Index it = 0; it < learning.iterations; it++)
 			{
 				//std::cout << "\tIteracion : " << it << "\n";
-				T mdEdR_Set = 0;//promedio de las derivadas
+				T mdEdR_set = 0;//promedio de las derivadas
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					spread(datas[indexData].inputs);
@@ -162,11 +158,11 @@ namespace oct::neu
 					//std::cout << "\tprev :";
 					//Layer<T>::print(*outs);
 					//std::cout << "\n";
-										
-					//derivada partcial respecto a la funcion de activacion	x		
+							
+					dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						dEdR[i] = (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];
+						dEdR[i] = (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];						
 					}
 					T mdEdR_Data = 0;//promedio de las derivadas
 					for(Index i = 0; i < dEdR.size(); i++)
@@ -174,9 +170,8 @@ namespace oct::neu
 						mdEdR_Data += std::abs(dEdR[i]);
 					}
 					mdEdR_Data /= T(dEdR.size());				
-					mdEdR_Set += mdEdR_Data;
-					if(mdEdR_Data < learning.dEdR) continue;
-					
+					mdEdR_set += mdEdR_Data;
+
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
 						//std::cout << ">Capa :" << indexLayer << "\n";
@@ -189,9 +184,9 @@ namespace oct::neu
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
 						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
 						dEdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						//dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						//dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-											
+						dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+						dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+			
 						//derivada de la activacion respecto a la suman ponderada
 						for(Index i = 0; i < dRdZ.size(); i++)
 						{
@@ -202,7 +197,6 @@ namespace oct::neu
 									dRdZ[i] =  Perceptron<T>::sigmoide_D(std::vector<Layer<T>>::at(indexLayer).at(i).get_sigma());
 								break;
 								case ActivationFuntion::IDENTITY:
-									//dRdZ[i] =  Perceptron<T>::identity_D(std::vector<Perceptron<T>>::at(i).get_sigma());
 									dRdZ[i] = T(1);
 								break;
 								default:
@@ -211,38 +205,32 @@ namespace oct::neu
 						}
 
 						//la derivada parcial de  la suman ponderada respecto de los pesos
-						/*for(Index i = 0; i < dZdW.size(); i++)
+						for(Index i = 0; i < dZdW.size(); i++)
 						{
 							dZdW[i] = 0;
 							for(Index j = 0; j < std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs().size(); j++)
 							{
 								dZdW[i] = dZdW[i] + *std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs()[j];
 							}
-						}*/
+						}
 						
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.3\n";
 						//error imputado
 						for(Index i = 0; i < dEdZ.size(); i++)
 						{
-							dEdZ[i] = 0;
-							for(Index j = 0; j < dEdR.size(); j++)
-							{
-								dEdZ[i] +=  dEdR[j] * dRdZ[i];
-							}
+							dEdZ[i] =  dEdR[i] * dRdZ[i];
 						}
 						
 						Index highIndex = max(dEdZ);
 
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
 						//derivada parcial del error repecto de los pesos
-						/*for(Index i = 0; i < dZdW.size(); i++)
+						for(Index i = 0; i < dZdW.size(); i++)
 						{
 							dEdW[i] =  dEdZ[i] * dZdW[i];
-						}*/
+						}
 							
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";				
-						
-						
+						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";	
 						
 						//std::cout << "dEdR = ";
 						//print(dEdR);
@@ -268,7 +256,8 @@ namespace oct::neu
 						//Layer<T>::print(outputs);
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
-						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdZ[highIndex]);
+						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdW[highIndex]);
+						//std::vector<Layer<T>>::at(indexLayer).spread();	
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
 					}
 					//std::cout << "\tpost :";
@@ -277,18 +266,17 @@ namespace oct::neu
 					//Layer<T>::print(datas[indexData].outputs);
 					//std::cout << "\n";
 				}
-				mdEdR_Set /= T(datas.size());
-				if(mdEdR_Set < learning.dEdR) continue;
-				//std::cout << "mdEdR = " << mdEdR_Set << "\n";
+				mdEdR_set /= T(datas.size());
 				if(plotting != NULL)
 				{
 					plotting->last++;
 					std::vector<T> vecerr(2);
 					vecerr[0] = plotting->last;
-					vecerr[1] = mdEdR_Set;
+					vecerr[1] = mdEdR_set;
 					plotting->data.push_back(vecerr);
 					plotting->plotter.plotting(plotting->data);
 				}
+				if(mdEdR_set < learning.dEdR) break;
 			}
 			if(plotting != NULL)
 			{
