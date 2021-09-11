@@ -277,7 +277,7 @@ namespace oct::neu
 			T maxFound = data[maxIndex];
 			for(Index i = 0; i < data.size(); i++)
 			{
-				if(data[i] > maxFound) 
+				if(data[i] > maxFound and (data[i] > 0.1 and data[i] < 0.9)) 
 				{
 					maxFound = data[i];
 					maxIndex = i;
