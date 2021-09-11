@@ -19,6 +19,9 @@ AC_PROG_CXX
 
 LT_INIT
 
+AC_CHECK_PROG([gnuplot],[gnuplot],[yes],[no])
+AM_CONDITIONAL([FOUND_GNUPLOT], [test "x$gnuplot" = xyes])
+AM_COND_IF([FOUND_GNUPLOT],,[AC_MSG_ERROR([required program 'gnuplot' not found.])])
 
 PKG_CHECK_MODULES(OCTETOS_CORE,octetos-core)
 

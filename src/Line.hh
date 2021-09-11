@@ -155,7 +155,7 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + y0;
-			std::vector<Data<T>>::at(i).outputs[0] = 1.0;//aceptable
+			std::vector<Data<T>>::at(i).outputs[0] = 0.75;//aceptable
 			T sensorErr = core::randNumber(0.0,derr);
 			if(sensorErr > 0.5) 
 			{
@@ -170,7 +170,7 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = core::randNumber(y0,y1);
-			std::vector<Data<T>>::at(i).outputs[0] = 0.0;//no captabl
+			std::vector<Data<T>>::at(i).outputs[0] = 0.25;//no captabl
 		}
 	};
 }
