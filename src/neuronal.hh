@@ -65,7 +65,7 @@ namespace oct::neu
 	template<typename T> struct Learning
 	{
 		T ratio;
-		T dEdR; 
+		T mE; 
 		unsigned int iterations;
 	};
 	template<typename T> struct Plotting

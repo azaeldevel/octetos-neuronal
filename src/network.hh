@@ -7,6 +7,10 @@
 
 #include "plot.hh"
 
+#define LAYER(L) std::vector<Layer<T>>::at(L)
+#define NEURONA(L,N) std::vector<Layer<T>>::at(L).at(N)
+#define WEIGHT(L,N,W) std::vector<Layer<T>>::at(L).at(N).weight[W]
+#define INPUT(L,N,I) std::vector<Layer<T>>::at(L).at(N).inputs[I]
 
 namespace oct::neu
 {
@@ -97,6 +101,121 @@ namespace oct::neu
 		*/
 		void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
 		{
+			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
+			
+			if(plotting != NULL)
+			{
+				plotting->plotter.set_terminal("qt");
+				//std::string titleplot = "dEdR";
+				//plotByIt->set_title(titleplot);
+				std::string labelRatio = "ratio = ";
+				labelRatio += std::to_string(learning.ratio);
+				plotting->plotter.set_label(labelRatio,10,0.15);
+				std::string labeldEdR = "max dEdR = ";
+				labeldEdR += std::to_string(learning.mE);
+				plotting->plotter.set_label(labeldEdR,10,0.10);
+				std::string labelCountData = "Data = ";
+				labelCountData += std::to_string(datas.size());
+				plotting->plotter.set_label(labelCountData,10,0.05);
+			}
+
+			for(Index it = 0; it < learning.iterations; it++)
+			{
+				T mET = 0;
+				T count = 0;
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
+				{
+					spread(datas[indexData].inputs);
+
+					std::vector<T> So;
+					So.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+					//calculo del error
+					for(Index i = 0; i < So.size(); i++)
+					{
+						So[i] = datas[indexData].outputs[i] - (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]);
+						switch(topology[lastlayer].AF)
+						{
+								case ActivationFuntion::SIGMOIDEA:
+									//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
+									So[i] *=  Neurona<T>::sigmoide_D(NEURONA(lastlayer,i).get_sigma());
+								break;
+								case ActivationFuntion::IDENTITY:
+									//So[i] *= T(1);
+								break;
+								default:
+									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+						};						
+					}
+					
+					T mE = 0;
+					for(Index i = 0; i < So.size(); i++)
+					{
+						mE += std::abs(So[i]);
+					}
+					if(So.size() > 1) mE /= T(So.size());
+					if(learning.mE < mE ) continue;
+					count++;
+					mET += mE;
+
+					std::vector<std::vector<T>> Sh;
+					for(Index indexLayer = lastlayer - 2; indexLayer > 0; indexLayer--)
+					{
+						Sh[indexLayer].resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
+						for(Index i = 0; i < Sh.size(); i++)//neurona i-esima de la capa indexLayer.
+						{
+							Sh[indexLayer][i] = 0;
+							for(Index j = 0; j < So.size(); j++)
+							{
+								for(Index k = 0; k < So.size(); k++)
+								{
+									Sh[indexLayer][i] += So[j] * std::vector<Layer<T>>::at(lastlayer).at(i).weight[k];
+								}
+							}
+						}
+					}
+
+					//actualizacion de pesos
+					for(Index i = 0; i < So.size(); i++)
+					{
+						for(Index j = 0; j < std::vector<Layer<T>>::at(lastlayer).at(i).weight.size(); j++)
+						{
+							WEIGHT(lastlayer,i,j) = WEIGHT(lastlayer,i,j) + learning.ratio * So[i] * (*INPUT(lastlayer,i,j));
+						}
+					}
+					for(Index layer = 0; layer < Sh.size(); layer++)//capa
+					{
+						for(Index neurona = 0; neurona < LAYER(layer).size(); neurona++)
+						{
+							for(Index weight = 0; weight < NEURONA(layer,neurona).weight.size(); weight++)
+							{
+								WEIGHT(layer,neurona,weight) = WEIGHT(layer,neurona,weight) + learning.ratio * Sh[layer][neurona] * (*INPUT(layer,neurona,weight));
+							}
+						}
+					}
+				}
+				mET /= count;
+				//if(learning.dEdR < mET) break;
+				if(plotting != NULL)
+				{
+					plotting->last++;
+					std::vector<T> vecerr(2);
+					vecerr[0] = plotting->last;
+					vecerr[1] = mET;
+					plotting->data.push_back(vecerr);
+					plotting->plotter.plotting(plotting->data);
+				}
+			}
+			if(plotting != NULL)
+			{
+				std::string output = "output.svg";
+				//output += std::to_string(indexData) + ".svg";
+				plotting->plotter.set_terminal("svg");
+				plotting->plotter.set_output(output);
+				plotting->plotter.plotting(plotting->data);
+			}
+		}
+		/*void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
+		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
@@ -124,13 +243,29 @@ namespace oct::neu
 			//dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
 			//dRdZ_history.resize(std::vector<Layer<T>>::size());
 			dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-			
+
 			for(Index it = 0; it < learning.iterations; it++)
 			{
 				//std::cout << "\tIteracion : " << it << "\n";
-				T mdEdR_set = 0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
+					spread(datas[indexData].inputs);
+					for(Index i = 0; i < dEdR.size(); i++)
+					{
+						dEdR[i] += (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];						
+					}
+				}
+				T mdEdR_mean = 0;
+				for(Index i = 0; i < dEdR.size(); i++)
+				{
+					dEdR[i] /= datas.size();
+					mdEdR_mean += std::abs(dEdR[i]);
+				}
+				if(dEdR.size() > 1) mdEdR_mean /= T(dEdR.size());	
+				if(mdEdR_mean < learning.dEdR) break;
+
+				//for(Index indexData = 0; indexData < datas.size(); indexData++)
+				//{
 					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
 					//std::cout << "\t>>Data :";
 					//std::cout << "\t";
@@ -139,20 +274,7 @@ namespace oct::neu
 					//Layer<T>::print(*outs);
 					//std::cout << "\n";
 					
-					spread(datas[indexData].inputs);
-
-					for(Index i = 0; i < dEdR.size(); i++)
-					{
-						dEdR[i] = (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];						
-					}
-					T mdEdR_Data = 0;//promedio de las derivadas
-					for(Index i = 0; i < dEdR.size(); i++)
-					{
-						mdEdR_Data += std::abs(dEdR[i]);
-					}
-					if(dEdR.size() > 1) mdEdR_Data /= T(dEdR.size());				
-					mdEdR_set = mdEdR_Data;
-					//if(mdEdR_set < learning.dEdR) break;
+					//
 
 					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
 					{
@@ -203,8 +325,6 @@ namespace oct::neu
 							dEdZ[i] =  dEdR[i] * dRdZ[i];
 						}
 						
-						Index highIndex = max(dEdZ);
-
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
 						//derivada parcial del error repecto de los pesos
 						for(Index i = 0; i < dZdW.size(); i++)
@@ -238,6 +358,7 @@ namespace oct::neu
 						//Layer<T>::print(outputs);
 						//std::cout << "\n";
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
+						Index highIndex = max(dEdZ);
 						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdW[highIndex]);
 						//std::vector<Layer<T>>::at(indexLayer).spread();	
 						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
@@ -247,18 +368,17 @@ namespace oct::neu
 					//std::cout << " - ";	
 					//Layer<T>::print(datas[indexData].outputs);
 					//std::cout << "\n";
-				}
+				//}
 				//mdEdR_set /= T(datas.size());
 				if(plotting != NULL)
 				{
 					plotting->last++;
 					std::vector<T> vecerr(2);
 					vecerr[0] = plotting->last;
-					vecerr[1] = mdEdR_set;
+					vecerr[1] = mdEdR_mean;
 					plotting->data.push_back(vecerr);
 					plotting->plotter.plotting(plotting->data);
 				}
-				if(mdEdR_set < learning.dEdR) break;
 			}
 			if(plotting != NULL)
 			{
@@ -269,7 +389,8 @@ namespace oct::neu
 				plotting->plotter.plotting(plotting->data);
 			}
 			//std::cout << "\tvoid Network::bp(..) : step 3\n";
-		}
+		}*/
+
 		Index max(std::vector<T>& data)
 		{
 			if(data.empty()) throw oct::core::Exception("Arreglo vacio",__FILE__,__LINE__);
@@ -277,7 +398,7 @@ namespace oct::neu
 			T maxFound = data[maxIndex];
 			for(Index i = 0; i < data.size(); i++)
 			{
-				if(data[i] > maxFound and (data[i] > 0.1 and data[i] < 0.9)) 
+				if(data[i] > maxFound) 
 				{
 					maxFound = data[i];
 					maxIndex = i;

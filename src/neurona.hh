@@ -18,7 +18,7 @@ namespace oct::neu
 		IDENTITY
 	};
 
-	template<typename T> class Neurona
+	template<typename T> struct Neurona
 	{
 	public:
 		Neurona()
@@ -145,7 +145,7 @@ namespace oct::neu
 		}
 		static T sigmoide_D(T v)
 		{
-			return sigmoide(v) * (T(1) - sigmoide(v));
+			return v * (T(1) - v);
 		}
 		static T identity(T v)
 		{
@@ -160,7 +160,7 @@ namespace oct::neu
 		{
 			
 		}
-	private:
+	//private:
 		std::vector<T*> inputs;
 		std::vector<T> weight;
 		T out;

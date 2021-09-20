@@ -25,44 +25,15 @@ int main()
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
 	oct::neu::Line<double> line(1,1,10,10,0.3,100,0);
+	
+	//oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
+		
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-2;
-	learnig.dEdR = 0.1;
+	learnig.ratio = 1.0e-3;
+	learnig.mE = 1.0e-3;
 	learnig.iterations = 1000;
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);
-	/*topology[0].height=2;
-	topology[1].height=18;
-	topology[2].height=30;
-	topology[3].height=30;
-	topology[4].height=80;
-	topology[5].height=20;
-	topology[6].height=5;
-	topology[7].height=1;*/
-	/*learnig.ratio = 1.0e-5;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(6,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=18;
-	topology[2].height=60;
-	topology[3].height=30;
-	topology[4].height=5;
-	topology[5].height=1;*/
-	/*learnig.ratio = 1.6e-4;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=8;
-	topology[2].height=8;
-	topology[3].height=1;*/
-	/*learnig.ratio = 1.0e-1;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(3,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=3;
-	topology[2].height=1;*/
+	
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
@@ -90,15 +61,14 @@ int main()
 		plotting.plotter.set_title(wintitle);
 		network.bp(line,learnig,&plotting);
 	}
-	double out;
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
 	{
-		out = *network.spread(d.inputs)[0];
-		if(out < 0.1 and d.outputs[0] < 0.1) 
+		double out = *network.spread(d.inputs)[0];
+		if(out < 0.5 and d.outputs[0] < 0.5 ) 
 		{
 		}
-		else if(out > 0.9 and d.outputs[0] > 0.9) 
+		else if(out > 0.5 and d.outputs[0] > 0.5)
 		{
 		}
 		else

@@ -13,7 +13,7 @@ int main()
 	oct::math::Plotter plotter;
 	Learning<double> learnig;	
 	learnig.ratio = 1.0e-1;
-	learnig.dEdR = 0.1;
+	learnig.mE = 0.1;
 	learnig.iterations = 100;
 	
 	for(unsigned int i = 0 ; i < 5; i++)
