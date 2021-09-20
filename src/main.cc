@@ -26,13 +26,16 @@ int main()
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
 	oct::neu::Line<double> line(1,1,10,10,0.3,100,0);
 	
-	//oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
-		
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
+	oct::neu::Learning<double> learnig;	
+	learnig.ratio = 1.0e-10;
+	learnig.mE = 0.15;
+	learnig.iterations = 1000;
+	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-3;
-	learnig.mE = 1.0e-3;
-	learnig.iterations = 1000;
+	learnig.mE = 0.15;
+	learnig.iterations = 1000;*/
 	
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;

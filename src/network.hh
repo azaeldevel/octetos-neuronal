@@ -119,10 +119,12 @@ namespace oct::neu
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 
+			T mET;
+			T count;
 			for(Index it = 0; it < learning.iterations; it++)
 			{
-				T mET = 0;
-				T count = 0;
+				mET = 0;
+				count = 0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					spread(datas[indexData].inputs);
@@ -153,7 +155,7 @@ namespace oct::neu
 						mE += std::abs(So[i]);
 					}
 					if(So.size() > 1) mE /= T(So.size());
-					if(learning.mE < mE ) continue;
+					if(learning.mE > mE) continue;
 					count++;
 					mET += mE;
 
@@ -191,10 +193,24 @@ namespace oct::neu
 								WEIGHT(layer,neurona,weight) = WEIGHT(layer,neurona,weight) + learning.ratio * Sh[layer][neurona] * (*INPUT(layer,neurona,weight));
 							}
 						}
+						for(Index i = 0; i < Sh.size(); i++)
+						{
+							switch(topology[layer].AF)
+							{
+									case ActivationFuntion::SIGMOIDEA:
+										//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
+										Sh[layer][i] *=  Neurona<T>::sigmoide_D(NEURONA(layer,i).get_sigma());
+									break;
+									case ActivationFuntion::IDENTITY:
+										//So[i] *= T(1);
+									break;
+									default:
+										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+							};
+						}
 					}
 				}
 				mET /= count;
-				//if(learning.dEdR < mET) break;
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -204,6 +220,7 @@ namespace oct::neu
 					plotting->data.push_back(vecerr);
 					plotting->plotter.plotting(plotting->data);
 				}
+				if(learning.mE > mET) break;
 			}
 			if(plotting != NULL)
 			{
