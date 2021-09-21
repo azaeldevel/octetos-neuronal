@@ -26,16 +26,16 @@ int main()
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
 	oct::neu::Line<double> line(1,1,10,10,0.3,100,0);
 	
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
+	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-10;
-	learnig.mE = 0.15;
-	learnig.iterations = 1000;
-	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
-	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-3;
-	learnig.mE = 0.15;
+	learnig.ratio = 1.0e-4;
+	learnig.mE = 0.09;
 	learnig.iterations = 1000;*/
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
+	oct::neu::Learning<double> learnig;	
+	learnig.ratio = 1.0e-2;
+	learnig.mE = 1.0e-2;
+	learnig.iterations = 5000;
 	
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
@@ -46,10 +46,9 @@ int main()
 	plotting.plotter.set_noautotitles();
 	std::ofstream dat;
 	
-	for(unsigned int i = 0;i < 3; i++)
+	//for(unsigned int i = 0;i < 3; i++)
 	{
-		std::string fnNeuranl = "neuronal-";
-		fnNeuranl += std::to_string(i) + ".dat";
+		std::string fnNeuranl = "neuronal-0.dat";
 		dat.open(fnNeuranl);
 		for(oct::neu::Data<double>& d : line)
 		{
@@ -58,11 +57,20 @@ int main()
 		}
 		dat.flush();
 		dat.close();
-		
-		std::string wintitle = "dEdR : ";
-		wintitle += std::to_string( i + 1);
+				
+		std::string wintitle = "mean Error ";
 		plotting.plotter.set_title(wintitle);
 		network.bp(line,learnig,&plotting);
+		
+		fnNeuranl = "neuronal-1.dat";
+		dat.open(fnNeuranl);
+		for(oct::neu::Data<double>& d : line)
+		{
+			double out = *network.spread(d.inputs)[0];
+			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
+		}
+		dat.flush();
+		dat.close();
 	}
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
