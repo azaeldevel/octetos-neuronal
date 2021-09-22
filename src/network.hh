@@ -98,8 +98,158 @@ namespace oct::neu
 		}
 		/**
 		*\brief Algoritmo de back-propagation
+		*\return true si adquirio suficente conocimiento, false de otra forma.
 		*/
-		void bp(const std::vector<Data<T>>& datas, Learning<T>& learning, Plotting<T>* plotting)
+		bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
+		{
+			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
+			
+			if(plotting != NULL)
+			{
+				plotting->plotter.set_terminal("qt");
+				//std::string titleplot = "dEdR";
+				//plotByIt->set_title(titleplot);
+				std::string labelRatio = "ratio = ";
+				labelRatio += std::to_string(learning.ratio);
+				plotting->plotter.set_label(labelRatio,10,0.15);
+				std::string labeldEdR = "max dEdR = ";
+				labeldEdR += std::to_string(learning.mE);
+				plotting->plotter.set_label(labeldEdR,10,0.10);
+				std::string labelCountData = "Data = ";
+				labelCountData += std::to_string(datas.size());
+				plotting->plotter.set_label(labelCountData,10,0.05);
+			}
+			
+			for(Index iteration = 0; iteration < learning.iterations; iteration++)
+			{
+				//
+				std::vector<T> E;
+				E.resize(LAYER(lastlayer).size());
+				T Em = 0;
+				for(Index i = 0; i < LAYER(lastlayer).size(); i++)
+				{
+					E[i] = 0;
+				}
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
+				{
+					spread(datas[indexData].inputs);
+					for(Index i = 0; i < LAYER(lastlayer).size(); i++)
+					{
+						E[i] += std::pow(datas[indexData].outputs[i] - (*LAYER(lastlayer).get_outputs()[i]),T(2));
+					}
+				}
+				for(Index i = 0; i < LAYER(lastlayer).size(); i++)
+				{
+					E[i] /= (T(datas.size()) * T(2));
+				}
+				for(Index i = 0; i < LAYER(lastlayer).size(); i++)
+				{
+					Em += E[i];
+				}
+				if(LAYER(lastlayer).size() > 1) Em /= T(LAYER(lastlayer).size());
+
+				//
+				if(plotting != NULL)
+				{
+					plotting->last++;
+					std::vector<T> vecerr(2);
+					vecerr[0] = plotting->last;
+					vecerr[1] = Em;
+					plotting->data.push_back(vecerr);
+					plotting->plotter.plotting(plotting->data);
+				}
+				if(learning.mE > Em) return true;
+
+
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
+				{
+					spread(datas[indexData].inputs);
+					std::vector<T> So;
+					So.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
+					//calculo del error
+					for(Index i = 0; i < So.size(); i++)
+					{
+						So[i] = datas[indexData].outputs[i] - (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]);						
+						//So[i] = E;
+						switch(topology[lastlayer].AF)
+						{
+								case ActivationFuntion::SIGMOIDEA:
+									//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
+									So[i] *=  Neurona<T>::sigmoide_D(NEURONA(lastlayer,i).sigma);
+								break;
+								case ActivationFuntion::IDENTITY:
+									//So[i] *= T(1);
+								break;
+								default:
+									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+						};						
+					}
+
+					T Sow = 0;
+					for(Index i = 0; i < So.size(); i++)
+					{
+						for(Index j = 0; j < NEURONA(lastlayer,i).weight.size(); j++)
+						{
+							Sow += So[i] * WEIGHT(lastlayer,i,j);
+						}
+					}
+					
+					std::vector<std::vector<T>> Sh;
+					Sh.resize(std::vector<Layer<T>>::size() - 1);
+					for(Index indexLayer = lastlayer - 1; indexLayer >= 0; indexLayer--)//capa
+					{
+						Sh[indexLayer].resize(LAYER(indexLayer).size());
+						for(Index i = 0; i < Sh[indexLayer].size(); i++)//neurona i-esima de la capa indexLayer.
+						{
+							Sh[indexLayer][i] = Sow;
+							switch(topology[indexLayer].AF)
+							{
+									case ActivationFuntion::SIGMOIDEA:
+										//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
+										Sh[indexLayer][i] *=  Neurona<T>::sigmoide_D(NEURONA(indexLayer,i).sigma);
+									break;
+									case ActivationFuntion::IDENTITY:
+										//So[i] *= T(1);
+									break;
+									default:
+										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+							}
+						}
+
+					}
+
+					if(learning.variable)
+					{
+						//if(E_prev < E) learning.ratio = learning.ratio * learning.p;
+						//else if(E_prev > E) learning.ratio = learning.ratio * learning.r;
+						//else learning.ratio = learning.ratio * learning.r;
+					}				
+					for(Index i = 0; i < So.size(); i++)
+					{
+						for(Index j = 0; j < std::vector<Layer<T>>::at(lastlayer).at(i).weight.size(); j++)
+						{
+							WEIGHT(lastlayer,i,j) = WEIGHT(lastlayer,i,j) + ( learning.ratio * So[i] * (*INPUT(lastlayer,i,j)));
+						}
+					}
+					for(Index indexLayer = lastlayer - 1; indexLayer >= 0; indexLayer--)//capa
+					{
+						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+						{
+							for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+							{
+								for(Index input = 0; input < LAYER(0).size(); input++)
+								{
+									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + (learning.ratio * Sh[indexLayer][neurona] * (*INPUT(0,input,0)));
+								}
+							}
+						}
+					}
+				}
+				
+			}
+			return false;
+		}
+		/*bool bp(const std::vector<Data<T>>& datas, Learning<T>& learning, Plotting<T>* plotting)
 		{
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			
@@ -148,7 +298,7 @@ namespace oct::neu
 					plotting->data.push_back(vecerr);
 					plotting->plotter.plotting(plotting->data);
 				}
-				if(learning.mE > E) return;
+				if(learning.mE > E) return true;
 
 				
 				
@@ -175,11 +325,17 @@ namespace oct::neu
 									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 						};						
 					}
-					/*std::cout << "\tExpected : " << datas[indexData].outputs[0] << "\n";
-					std::cout << "\tPredicted : " << (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[0]) << "\n";
-					std::cout << "\tSo :";
-					print(So);
-					std::cout << "\n";*/
+					
+					T Sow = 0;
+					for(Index i = 0; i < So.size(); i++)
+					{
+						for(Index j = 0; j < NEURONA(lastlayer,i).weight.size(); j++)
+						{
+							Sow += So[i] * WEIGHT(lastlayer,i,j);
+						}
+					}
+					
+					
 					std::vector<std::vector<T>> Sh;
 					Sh.resize(std::vector<Layer<T>>::size() - 1);
 					for(Index indexLayer = lastlayer - 1; indexLayer > 0; indexLayer--)//capa
@@ -187,25 +343,18 @@ namespace oct::neu
 						Sh[indexLayer].resize(LAYER(indexLayer).get_outputs().size());
 						for(Index i = 0; i < Sh[indexLayer].size(); i++)//neurona i-esima de la capa indexLayer.
 						{
-							Sh[indexLayer][i] = 0;
-							for(Index j = 0; j < So.size(); j++)
+							Sh[indexLayer][i] = Sow;
+							switch(topology[indexLayer].AF)
 							{
-								for(Index k = 0; k < NEURONA(lastlayer,j).weight.size(); k++)
-								{
-									Sh[indexLayer][i] += So[j] * NEURONA(lastlayer,j).weight[k];
-									switch(topology[lastlayer].AF)
-									{
-											case ActivationFuntion::SIGMOIDEA:
-												//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
-												Sh[indexLayer][i] *=  Neurona<T>::sigmoide_D(NEURONA(indexLayer,i).sigma);
-											break;
-											case ActivationFuntion::IDENTITY:
-												//So[i] *= T(1);
-											break;
-											default:
-												throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-									};
-								}
+									case ActivationFuntion::SIGMOIDEA:
+										//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
+										Sh[indexLayer][i] *=  Neurona<T>::sigmoide_D(NEURONA(indexLayer,i).sigma);
+									break;
+									case ActivationFuntion::IDENTITY:
+										//So[i] *= T(1);
+									break;
+									default:
+										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 							}
 						}
 					}
@@ -230,41 +379,22 @@ namespace oct::neu
 						{
 							for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
 							{
-								for(Index input = 0; input < NEURONA(0,input).inputs.size(); input++)
+								for(Index input = 0; input < LAYER(0).size(); input++)
 								{
 									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + (learning.ratio * Sh[indexLayer][neurona] * (*INPUT(0,input,0)));
 								}
 							}
 						}
-						for(Index i = 0; i < Sh.size(); i++)
-						{
-							switch(topology[indexLayer].AF)
-							{
-									case ActivationFuntion::SIGMOIDEA:
-										//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
-										Sh[indexLayer][i] *=  Neurona<T>::sigmoide_D(NEURONA(indexLayer,i).get_sigma());
-									break;
-									case ActivationFuntion::IDENTITY:
-										//So[i] *= T(1);
-									break;
-									default:
-										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-							};
-						}
 					}
 				}				  
 				E_prev = E;
+				nextData:
+					;
 			}
-			if(plotting != NULL)
-			{
-				std::string output = "output.svg";
-				//output += std::to_string(indexData) + ".svg";
-				plotting->plotter.set_terminal("svg");
-				plotting->plotter.set_output(output);
-				plotting->plotter.plotting(plotting->data);
-			}
-		}
-		/*void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
+			
+			return false;
+		}*/
+		/*bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
 		{
 			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
@@ -281,7 +411,7 @@ namespace oct::neu
 				labelRatio += std::to_string(learning.ratio);
 				plotting->plotter.set_label(labelRatio,10,0.15);
 				std::string labeldEdR = "max dEdR = ";
-				labeldEdR += std::to_string(learning.dEdR);
+				labeldEdR += std::to_string(learning.mE);
 				plotting->plotter.set_label(labeldEdR,10,0.10);
 				std::string labelCountData = "Data = ";
 				labelCountData += std::to_string(datas.size());
@@ -308,11 +438,11 @@ namespace oct::neu
 				T mdEdR_mean = 0;
 				for(Index i = 0; i < dEdR.size(); i++)
 				{
-					dEdR[i] /= datas.size();
+					dEdR[i] /= T(datas.size());
 					mdEdR_mean += std::abs(dEdR[i]);
 				}
 				if(dEdR.size() > 1) mdEdR_mean /= T(dEdR.size());	
-				if(mdEdR_mean < learning.dEdR) break;
+				if(mdEdR_mean > learning.mE) return true;
 
 				//for(Index indexData = 0; indexData < datas.size(); indexData++)
 				//{
@@ -326,7 +456,7 @@ namespace oct::neu
 					
 					//
 
-					for(Index indexLayer = lastlayer; indexLayer > 0; indexLayer--)
+					for(Index indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
 					{
 						//std::cout << ">Capa :" << indexLayer << "\n";
 						//std::cout << "Dato : " << indexData << "\n";
@@ -420,6 +550,12 @@ namespace oct::neu
 					//std::cout << "\n";
 				//}
 				//mdEdR_set /= T(datas.size());
+				
+			}
+			
+			return false;
+		}*/
+/*
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -429,18 +565,7 @@ namespace oct::neu
 					plotting->data.push_back(vecerr);
 					plotting->plotter.plotting(plotting->data);
 				}
-			}
-			if(plotting != NULL)
-			{
-				std::string output = "output.svg";
-				//output += std::to_string(indexData) + ".svg";
-				plotting->plotter.set_terminal("svg");
-				plotting->plotter.set_output(output);
-				plotting->plotter.plotting(plotting->data);
-			}
-			//std::cout << "\tvoid Network::bp(..) : step 3\n";
-		}*/
-
+*/
 		Index max(std::vector<T>& data)
 		{
 			if(data.empty()) throw oct::core::Exception("Arreglo vacio",__FILE__,__LINE__);

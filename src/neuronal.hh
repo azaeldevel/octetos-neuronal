@@ -13,7 +13,7 @@
 
 namespace oct::neu
 {
-	typedef unsigned int Index;
+	typedef int Index;
 
 	template<typename T> struct Data
 	{

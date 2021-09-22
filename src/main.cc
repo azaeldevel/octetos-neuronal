@@ -24,7 +24,7 @@ int main()
 	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(1,1,10,10,0.3,3000,0);
+	oct::neu::Line<double> line(0,0,1,1,0.03,1000,0);
 	
 	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
 	oct::neu::Learning<double> learnig;	
@@ -32,11 +32,12 @@ int main()
 	learnig.mE = 0.05;
 	//learnig.variable = true;
 	learnig.iterations = 1000;*/
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,5,2,1);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::IDENTITY,5,5,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-5;
-	learnig.mE = 0.005;
-	learnig.iterations = 500;
+	learnig.ratio = 1.0e-3;
+	learnig.mE = 0.05;
+	learnig.variable = false;
+	learnig.iterations = 100;
 	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-2;
@@ -52,31 +53,29 @@ int main()
 	plotting.plotter.set_noautotitles();
 	std::ofstream dat;
 	
-	//for(unsigned int i = 0;i < 3; i++)
+	bool createDatas = false;
+	for(unsigned int i = 0;i < 20; i++)
 	{
-		std::string fnNeuranl = "neuronal-0.dat";
-		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line)
-		{
-			double out = *network.spread(d.inputs)[0];
-			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
-		}
-		dat.flush();
-		dat.close();
-				
 		std::string wintitle = "mean Error ";
+		wintitle = wintitle + " : " + std::to_string(i);
 		plotting.plotter.set_title(wintitle);
-		network.bp(line,learnig,&plotting);
 		
-		fnNeuranl = "neuronal-1.dat";
-		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line)
+		std::string fnNeuranl;
+		if(createDatas)
 		{
-			double out = *network.spread(d.inputs)[0];
-			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
+			fnNeuranl = "neuronal-";
+			fnNeuranl += std::to_string(i) + ".dat";
+			dat.open(fnNeuranl);
+			for(oct::neu::Data<double>& d : line)
+			{
+				double out = *network.spread(d.inputs)[0];
+				oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
+			}
+			dat.flush();
+			dat.close();
 		}
-		dat.flush();
-		dat.close();
+		
+		if(network.bp(line,learnig,&plotting)) break;
 	}
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
