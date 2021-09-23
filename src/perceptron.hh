@@ -18,13 +18,13 @@ namespace oct::neu
 		IDENTITY
 	};
 
-	template<typename T> struct Neurona
+	template<typename T> struct Perceptron
 	{
 	public:
-		Neurona()
+		Perceptron()
 		{		
 		}
-		Neurona(unsigned short ins)
+		Perceptron(unsigned short ins)
 		{
 			set(ins);
 		}

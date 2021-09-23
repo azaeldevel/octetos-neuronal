@@ -10,14 +10,14 @@ AM_CFLAGS =\
 
 bin_PROGRAMS = develop experement bp-neurona
 
-develop_SOURCES = main.cc neuronal.cc neurona.cc layer.cc network.cc plot.cc
+develop_SOURCES = main.cc neuronal.cc perceptron.cc layer.cc network.cc plot.cc
 develop_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
 develop_LDADD = $(OCTETOS_CORE_LIBS)
 
-experement_SOURCES = experement.cc neurona.cc plot.cc
+experement_SOURCES = experement.cc perceptron.cc plot.cc
 experement_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
 experement_LDADD = $(OCTETOS_CORE_LIBS)
 
-bp_neurona_SOURCES = bp-neurona.cc neurona.cc plot.cc
+bp_neurona_SOURCES = bp-neurona.cc perceptron.cc plot.cc
 bp_neurona_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
 bp_neurona_LDADD = $(OCTETOS_CORE_LIBS)

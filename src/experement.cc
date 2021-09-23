@@ -1,6 +1,6 @@
 
 
-#include "neurona.hh"
+#include "perceptron.hh"
 #include "plot.hh"
 
 int main()
@@ -9,7 +9,7 @@ int main()
 	std::ofstream file("circle.dat");
 	
 	std::vector<double> data(2);
-	oct::neu::Neurona<double> per(2);
+	oct::neu::Perceptron<double> per(2);
 	data[0] = 0.0;
 	data[1] = 1.0;
 	per.get_inputs()[0] = &data[0];

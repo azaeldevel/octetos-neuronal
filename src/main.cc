@@ -11,7 +11,7 @@ int main()
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
-	oct::neu::Neurona<double> per(3);
+	oct::neu::Perceptron<double> per(3);
 	per.get_inputs()[0] = &data[0];
 	per.get_inputs()[1] = &data[1];
 	per.get_inputs()[2] = &data[2];

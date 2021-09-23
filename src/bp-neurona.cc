@@ -1,6 +1,6 @@
 
 #include "Line.hh"
-#include "neurona.hh"
+#include "perceptron.hh"
 #include "plot.hh"
 
 using namespace oct::neu;
@@ -8,7 +8,7 @@ using namespace oct::neu;
 int main()
 {
 	Line<double> line1(1,1,10,10,0.3,100,1);
-	Neurona<double> neurona(2);
+	Perceptron<double> neurona(2);
 	std::ofstream dat;
 	oct::math::Plotter plotter;
 	Learning<double> learnig;	
