@@ -175,7 +175,7 @@ namespace oct::neu
 						{
 								case ActivationFuntion::SIGMOIDEA:
 									//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
-									So[i] *=  Perceptron<T>::sigmoide_D(NEURONA(lastlayer,i).sigma);
+									So[i] *=  Perceptron<T>::sigmoidea_D(NEURONA(lastlayer,i).sigma);
 								break;
 								case ActivationFuntion::IDENTITY:
 									//So[i] *= T(1);
@@ -206,7 +206,7 @@ namespace oct::neu
 							{
 									case ActivationFuntion::SIGMOIDEA:
 										//std::cout << "sigma : " << NEURONA(lastlayer,i).sigma << "\n";
-										Sh[indexLayer][i] *=  Perceptron<T>::sigmoide_D(NEURONA(indexLayer,i).sigma);
+										Sh[indexLayer][i] *=  Perceptron<T>::sigmoidea_D(NEURONA(indexLayer,i).sigma);
 									break;
 									case ActivationFuntion::IDENTITY:
 										//So[i] *= T(1);

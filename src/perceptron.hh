@@ -11,7 +11,9 @@ namespace oct::neu
 	enum ActivationFuntion
 	{
 		NONE,
-		SIGMOIDEA,
+		
+
+SIGMOIDEA,
 		TANH,
 		RELU,
 		SCALON,
@@ -76,13 +78,13 @@ namespace oct::neu
 			switch(AF)
 			{
 				case ActivationFuntion::SIGMOIDEA:
-					out =  sigmoide(sigma);
+					out = sigmoidea(sigma);
 				break;
 				case ActivationFuntion::IDENTITY:
-					out =  sigma;
+					out = sigma;
 				break;
 				case ActivationFuntion::SCALON:
-					out =  scalon(sigma);
+					out = scalon(sigma);
 				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -111,11 +113,11 @@ namespace oct::neu
 		}
 
 
-		static T sigmoide(T v)
+		static T sigmoidea(T v)
 		{
 			return T(1)/(T(1) + exp(T(-1) * v));
 		}
-		static T sigmoide_D(T v)
+		static T sigmoidea_D(T v)
 		{
 			return v * (T(1) - v);
 		}
