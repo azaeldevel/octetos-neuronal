@@ -140,7 +140,7 @@ namespace oct::neu
 				}
 				for(Index i = 0; i < LAYER(lastlayer).size(); i++)
 				{
-					E[i] /= (T(datas.size()) * T(2));
+					E[i] /= T(datas.size());
 				}
 				for(Index i = 0; i < LAYER(lastlayer).size(); i++)
 				{
