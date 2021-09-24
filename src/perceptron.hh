@@ -11,13 +11,19 @@ namespace oct::neu
 	enum ActivationFuntion
 	{
 		NONE,
-		
-
-SIGMOIDEA,
+		SIGMOIDEA,
 		TANH,
 		RELU,
 		SCALON,
 		IDENTITY
+	};
+
+	enum Mode
+	{
+		NOTHING,
+		SIGMA,
+		MI,
+		LINEAL
 	};
 
 	template<typename T> struct Perceptron
@@ -59,7 +65,7 @@ SIGMOIDEA,
 		}
 		T& get_sigma()
 		{
-			return sigma;
+			return result;
 		}
 
 		void set_inputs(const std::vector<T*>& v)
@@ -73,18 +79,48 @@ SIGMOIDEA,
 
 		T spread(ActivationFuntion AF)
 		{
-			sigma = sum();
+			result = sigma();
 
 			switch(AF)
 			{
 				case ActivationFuntion::SIGMOIDEA:
-					out = sigmoidea(sigma);
+					out = sigmoidea(result);
 				break;
 				case ActivationFuntion::IDENTITY:
-					out = sigma;
+					out = result;
 				break;
 				case ActivationFuntion::SCALON:
-					out = scalon(sigma);
+					out = scalon(result);
+				break;
+				default:
+					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+			};
+			
+			return out;
+		}
+		T spread(ActivationFuntion AF,Mode mode)
+		{
+			switch(mode)
+			{
+			case SIGMA:
+				result = sigma();
+				break;
+			case MI:
+				result = mi();
+				break;
+				default:
+					throw oct::core::Exception("Modo desconocido.",__FILE__,__LINE__);
+			};
+			switch(AF)
+			{
+				case ActivationFuntion::SIGMOIDEA:
+					out = sigmoidea(result);
+				break;
+				case ActivationFuntion::IDENTITY:
+					out = result;
+				break;
+				case ActivationFuntion::SCALON:
+					out = scalon(result);
 				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -97,7 +133,7 @@ SIGMOIDEA,
 			inputs.resize(ins);
 			weight.resize(ins);
 		}
-		T sum()
+		T sigma()
 		{
 			T val = 0;
 
@@ -111,7 +147,34 @@ SIGMOIDEA,
 
 			return val;
 		}
+		T mi()
+		{
+			T val = 0;
 
+			if(inputs.size() != weight.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+			
+			for(unsigned short i = 0; i < inputs.size(); i++)
+			{
+				val *= (*inputs[i]) + weight[i];
+			}
+			val *= theta;
+
+			return val;
+		}
+		T lineal()
+		{
+			T val = 0;
+
+			if(inputs.size() != weight.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
+			
+			for(unsigned short i = 0; i < inputs.size(); i++)
+			{
+				val *= (*inputs[i]) * weight[i];
+			}
+			val += theta;
+
+			return val;
+		}
 
 		static T sigmoidea(T v)
 		{
@@ -135,17 +198,12 @@ SIGMOIDEA,
 			else  return T(0);
 		}
 
-		void bp(const std::vector<Data<T>>& datas, const Learning<T>& learning,oct::math::Plotter* plotting)
-		{
-			
-		}
-
 		std::vector<T*> inputs;
 		std::vector<T> weight;
 		T out;
 		//T umbral;
 		//T sesgo;
-		T sigma;
+		T result;
 		T theta;
 		
 	};

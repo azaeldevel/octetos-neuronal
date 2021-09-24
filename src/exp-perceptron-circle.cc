@@ -27,5 +27,5 @@ int main()
 	file.flush();
 	file.close();
 	
-	
+	return EXIT_SUCCESS;
 }
