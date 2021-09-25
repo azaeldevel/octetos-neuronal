@@ -4,24 +4,7 @@
 #include "Line.hh"
 
 int main()
-{
-	//std::cout << "Hello world!" << std::endl;
-	
-	std::vector<double> data(3);
-	data[0] = 3.0;
-	data[1] = 4.0;
-	data[2] = -2.0;
-	oct::neu::Perceptron<double> per(3);
-	per.get_inputs()[0] = &data[0];
-	per.get_inputs()[1] = &data[1];
-	per.get_inputs()[2] = &data[2];
-	per.get_weight()[0] = 0.2;
-	per.get_weight()[1] = 0.6;
-	per.get_weight()[2] = 0.01;
-	per.spread(oct::neu::ActivationFuntion::SIGMOIDEA);
-	std::cout << "Salida = " << per.get_out() << std::endl;	
-	
-	
+{	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
 	oct::neu::Line<double> line(0,0,1,1,0.03,1000,0);
@@ -32,7 +15,7 @@ int main()
 	learnig.mE = 0.05;
 	//learnig.variable = true;
 	learnig.iterations = 1000;*/
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::IDENTITY,5,5,2,1);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-3;
 	learnig.mE = 0.05;
@@ -51,32 +34,14 @@ int main()
 	oct::neu::Plotting<double> plotting;
 	//oct::math::Plotter plotGraph;
 	plotting.plotter.set_noautotitles();
+	plotting.filename = "neronal.dat";
+	std::string wintitle = "mean Error ";
+	wintitle = wintitle + " : " + std::to_string(0);
+	plotting.plotter.set_title(wintitle);
 	std::ofstream dat;
 	
-	bool createDatas = false;
-	for(unsigned int i = 0;i < 20; i++)
-	{
-		std::string wintitle = "mean Error ";
-		wintitle = wintitle + " : " + std::to_string(i);
-		plotting.plotter.set_title(wintitle);
-		
-		std::string fnNeuranl;
-		if(createDatas)
-		{
-			fnNeuranl = "neuronal-";
-			fnNeuranl += std::to_string(i) + ".dat";
-			dat.open(fnNeuranl);
-			for(oct::neu::Data<double>& d : line)
-			{
-				double out = *network.spread(d.inputs)[0];
-				oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
-			}
-			dat.flush();
-			dat.close();
-		}
-		
-		if(network.bp(line,learnig,&plotting)) break;
-	}
+	network.bp(line,learnig,&plotting);
+	
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
 	{

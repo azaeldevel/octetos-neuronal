@@ -97,7 +97,7 @@ namespace oct::neu
 		*\brief Algoritmo de back-propagation
 		*\return true si adquirio suficente conocimiento, false de otra forma.
 		*/
-		bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
+		/*bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
 		{
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			
@@ -245,7 +245,7 @@ namespace oct::neu
 				
 			}
 			return false;
-		}
+		}*/
 		/*bool bp(const std::vector<Data<T>>& datas, Learning<T>& learning, Plotting<T>* plotting)
 		{
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
@@ -391,16 +391,14 @@ namespace oct::neu
 			
 			return false;
 		}*/
-		/*bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
+		bool bp(const std::vector<Data<T>>& datas, const Learning<T>& learning, Plotting<T>* plotting)
 		{
-			//std::cout << "\tvoid Network::bp(..) : step 1\n";
 			Index lastlayer = std::vector<Layer<T>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<T>>::at(lastlayer).get_outputs();
-			//std::cout << "\tvoid Network::bp(..) : step 2\n";
-			//std::list<std::vector<T>> errDataPlot;
-			//std::list<std::vector<T>> fDataPlot;
+			std::ofstream filePlotting;
 			if(plotting != NULL)
 			{
+				filePlotting.open(plotting->filename,std::ios::app);
 				plotting->plotter.set_terminal("qt");
 				//std::string titleplot = "dEdR";
 				//plotByIt->set_title(titleplot);
@@ -415,143 +413,94 @@ namespace oct::neu
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 						
-			std::vector<T> dEdR,dRdZ,dEdZ,dZdW,dEdW;
-			//std::vector<std::vector<T>> dRdZ_history;
-			//dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-			//dRdZ_history.resize(std::vector<Layer<T>>::size());
-			dEdR.resize(std::vector<Layer<T>>::at(lastlayer).get_outputs().size());
-
+			//solo para la ultima capa
+			std::vector<T> dEdR,dRdZ;
+			dEdR.resize(LAYER(lastlayer).size());
+			dRdZ.resize(LAYER(lastlayer).size());
+			
+			T mdEdR_mean,mdEdR_set;
+			T count = 0;
+			//std::cout << "Step 1.0\n";
 			for(Index it = 0; it < learning.iterations; it++)
 			{
-				//std::cout << "\tIteracion : " << it << "\n";
+				mdEdR_set = 0;
+				count = 0;
+				//std::cout << "Step 1.0.1.0\n";
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
+					//std::cout << "Step 1.0.1.0.1.0\n";
 					spread(datas[indexData].inputs);
+					for(Index out = 0; out < dEdR.size(); out++)
+					{
+						dEdR[out] = datas[indexData].outputs[out] - (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[out]);	
+					}
+					//std::cout << "Step 1.0.1.0.1.1\n";
+					mdEdR_mean = 0;
 					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						dEdR[i] += (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[i]) - datas[indexData].outputs[i];						
+						mdEdR_mean += std::abs(dEdR[i]);
 					}
-				}
-				T mdEdR_mean = 0;
-				for(Index i = 0; i < dEdR.size(); i++)
-				{
-					dEdR[i] /= T(datas.size());
-					mdEdR_mean += std::abs(dEdR[i]);
-				}
-				if(dEdR.size() > 1) mdEdR_mean /= T(dEdR.size());	
-				if(mdEdR_mean > learning.mE) return true;
-
-				//for(Index indexData = 0; indexData < datas.size(); indexData++)
-				//{
-					//std::cout << "\tvoid Network::bp(..) : step 2.1\n";
-					//std::cout << "\t>>Data :";
-					//std::cout << "\t";
-					//Layer<T>::print(datas[indexData].inputs);
-					//std::cout << "\tprev :";
-					//Layer<T>::print(*outs);
-					//std::cout << "\n";
+					if(dEdR.size() > 1) mdEdR_mean /= T(dEdR.size());	
+					if(mdEdR_mean < learning.mE) continue;
+					mdEdR_set += mdEdR_mean;
 					
-					//
+					//std::cout << "Step 1.0.1.0.1.2\n";
+					//derivada de la activacion respecto a la suman ponderada
+					for(Index i = 0; i < dRdZ.size(); i++)
+					{
+						switch(topology[lastlayer].AF)
+						{
+							case ActivationFuntion::SIGMOIDEA:
+								dRdZ[i] =  Perceptron<T>::sigmoidea_D(std::vector<Layer<T>>::at(lastlayer).at(i).result);
+							break;
+							case ActivationFuntion::IDENTITY:
+								dRdZ[i] = T(1);
+							break;
+							default:
+								throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+						};
+					}
 
+					//std::cout << "Step 1.0.1.0.1.3\n";
+					T dEdW = 0;
+					for(Index out = 0; out < dEdR.size(); out++)
+					{
+						dEdW += dEdR[out] * dRdZ[out];
+					}	
+					//std::cout << "Step 1.0.1.0.1.4.0\n";
 					for(Index indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
 					{
-						//std::cout << ">Capa :" << indexLayer << "\n";
-						//std::cout << "Dato : " << indexData << "\n";
-						//std::cout << "Media dEdR : " << mdEdR_Data << "\n";
-						//print(std::vector<Layer<T>>::at(lastlayer).get_outputs());
-						//std::cout << " | ";	
-						//print(datas[indexData].outputs);				
-						//std::cout << "\n";
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.1\n";
-						dEdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						dZdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						dRdZ.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-						dEdW.resize(std::vector<Layer<T>>::at(indexLayer).get_outputs().size());
-			
-						//derivada de la activacion respecto a la suman ponderada
-						for(Index i = 0; i < dRdZ.size(); i++)
-						{
-							switch(topology[indexLayer].AF)
-							{
-								case ActivationFuntion::SIGMOIDEA:
-									//std::cout << "sigma : " << std::vector<Perceptron<T>>::at(i).get_sigma() << "\n";
-									dRdZ[i] =  Neurona<T>::sigmoide_D(std::vector<Layer<T>>::at(indexLayer).at(i).get_sigma());
-								break;
-								case ActivationFuntion::IDENTITY:
-									dRdZ[i] = T(1);
-								break;
-								default:
-									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-							};
-						}
+						//std::cout << "Step 1.0.1.0.1.4.0.1\n";
+						Index neurona = max(LAYER(indexLayer));	
+						Index input = max(NEURONA(indexLayer,neurona));
+						//std::cout << "Step 1.0.1.0.1.4.0.2\n";
+						dEdW *= *INPUT(indexLayer,neurona,input);//weight es el mismo indice de la input
 
-						//la derivada parcial de  la suman ponderada respecto de los pesos
-						for(Index i = 0; i < dZdW.size(); i++)
-						{
-							dZdW[i] = 0;
-							for(Index j = 0; j < std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs().size(); j++)
-							{
-								dZdW[i] = dZdW[i] + *std::vector<Layer<T>>::at(indexLayer).at(i).get_inputs()[j];
-							}
-						}
-						
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.3\n";
-						//error imputado
-						for(Index i = 0; i < dEdZ.size(); i++)
-						{
-							dEdZ[i] =  dEdR[i] * dRdZ[i];
-						}
-						
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.4\n";
-						//derivada parcial del error repecto de los pesos
-						for(Index i = 0; i < dZdW.size(); i++)
-						{
-							dEdW[i] =  dEdZ[i] * dZdW[i];
-						}
-							
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.5\n";	
-						
-						//std::cout << "dEdR = ";
-						//print(dEdR);
-						//std::cout << "\n";
-						//std::cout << "dRdZ = ";
-						//print(dRdZ);
-						//std::cout << "\n";
-						//std::cout << "dZdW = ";
-						//print(dZdW);
-						//std::cout << "\n";
-						//std::cout << "dEdW = ";
-						//print(dEdW);
-						//std::cout << "\n";
-						//std::cout << "dEdZ = ";
-						//print(dEdZ);
-						//std::cout << "\n";
-						//Layer<T>::print(Layer<T>::at(highIndex).get_inputs());
-						//std::cout << "\n";
-						//std::cout << "\t\t\tweight : ";
-						//Layer<T>::print(Layer<T>::at(indexLayer).get_weight());
-						//std::cout << "\n";
-						//std::cout << "outputs : ";
-						//Layer<T>::print(outputs);
-						//std::cout << "\n";
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.6\n";
-						Index highIndex = max(dEdZ);
-						std::vector<Layer<T>>::at(indexLayer).at(highIndex).gd(learning.ratio,dEdW[highIndex]);
-						//std::vector<Layer<T>>::at(indexLayer).spread();	
-						//std::cout << "\tvoid Network::bp(..) : step 2.1.8\n";
+						//std::cout << "Step 1.0.1.0.1.4.0.3\n";
+						WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - (learning.ratio * dEdW);											
 					}
-					//std::cout << "\tpost :";
-					//Layer<T>::print(*outs);
-					//std::cout << " - ";	
-					//Layer<T>::print(datas[indexData].outputs);
-					//std::cout << "\n";
-				//}
-				//mdEdR_set /= T(datas.size());
-				
+					//std::cout << "Step 1.0.1.0.1.5\n";
+				}
+				mdEdR_set/=count;
+				if(mdEdR_set < learning.mE) 
+				{
+					filePlotting.flush();
+					filePlotting.close();
+					return true;
+				}
+				if(plotting != NULL)
+				{
+					plotting->last++;
+					oct::math::Plotter::save(filePlotting,plotting->last,mdEdR_set);
+					filePlotting.flush();
+					plotting->plotter.plottingFile2D(plotting->filename);
+				}
 			}
 			
+			filePlotting.flush();
+			filePlotting.close();
 			return false;
-		}*/
+		}
 /*
 				if(plotting != NULL)
 				{
@@ -563,16 +512,31 @@ namespace oct::neu
 					plotting->plotter.plotting(plotting->data);
 				}
 */
-		Index max(std::vector<T>& data)
+
+		Index max(const Layer<T>& layer)
 		{
-			if(data.empty()) throw oct::core::Exception("Arreglo vacio",__FILE__,__LINE__);
 			Index maxIndex = 0;
-			T maxFound = data[maxIndex];
-			for(Index i = 0; i < data.size(); i++)
+			T maxFound = *layer.get_outputs()[maxIndex];
+			for(Index i = 0; i < layer.size(); i++)
 			{
-				if(data[i] > maxFound) 
+				if(*layer.get_outputs()[i] > maxFound) 
 				{
-					maxFound = data[i];
+					maxFound = *layer.get_outputs()[i];
+					maxIndex = i;
+				}
+			}
+
+			return maxIndex;
+		}
+		Index max(const Perceptron<T>& perceptron)
+		{
+			Index maxIndex = 0;
+			T maxFound = perceptron.weight[maxIndex];
+			for(Index i = 0; i < perceptron.weight.size(); i++)
+			{
+				if(perceptron.weight[i] > maxFound) 
+				{
+					maxFound = perceptron.weight[i];
 					maxIndex = i;
 				}
 			}

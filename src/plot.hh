@@ -19,7 +19,7 @@ public:
 	~Plotter();
 
 	
-	void plotting(const std::string& datafile);
+	void plottingFile2D(const std::string& datafile);
 	void plotting(const std::vector<std::vector<double>>&);
 	void plotting(const std::list<std::vector<double>>&);
 		

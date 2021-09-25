@@ -46,9 +46,9 @@ namespace oct::neu
 				if(randS > 0.5) weight[i] = core::randNumber(0.0,0.01);
 				else weight[i] = core::randNumber(0.0,0.01) * -1.0;
 			}
-			double randS = core::randNumber();
-			if(randS > 0.5) theta = core::randNumber(0.0,0.5);
-			else theta = core::randNumber(0.0,0.5) * -1.0;
+			//double randS = core::randNumber();
+			//if(randS > 0.5) theta = core::randNumber(0.0,0.5);
+			//else theta = core::randNumber(0.0,0.5) * -1.0;
 		}
 		
 		std::vector<T*>& get_inputs()
@@ -143,7 +143,7 @@ namespace oct::neu
 			{
 				val += (*inputs[i]) * weight[i];
 			}
-			val += theta;
+			//val += theta;
 
 			return val;
 		}
@@ -157,7 +157,7 @@ namespace oct::neu
 			{
 				val *= (*inputs[i]) + weight[i];
 			}
-			val *= theta;
+			//val *= theta;
 
 			return val;
 		}
@@ -171,7 +171,7 @@ namespace oct::neu
 			{
 				val *= (*inputs[i]) * weight[i];
 			}
-			val += theta;
+			//val += theta;
 
 			return val;
 		}
@@ -182,7 +182,7 @@ namespace oct::neu
 		}
 		static T sigmoidea_D(T v)
 		{
-			return v * (T(1) - v);
+			return sigmoidea(v) * (T(1) - sigmoidea(v));
 		}
 		static T identity(T v)
 		{
@@ -204,7 +204,7 @@ namespace oct::neu
 		//T umbral;
 		//T sesgo;
 		T result;
-		T theta;
+		//T theta;
 		
 	};
 

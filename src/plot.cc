@@ -17,11 +17,11 @@ namespace oct::math
 	{
 		pclose(gnuplotPipe);
 	}
-	void Plotter::plotting(const std::string& datafile)
+	void Plotter::plottingFile2D(const std::string& datafile)
 	{
 		std::string cmd = "plot '" ;
 		cmd += datafile + "'\n";
-		fprintf(gnuplotPipe,"%s \n",cmd.c_str());
+		fprintf(gnuplotPipe,"%s\n",cmd.c_str());
 	}	
 	void Plotter::plotting(const std::vector<std::vector<double>>& ps)
 	{		

@@ -37,6 +37,10 @@ namespace oct::neu
 		{
 			return outputs;
 		}
+		const std::vector<T*>& get_outputs() const
+		{
+			return outputs;
+		}
 
 		void spread()
 		{

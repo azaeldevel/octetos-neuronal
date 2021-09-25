@@ -83,6 +83,7 @@ namespace oct::neu
 		oct::math::Plotter plotter;
 		std::list<std::vector<T>> data;
 		T last;
+		std::string filename;
 			
 		Plotting()
 		{
