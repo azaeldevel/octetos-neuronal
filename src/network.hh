@@ -27,10 +27,7 @@ namespace oct::neu
 	template<typename T> class Network : public std::vector<Layer<T>>
 	{
 	public:	
-		struct Progress
-		{
-			std::vector<T> dEdR;
-		};
+		
 	public:
 		/**
 		*\param layerWidth Inidca la caxntidad de neuronal para la capa i-esima, deve de tener 1 para la primer capa
@@ -288,7 +285,6 @@ namespace oct::neu
 		}
 		void display(const Data<T>& data,oct::math::Plotter* plotGraph, const Learning<T>& learning)
 		{
-
 			plotGraph->set_terminal("qt");
 			//std::string titleplot = "funcion";
 			//plotGraph->set_title(titleplot);
@@ -340,8 +336,7 @@ namespace oct::neu
 		std::vector<T*>* outs;
 		std::vector<T> ins;
 		//ActivationFuntion AF;
-		Topology topology;		
-		std::list<Progress> progress;
+		Topology topology;
 	};
 }
 
