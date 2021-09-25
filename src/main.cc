@@ -17,10 +17,10 @@ int main()
 	learnig.iterations = 1000;*/
 	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,5,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-3;
+	learnig.ratio = 0.25;
 	learnig.mE = 0.05;
 	learnig.variable = false;
-	learnig.iterations = 100;
+	learnig.iterations = 30000;
 	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-2;

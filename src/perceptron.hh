@@ -43,8 +43,8 @@ namespace oct::neu
 			for(Index i = 0; i < weight.size(); i++)
 			{
 				double randS = core::randNumber();
-				if(randS > 0.5) weight[i] = core::randNumber(0.0,0.01);
-				else weight[i] = core::randNumber(0.0,0.01) * -1.0;
+				if(randS > 0.5) weight[i] = core::randNumber(0.0,0.5);
+				else weight[i] = core::randNumber(0.0,0.5) * -1.0;
 			}
 			//double randS = core::randNumber();
 			//if(randS > 0.5) theta = core::randNumber(0.0,0.5);

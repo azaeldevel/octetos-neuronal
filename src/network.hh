@@ -420,31 +420,34 @@ namespace oct::neu
 			
 			T mdEdR_mean,mdEdR_set;
 			T count = 0;
-			//std::cout << "Step 1.0\n";
 			for(Index it = 0; it < learning.iterations; it++)
 			{
 				mdEdR_set = 0;
 				count = 0;
-				//std::cout << "Step 1.0.1.0\n";
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
-					//std::cout << "Step 1.0.1.0.1.0\n";
 					spread(datas[indexData].inputs);
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
 						dEdR[out] = datas[indexData].outputs[out] - (*std::vector<Layer<T>>::at(lastlayer).get_outputs()[out]);	
 					}
-					//std::cout << "Step 1.0.1.0.1.1\n";
 					mdEdR_mean = 0;
-					for(Index i = 0; i < dEdR.size(); i++)
+					if(dEdR.size() > 1)
 					{
-						mdEdR_mean += std::abs(dEdR[i]);
+						for(Index i = 0; i < dEdR.size(); i++)
+						{
+							mdEdR_mean += std::abs(dEdR[i]);
+						}
+						mdEdR_mean /= T(dEdR.size());
+					}	
+					else
+					{
+						mdEdR_mean = std::abs(dEdR[0]);
 					}
-					if(dEdR.size() > 1) mdEdR_mean /= T(dEdR.size());	
-					if(mdEdR_mean < learning.mE) continue;
+					if(mdEdR_mean < learning.mE) continue;//siguiente dato
 					mdEdR_set += mdEdR_mean;
+					count++;
 					
-					//std::cout << "Step 1.0.1.0.1.2\n";
 					//derivada de la activacion respecto a la suman ponderada
 					for(Index i = 0; i < dRdZ.size(); i++)
 					{
@@ -461,25 +464,19 @@ namespace oct::neu
 						};
 					}
 
-					//std::cout << "Step 1.0.1.0.1.3\n";
 					T dEdW = 0;
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
 						dEdW += dEdR[out] * dRdZ[out];
 					}	
-					//std::cout << "Step 1.0.1.0.1.4.0\n";
 					for(Index indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
 					{
-						//std::cout << "Step 1.0.1.0.1.4.0.1\n";
 						Index neurona = max(LAYER(indexLayer));	
-						Index input = max(NEURONA(indexLayer,neurona));
-						//std::cout << "Step 1.0.1.0.1.4.0.2\n";
-						dEdW *= *INPUT(indexLayer,neurona,input);//weight es el mismo indice de la input
-
-						//std::cout << "Step 1.0.1.0.1.4.0.3\n";
-						WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - (learning.ratio * dEdW);											
+						Index weight = max_weight(NEURONA(indexLayer,neurona));
+						dEdW *= *INPUT(indexLayer,neurona,weight);//weight es el mismo indice de la input
+						//std::cout << "Layer : " << indexLayer << " dEdW = " << dEdW << "\n";
+						WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + (learning.ratio * dEdW);											
 					}
-					//std::cout << "Step 1.0.1.0.1.5\n";
 				}
 				mdEdR_set/=count;
 				if(mdEdR_set < learning.mE) 
@@ -492,6 +489,7 @@ namespace oct::neu
 				{
 					plotting->last++;
 					oct::math::Plotter::save(filePlotting,plotting->last,mdEdR_set);
+					//std::cout << "(" << plotting->last << "," << mdEdR_set << ")\n";
 					filePlotting.flush();
 					plotting->plotter.plottingFile2D(plotting->filename);
 				}
@@ -528,7 +526,7 @@ namespace oct::neu
 
 			return maxIndex;
 		}
-		Index max(const Perceptron<T>& perceptron)
+		Index max_weight(const Perceptron<T>& perceptron)
 		{
 			Index maxIndex = 0;
 			T maxFound = perceptron.weight[maxIndex];
