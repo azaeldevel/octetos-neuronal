@@ -11,7 +11,7 @@ int main()
 	data[0] = 3.0;
 	data[1] = 4.0;
 	data[2] = -2.0;
-	oct::neu::Neurona<double> per(3);
+	oct::neu::Perceptron<double> per(3);
 	per.get_inputs()[0] = &data[0];
 	per.get_inputs()[1] = &data[1];
 	per.get_inputs()[2] = &data[2];
@@ -24,45 +24,26 @@ int main()
 	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(1,1,10,10,0.3,100,0);
+	oct::neu::Line<double> line(0,0,1,1,0.03,1000,0);
+	
+	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
+	oct::neu::Learning<double> learnig;	
+	learnig.ratio = 1.0e-3;
+	learnig.mE = 0.05;
+	//learnig.variable = true;
+	learnig.iterations = 1000;*/
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::IDENTITY,5,5,2,1);
+	oct::neu::Learning<double> learnig;	
+	learnig.ratio = 1.0e-3;
+	learnig.mE = 0.05;
+	learnig.variable = false;
+	learnig.iterations = 100;
+	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-2;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);
-	/*topology[0].height=2;
-	topology[1].height=18;
-	topology[2].height=30;
-	topology[3].height=30;
-	topology[4].height=80;
-	topology[5].height=20;
-	topology[6].height=5;
-	topology[7].height=1;*/
-	/*learnig.ratio = 1.0e-5;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(6,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=18;
-	topology[2].height=60;
-	topology[3].height=30;
-	topology[4].height=5;
-	topology[5].height=1;*/
-	/*learnig.ratio = 1.6e-4;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(4,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=8;
-	topology[2].height=8;
-	topology[3].height=1;*/
-	/*learnig.ratio = 1.0e-1;
-	learnig.dEdR = 0.1;
-	learnig.iterations = 1000;
-	oct::neu::Topology topology(3,oct::neu::ActivationFuntion::SIGMOIDEA);
-	topology[0].height=2;
-	topology[1].height=3;
-	topology[2].height=1;*/
+	learnig.mE = 0.05;
+	learnig.iterations = 500;*/
+	
 	oct::neu::Network<double> network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
@@ -72,33 +53,38 @@ int main()
 	plotting.plotter.set_noautotitles();
 	std::ofstream dat;
 	
-	for(unsigned int i = 0;i < 3; i++)
+	bool createDatas = false;
+	for(unsigned int i = 0;i < 20; i++)
 	{
-		std::string fnNeuranl = "neuronal-";
-		fnNeuranl += std::to_string(i) + ".dat";
-		dat.open(fnNeuranl);
-		for(oct::neu::Data<double>& d : line)
-		{
-			double out = *network.spread(d.inputs)[0];
-			oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
-		}
-		dat.flush();
-		dat.close();
-		
-		std::string wintitle = "dEdR : ";
-		wintitle += std::to_string( i + 1);
+		std::string wintitle = "mean Error ";
+		wintitle = wintitle + " : " + std::to_string(i);
 		plotting.plotter.set_title(wintitle);
-		network.bp(line,learnig,&plotting);
+		
+		std::string fnNeuranl;
+		if(createDatas)
+		{
+			fnNeuranl = "neuronal-";
+			fnNeuranl += std::to_string(i) + ".dat";
+			dat.open(fnNeuranl);
+			for(oct::neu::Data<double>& d : line)
+			{
+				double out = *network.spread(d.inputs)[0];
+				oct::math::Plotter::save(dat,d.inputs[0],d.inputs[1], out);
+			}
+			dat.flush();
+			dat.close();
+		}
+		
+		if(network.bp(line,learnig,&plotting)) break;
 	}
-	double out;
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
 	{
-		out = *network.spread(d.inputs)[0];
-		if(out < 0.1 and d.outputs[0] < 0.1) 
+		double out = *network.spread(d.inputs)[0];
+		if(out < 0.5 and d.outputs[0] < 0.5 ) 
 		{
 		}
-		else if(out > 0.9 and d.outputs[0] > 0.9) 
+		else if(out > 0.5 and d.outputs[0] > 0.5)
 		{
 		}
 		else

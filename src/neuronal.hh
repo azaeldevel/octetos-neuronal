@@ -13,7 +13,7 @@
 
 namespace oct::neu
 {
-	typedef unsigned int Index;
+	typedef int Index;
 
 	template<typename T> struct Data
 	{
@@ -65,8 +65,18 @@ namespace oct::neu
 	template<typename T> struct Learning
 	{
 		T ratio;
-		T dEdR; 
+		T p;
+		T r;
+		bool variable;
+		T mE; 
 		unsigned int iterations;
+
+		Learning()
+		{
+			p = 1.1;
+			r = 0.5;
+			variable = false;
+		}
 	};
 	template<typename T> struct Plotting
 	{

@@ -1,7 +1,7 @@
 #ifndef OCTETOS_NEURONAL_LAYER_HH
 #define OCTETOS_NEURONAL_LAYER_HH
 
-#include "neurona.hh"
+#include "perceptron.hh"
 #include <list>
 
 namespace oct::neu
@@ -13,7 +13,7 @@ namespace oct::neu
 		unsigned short inputsNeurona;
 	};
 
-	template<typename T> class Layer : public std::vector<Neurona<T>>
+	template<typename T> class Layer : public std::vector<Perceptron<T>>
 	{
 	public:
 		Layer()
@@ -22,15 +22,15 @@ namespace oct::neu
 		void set(Model& model)
 		{
 			this->model = &model;
-			if(std::vector<Neurona<T>>::size() < model.height) std::vector<Neurona<T>>::resize(model.height);
-			for(Neurona<T>& p : *this)
+			if(std::vector<Perceptron<T>>::size() < model.height) std::vector<Perceptron<T>>::resize(model.height);
+			for(Perceptron<T>& p : *this)
 			{
 				p.set(model.inputsNeurona);
 			}
 			if(outputs.size() < model.height) outputs.resize(model.height);
 			for(unsigned short i = 0; i < model.height; i++)
 			{//asigna la salida de cada perceptor al vetor de salida
-				outputs[i] = &std::vector<Neurona<T>>::at(i).get_out(); 
+				outputs[i] = &std::vector<Perceptron<T>>::at(i).get_out(); 
 			}
 		}
 		std::vector<T*>& get_outputs()
@@ -41,10 +41,10 @@ namespace oct::neu
 		void spread()
 		{
 			//std::cout << "\tvoid Layer::spread(): step 1 \n";
-			for(unsigned short i = 0; i < std::vector<Neurona<T>>::size(); i++)
+			for(unsigned short i = 0; i < std::vector<Perceptron<T>>::size(); i++)
 			{
 				//std::cout << "\tvoid Layer::spread(): step 1.1\n";
-				std::vector<Neurona<T>>::at(i).spread(model->AF);			
+				std::vector<Perceptron<T>>::at(i).spread(model->AF);			
 			}
 			//std::cout << "\tvoid Layer::spread(): step 2 \n";
 		}
