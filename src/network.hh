@@ -47,6 +47,8 @@ namespace oct::neu
 		*\return true si adquirio suficente conocimiento, false de otra forma.
 		*/		
 		bool bp(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
+		bool trainig(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count);
+
 
 		Index max(const Layer<DATATYPE>& layer);
 		Index max_weight(const Perceptron<DATATYPE>& perceptron);

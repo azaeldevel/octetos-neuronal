@@ -1,4 +1,5 @@
 
+#include <octetos/core/shell.hh>
 
 #include "network.hh"
 #include "Line.hh"
@@ -7,7 +8,7 @@ int main()
 {	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(0,0,1,1,0.03,1000,0);
+	oct::neu::Line<double> line(0,0,1,1,0.03,100,0);
 	
 	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
 	oct::neu::Learning<double> learnig;	
@@ -20,7 +21,7 @@ int main()
 	learnig.ratio = 0.25;
 	learnig.mE = 0.05;
 	learnig.variable = false;
-	learnig.iterations = 30000;
+	learnig.iterations = 1000;
 	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 1.0e-2;
@@ -39,8 +40,14 @@ int main()
 	wintitle = wintitle + " : " + std::to_string(0);
 	plotting.plotter.set_title(wintitle);
 	std::ofstream dat;
+	oct::core::Shell shell;
+	if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
 	
-	network.bp(line,learnig,&plotting);
+	if(not network.trainig(line,learnig,&plotting,5))
+	{
+		std::cout << "No se entreno correctamente\n";
+		return EXIT_FAILURE;
+	}
 	
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
@@ -62,6 +69,7 @@ int main()
 			std::cout << "\n";
 		}
 	}
-	return 0;
+	
+	return EXIT_SUCCESS;
 }
 

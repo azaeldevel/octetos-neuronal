@@ -11,7 +11,6 @@ namespace oct::math
 	Plotter::Plotter()
 	{
 		gnuplotPipe = popen("gnuplot -persistent","w");
-		sl = 7;
 	}
 	Plotter::~Plotter()
 	{

@@ -173,4 +173,14 @@ namespace oct::neu
 			msg += std::to_string(i-1) + "' requiere " + std::to_string(topology[i-1].height);
 			throw octetos::core::Exception(msg,f,l);
 		}
+		
+		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count)
+		{
+			for (Index i = 0; i < count; i++)
+			{
+				if(bp(datas,learning,plotting)) return true;
+			}
+			
+			return false;
+		}
 }

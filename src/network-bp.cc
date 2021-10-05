@@ -342,11 +342,13 @@ namespace oct::neu
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					spread(datas[indexData].inputs);
-					for(Index out = 0; out < dEdR.size(); out++)
+					for(Index out = 0; out < dEdR.size(); out++)//calcula el error en cada salida
 					{
 						dEdR[out] = datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
 					}
 					mdEdR_mean = 0;
+					
+					//calcula el promiedio de erro en todas las salidas
 					if(dEdR.size() > 1)
 					{
 						for(Index i = 0; i < dEdR.size(); i++)
@@ -361,7 +363,7 @@ namespace oct::neu
 					}
 					if(mdEdR_mean < learning.mE) continue;//siguiente dato
 					mdEdR_set += mdEdR_mean;
-					count++;
+					count++;//para plotting
 					
 					//derivada de la activacion respecto a la suman ponderada
 					for(Index i = 0; i < dRdZ.size(); i++)
@@ -379,18 +381,19 @@ namespace oct::neu
 						};
 					}
 
-					DATATYPE dEdW = 0;
+					DATATYPE dEdZ = 0;
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
-						dEdW += dEdR[out] * dRdZ[out];
+						dEdZ += dEdR[out] * dRdZ[out];
 					}	
-					for(Index indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
+					for(int indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
 					{
 						Index neurona = max(LAYER(indexLayer));	
-						Index weight = max_weight(NEURONA(indexLayer,neurona));
-						dEdW *= *INPUT(indexLayer,neurona,weight);//weight es el mismo indice de la input
-						//std::cout << "Layer : " << indexLayer << " dEdW = " << dEdW << "\n";
-						WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + (learning.ratio * dEdW);											
+						//Index weight = max_weight(NEURONA(indexLayer,neurona));
+						for(Index i = 0; i < NEURONA(indexLayer,neurona).inputs.size(); i++)
+						{
+							WEIGHT(indexLayer,neurona,i) = WEIGHT(indexLayer,neurona,i) + (learning.ratio * dEdZ * (*INPUT(indexLayer,neurona,i)));		
+						}									
 					}
 				}
 				mdEdR_set/=count;
