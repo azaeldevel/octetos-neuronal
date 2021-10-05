@@ -11,6 +11,9 @@
 
 #include "plot.hh"
 
+#define DATATYPE double
+
+
 namespace oct::neu
 {
 	typedef int Index;

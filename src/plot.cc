@@ -15,6 +15,7 @@ namespace oct::math
 	}
 	Plotter::~Plotter()
 	{
+		fprintf(gnuplotPipe,"exit\n");
 		pclose(gnuplotPipe);
 	}
 	void Plotter::plottingFile2D(const std::string& datafile)

@@ -27,7 +27,7 @@ int main()
 	learnig.mE = 0.05;
 	learnig.iterations = 500;*/
 	
-	oct::neu::Network<double> network(topology,2,1);
+	oct::neu::Network network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
 	//std::cout << "\n";

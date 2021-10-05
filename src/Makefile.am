@@ -10,7 +10,7 @@ AM_CFLAGS =\
 
 bin_PROGRAMS = develop bp-neurona exp-perceptron-circle exp-perceptron-line
 
-develop_SOURCES = main.cc neuronal.cc perceptron.cc layer.cc network.cc plot.cc
+develop_SOURCES = main.cc neuronal.cc perceptron.cc layer.cc  network.cc  network-bp.cc plot.cc
 develop_LDFLAGS = $(OCTETOS_CORE_CFLAGS)
 develop_LDADD = $(OCTETOS_CORE_LIBS)
 
