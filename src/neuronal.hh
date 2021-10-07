@@ -73,6 +73,7 @@ namespace oct::neu
 		bool variable;
 		T mE; 
 		unsigned int iterations;
+		unsigned int training;
 
 		Learning()
 		{

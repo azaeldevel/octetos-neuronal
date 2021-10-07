@@ -70,7 +70,7 @@ namespace oct::neu
 		*\param maxerr
 		*\param minerr
 		*/
-		Line(T m, T b, T derr, Index count, T xmin, T xmax)
+		/*Line(T m, T b, T derr, Index count, T xmin, T xmax)
 		{
 			std::vector<Data<T>>::resize(count);
 			for(Data<T>& d : *this)
@@ -113,7 +113,7 @@ namespace oct::neu
 					//else std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] - (derr * errOut);
 				}
 			}
-		}
+		}*/
 
 		void print() const
 		{
@@ -155,7 +155,7 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + y0;
-			std::vector<Data<T>>::at(i).outputs[0] = 0.9;//aceptable
+			std::vector<Data<T>>::at(i).outputs[0] = 1.0;//aceptable
 			T sensorErr = core::randNumber(0.0,derr);
 			if(sensorErr > 0.5) 
 			{
@@ -170,7 +170,7 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = core::randNumber(y0,y1);
-			std::vector<Data<T>>::at(i).outputs[0] = 0.1;//no captabl
+			std::vector<Data<T>>::at(i).outputs[0] = 0.0;//no captabl
 		}
 	};
 }

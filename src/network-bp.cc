@@ -329,18 +329,52 @@ namespace oct::neu
 			}
 						
 			//solo para la ultima capa
-			std::vector<DATATYPE> dEdR,dRdZ,Sp;//,dEdZ
+			std::vector<DATATYPE> dEdR,dRdZ,dEdZ,E;//,dEdZ
 			dEdR.resize(LAYER(lastlayer).size());
 			dRdZ.resize(LAYER(lastlayer).size());
 			//dEdZ.resize(LAYER(lastlayer).size());
-			Sp.resize(LAYER(lastlayer).size());
+			dEdZ.resize(LAYER(lastlayer).size());
+			E.resize(LAYER(lastlayer).size());
 			
-			DATATYPE mdEdR_mean,mdEdR_set,E_prev;
-			DATATYPE count = 0;
+			DATATYPE E_prev = 1, E_mean = 0;
 			for(Index it = 0; it < learning.iterations; it++)
-			{
-				mdEdR_set = 0;
-				count = 0;
+			{		
+				for(Index out = 0; out < E.size(); out++)
+				{
+					E[out] = 0;
+				}
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
+				{
+					DATATYPE e;
+					spread(datas[indexData].inputs);
+					for(Index out = 0; out < E.size(); out++)//calcula el error en cada salida
+					{
+						e = datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
+						//std::cout << "e = " << e << "\n";
+						E[out] += std::pow(e,DATATYPE(2));
+					}
+				}
+				for(Index out = 0; out < E.size(); out++)
+				{
+					E[out] = E[out] / ( DATATYPE(2) * DATATYPE(datas.size()));
+				}
+				E_mean = 0;	
+				for(Index out = 0; out < E.size(); out++)
+				{
+					E_mean += E[out];
+				}
+				if(E.size() > 1) E_mean /= DATATYPE(E.size());
+				
+				if(plotting != NULL)
+				{
+					plotting->last++;
+					oct::math::Plotter::save(filePlotting,plotting->last,E_mean);
+					//std::cout << "(" << plotting->last << "," << mdEdR_set << ")\n";
+					filePlotting.flush();
+					plotting->plotter.plottingFile2D(plotting->filename);
+				}
+				
+				DATATYPE mdEdR_mean;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					spread(datas[indexData].inputs);
@@ -350,23 +384,14 @@ namespace oct::neu
 					}
 									
 					//calcula el promiedio de erro en todas las salidas
-					mdEdR_mean = 0;	
-					if(dEdR.size() > 1)
+					/*mdEdR_mean = 0;	
+					for(Index i = 0; i < dEdR.size(); i++)
 					{
-						for(Index i = 0; i < dEdR.size(); i++)
-						{
-							mdEdR_mean += std::abs(dEdR[i]);
-						}
-						mdEdR_mean /= DATATYPE(dEdR.size());
-					}	
-					else
-					{
-						mdEdR_mean = std::abs(dEdR[0]);
+						mdEdR_mean += std::abs(dEdR[i]);
 					}
-					if(mdEdR_mean < learning.mE) continue;//siguiente dato
-					mdEdR_set += mdEdR_mean;
-					count++;//para plotting
-					
+					if(dEdR.size() > 1)  mdEdR_mean /= DATATYPE(dEdR.size());
+					if(mdEdR_mean < learning.mE) continue;*///siguiente dato
+										
 					//derivada de la activacion respecto a la suman ponderada
 					for(Index i = 0; i < dRdZ.size(); i++)
 					{
@@ -385,14 +410,14 @@ namespace oct::neu
 
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
-						Sp[out] = dEdR[out] * dRdZ[out];						
+						dEdZ[out] = dEdR[out] * dRdZ[out];						
 					}
 					
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
 						for(Index i = 0; i < NEURONA(lastlayer,out).inputs.size(); i++)
 						{
-							WEIGHT(lastlayer,out,i) = WEIGHT(lastlayer,out,i) + (learning.ratio * Sp[out] * (*INPUT(lastlayer,out,i)));		
+							WEIGHT(lastlayer,out,i) = WEIGHT(lastlayer,out,i) + (learning.ratio * dEdZ[out] * (*INPUT(lastlayer,out,i)));		
 						}
 					}
 					DATATYPE SpO = 0;
@@ -400,14 +425,14 @@ namespace oct::neu
 					{
 						for(Index i = 0; i < NEURONA(lastlayer,out).weight.size(); i++)
 						{
-							SpO += Sp[out] * WEIGHT(lastlayer,out,i);
+							SpO += dEdZ[out] * WEIGHT(lastlayer,out,i) ;//
 						}					
 					}
 					
-					DATATYPE Sh;
+					DATATYPE dFdZ;
 					for(int indexLayer = lastlayer - 1; indexLayer >= 0; indexLayer--)
 					{
-						Sh = 0;
+						dFdZ = 0;
 						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
 						{
 							//derivada de la activacion respecto a la suman ponderada
@@ -416,17 +441,17 @@ namespace oct::neu
 								switch(topology[indexLayer].AF)
 								{
 									case ActivationFuntion::SIGMOIDEA:
-										Sh =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(i).result);
+										dFdZ =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(i).result);
 									break;
 									case ActivationFuntion::IDENTITY:
-										Sh = DATATYPE(1);
+										dFdZ = DATATYPE(1);
 									break;
 									default:
 										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 								};
 							}
 							
-							Sh *= SpO;
+							dFdZ *= SpO;
 							//if(Sh > 0) continue;//si la pedniete es positiva(en ascenso) para esta neurona
 							
 							for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
@@ -434,33 +459,23 @@ namespace oct::neu
 								DATATYPE step;
 								for(Index x = 0; x < LAYER(0).size(); x++)
 								{
-									step = learning.ratio * Sh * (*INPUT(0,x,0)) * (*INPUT(0,x,0));
+									step = learning.ratio * dFdZ * (*INPUT(0,x,0));
 									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
 								}
 							}
 						}
 					}
 				}
-				mdEdR_set/=count;
 				
-				if(mdEdR_set < E_prev) learning.ratio = learning.ratio * learning.p;
+				if(E_mean < E_prev) learning.ratio = learning.ratio * learning.p;
 				else learning.ratio = learning.ratio * learning.r;
-				E_prev = mdEdR_set;
-				if(mdEdR_set < learning.mE) 
+				E_prev = E_mean;
+				if(E_mean < learning.mE) 
 				{
 					filePlotting.flush();
 					filePlotting.close();
 					break;
-				}
-				
-				if(plotting != NULL)
-				{
-					plotting->last++;
-					oct::math::Plotter::save(filePlotting,plotting->last,mdEdR_set);
-					//std::cout << "(" << plotting->last << "," << mdEdR_set << ")\n";
-					filePlotting.flush();
-					plotting->plotter.plottingFile2D(plotting->filename);
-				}
+				}				
 			}
 			if(plotting != NULL)
 			{
@@ -469,7 +484,7 @@ namespace oct::neu
 				plotting->plotter.plottingFile2D(plotting->filename);
 				filePlotting.flush();
 				filePlotting.close();
-				if(mdEdR_set < learning.mE) return true;
+				if(E_mean < learning.mE) return true;
 			}
 			return false;
 		}

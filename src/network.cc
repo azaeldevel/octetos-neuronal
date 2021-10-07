@@ -173,9 +173,9 @@ namespace oct::neu
 			throw octetos::core::Exception(msg,f,l);
 		}
 		
-		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count)
+		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
-			for (Index i = 0; i < count; i++)
+			for (Index i = 0; i < learning.training; i++)
 			{
 				if(bp(datas,learning,plotting)) return true;
 			}

@@ -55,7 +55,7 @@ namespace oct::neu
 		*\return true si adquirio suficente conocimiento, false de otra forma.
 		*/		
 		bool bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
-		bool trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count);
+		bool trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
 
 
 		Index max(const Layer<DATATYPE>& layer);

@@ -13,8 +13,9 @@ int main()
 	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,10,2,1);
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 0.1;
-	learnig.mE = 0.05;
+	learnig.mE = 0.1;
 	learnig.iterations = 1000;
+	learnig.training = 5;
 	
 	oct::neu::Network network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
@@ -31,7 +32,7 @@ int main()
 	oct::core::Shell shell;
 	//if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
 	
-	if(not network.trainig(line,learnig,&plotting,10))
+	if(not network.trainig(line,learnig,&plotting))
 	{
 		std::cout << "No se entreno correctamente\n";
 		return EXIT_FAILURE;
