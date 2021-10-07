@@ -10,23 +10,11 @@ int main()
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
 	oct::neu::Line<double> line(0,0,1,1,0.03,100,0);
 	
-	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,8,10,2,1);	
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,10,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-3;
+	learnig.ratio = 0.1;
 	learnig.mE = 0.05;
-	//learnig.variable = true;
-	learnig.iterations = 1000;*/
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,5,2,1);
-	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 0.25;
-	learnig.mE = 0.05;
-	learnig.variable = false;
 	learnig.iterations = 1000;
-	/*oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,3,5,2,1);
-	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-2;
-	learnig.mE = 0.05;
-	learnig.iterations = 500;*/
 	
 	oct::neu::Network network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
@@ -35,15 +23,15 @@ int main()
 	oct::neu::Plotting<double> plotting;
 	//oct::math::Plotter plotGraph;
 	plotting.plotter.set_noautotitles();
-	plotting.filename = "neronal.dat";
+	plotting.filename = "neuronal.dat";
 	std::string wintitle = "mean Error ";
 	wintitle = wintitle + " : " + std::to_string(0);
 	plotting.plotter.set_title(wintitle);
 	std::ofstream dat;
 	oct::core::Shell shell;
-	if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
+	//if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
 	
-	if(not network.trainig(line,learnig,&plotting,5))
+	if(not network.trainig(line,learnig,&plotting,10))
 	{
 		std::cout << "No se entreno correctamente\n";
 		return EXIT_FAILURE;

@@ -30,7 +30,6 @@ namespace oct::neu
 	Topology::Topology(const Topology& t) : std::vector<Model>(t)
 	{
 		//inputsNeurona = t.inputsNeurona;
-		
 	}
 	
 	
@@ -174,7 +173,7 @@ namespace oct::neu
 			throw octetos::core::Exception(msg,f,l);
 		}
 		
-		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count)
+		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count)
 		{
 			for (Index i = 0; i < count; i++)
 			{

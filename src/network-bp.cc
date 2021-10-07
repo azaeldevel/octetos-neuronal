@@ -306,7 +306,7 @@ namespace oct::neu
 			
 			return false;
 		}*/
-		bool Network::bp(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
+		bool Network::bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
 			Index lastlayer = std::vector<Layer<DATATYPE>>::size() - 1;//optener la ultima capa
 			outs = &std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs();
@@ -329,11 +329,13 @@ namespace oct::neu
 			}
 						
 			//solo para la ultima capa
-			std::vector<DATATYPE> dEdR,dRdZ;
+			std::vector<DATATYPE> dEdR,dRdZ,Sp;//,dEdZ
 			dEdR.resize(LAYER(lastlayer).size());
 			dRdZ.resize(LAYER(lastlayer).size());
+			//dEdZ.resize(LAYER(lastlayer).size());
+			Sp.resize(LAYER(lastlayer).size());
 			
-			DATATYPE mdEdR_mean,mdEdR_set;
+			DATATYPE mdEdR_mean,mdEdR_set,E_prev;
 			DATATYPE count = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{
@@ -346,9 +348,9 @@ namespace oct::neu
 					{
 						dEdR[out] = datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
 					}
-					mdEdR_mean = 0;
-					
+									
 					//calcula el promiedio de erro en todas las salidas
+					mdEdR_mean = 0;	
 					if(dEdR.size() > 1)
 					{
 						for(Index i = 0; i < dEdR.size(); i++)
@@ -381,28 +383,76 @@ namespace oct::neu
 						};
 					}
 
-					DATATYPE dEdZ = 0;
 					for(Index out = 0; out < dEdR.size(); out++)
 					{
-						dEdZ += dEdR[out] * dRdZ[out];
-					}	
-					for(int indexLayer = lastlayer; indexLayer >= 0; indexLayer--)
+						Sp[out] = dEdR[out] * dRdZ[out];						
+					}
+					
+					for(Index out = 0; out < dEdR.size(); out++)
 					{
-						Index neurona = max(LAYER(indexLayer));	
-						//Index weight = max_weight(NEURONA(indexLayer,neurona));
-						for(Index i = 0; i < NEURONA(indexLayer,neurona).inputs.size(); i++)
+						for(Index i = 0; i < NEURONA(lastlayer,out).inputs.size(); i++)
 						{
-							WEIGHT(indexLayer,neurona,i) = WEIGHT(indexLayer,neurona,i) + (learning.ratio * dEdZ * (*INPUT(indexLayer,neurona,i)));		
-						}									
+							WEIGHT(lastlayer,out,i) = WEIGHT(lastlayer,out,i) + (learning.ratio * Sp[out] * (*INPUT(lastlayer,out,i)));		
+						}
+					}
+					DATATYPE SpO = 0;
+					for(Index out = 0; out < dEdR.size(); out++)
+					{
+						for(Index i = 0; i < NEURONA(lastlayer,out).weight.size(); i++)
+						{
+							SpO += Sp[out] * WEIGHT(lastlayer,out,i);
+						}					
+					}
+					
+					DATATYPE Sh;
+					for(int indexLayer = lastlayer - 1; indexLayer >= 0; indexLayer--)
+					{
+						Sh = 0;
+						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+						{
+							//derivada de la activacion respecto a la suman ponderada
+							for(Index i = 0; i < dRdZ.size(); i++)
+							{
+								switch(topology[indexLayer].AF)
+								{
+									case ActivationFuntion::SIGMOIDEA:
+										Sh =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(i).result);
+									break;
+									case ActivationFuntion::IDENTITY:
+										Sh = DATATYPE(1);
+									break;
+									default:
+										throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+								};
+							}
+							
+							Sh *= SpO;
+							//if(Sh > 0) continue;//si la pedniete es positiva(en ascenso) para esta neurona
+							
+							for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+							{
+								DATATYPE step;
+								for(Index x = 0; x < LAYER(0).size(); x++)
+								{
+									step = learning.ratio * Sh * (*INPUT(0,x,0)) * (*INPUT(0,x,0));
+									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
+								}
+							}
+						}
 					}
 				}
 				mdEdR_set/=count;
+				
+				if(mdEdR_set < E_prev) learning.ratio = learning.ratio * learning.p;
+				else learning.ratio = learning.ratio * learning.r;
+				E_prev = mdEdR_set;
 				if(mdEdR_set < learning.mE) 
 				{
 					filePlotting.flush();
 					filePlotting.close();
-					return true;
+					break;
 				}
+				
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -412,9 +462,15 @@ namespace oct::neu
 					plotting->plotter.plottingFile2D(plotting->filename);
 				}
 			}
-			
-			filePlotting.flush();
-			filePlotting.close();
+			if(plotting != NULL)
+			{
+				plotting->plotter.set_terminal("svg");
+				plotting->plotter.set_output("out.svg");
+				plotting->plotter.plottingFile2D(plotting->filename);
+				filePlotting.flush();
+				filePlotting.close();
+				if(mdEdR_set < learning.mE) return true;
+			}
 			return false;
 		}
 }

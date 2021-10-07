@@ -8,9 +8,9 @@
 #include "plot.hh"
 
 #define LAYER(L) std::vector<Layer<DATATYPE>>::at(L)
-#define NEURONA(L,N) std::vector<Layer<DATATYPE>>::at(L).at(N)
-#define WEIGHT(L,N,W) std::vector<Layer<DATATYPE>>::at(L).at(N).weight[W]
-#define INPUT(L,N,I) std::vector<Layer<DATATYPE>>::at(L).at(N).inputs[I]
+#define NEURONA(L,N) std::vector<Layer<DATATYPE>>::at(L)[N]
+#define WEIGHT(L,N,W) std::vector<Layer<DATATYPE>>::at(L)[N].weight[W]
+#define INPUT(L,N,I) std::vector<Layer<DATATYPE>>::at(L)[N].inputs[I]
 
 namespace oct::neu
 {
@@ -20,6 +20,14 @@ namespace oct::neu
 	{
 		//float inputsNeurona;
 		Topology(Index size);
+		/**
+		*\brief
+		*\param AF Funcion de activacion
+		*\param width cantiad, cpa de antrada mas capaz ocultas mas capa de salida
+		*\param heightLayer neuronas por capa
+		*\param inputs catidad de entradas
+		*\param outputs canida de salidas
+		**/
 		Topology(ActivationFuntion AF,Index width, Index heightLayer, unsigned int inputs, unsigned int outputs);
 		Topology(const Topology&);
 	};
@@ -46,8 +54,8 @@ namespace oct::neu
 		*\brief Algoritmo de back-propagation
 		*\return true si adquirio suficente conocimiento, false de otra forma.
 		*/		
-		bool bp(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
-		bool trainig(const std::vector<Data<DATATYPE>>& datas, const Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count);
+		bool bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
+		bool trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting, Index count);
 
 
 		Index max(const Layer<DATATYPE>& layer);
