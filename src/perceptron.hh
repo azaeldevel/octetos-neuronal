@@ -42,9 +42,9 @@ namespace oct::neu
 			weight.resize(ins);
 			for(Index i = 0; i < weight.size(); i++)
 			{
-				double randS = core::randNumber();
-				if(randS > 0.5) weight[i] = core::randNumber(0.0,0.5);
-				else weight[i] = core::randNumber(0.0,0.5) * -1.0;
+				//double randS = core::randNumber();
+				weight[i] = core::randNumber(0.0,0.5);
+				//else weight[i] = core::randNumber(0.0,0.5) * -1.0;
 			}
 			//double randS = core::randNumber();
 			//if(randS > 0.5) theta = core::randNumber(0.0,0.5);
@@ -92,6 +92,9 @@ namespace oct::neu
 				case ActivationFuntion::SCALON:
 					out = scalon(result);
 				break;
+				case ActivationFuntion::RELU:
+					out = relu(result);
+				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 			};
@@ -121,6 +124,9 @@ namespace oct::neu
 				break;
 				case ActivationFuntion::SCALON:
 					out = scalon(result);
+				break;
+				case ActivationFuntion::RELU:
+					out = relu(result);
 				break;
 				default:
 					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
@@ -182,7 +188,7 @@ namespace oct::neu
 		}
 		static T sigmoidea_D(T v)
 		{
-			return sigmoidea(v) * (T(1) - sigmoidea(v));
+			return v * (T(1) - v);
 		}
 		static T identity(T v)
 		{
@@ -196,6 +202,16 @@ namespace oct::neu
 		{
 			if(v > 0.5)return T(1);
 			else  return T(0);
+		}
+		static T relu(T v)
+		{
+			if(v < 0) return T(0);
+			else  return T(v);
+		}
+		static T relu_D(T v)
+		{
+			if(v < 0) return T(0);
+			else  return T(1);
 		}
 
 		std::vector<T*> inputs;

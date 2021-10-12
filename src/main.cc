@@ -8,11 +8,11 @@ int main()
 {	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(0,0,1,1,0.03,100,0);
+	oct::neu::Line<double> line(0,0,1,1,0.03,10,0);
 	
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOIDEA,5,10,2,1);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,5,10,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 0.1;
+	learnig.ratio = 1.0e-1;
 	learnig.mE = 0.1;
 	learnig.iterations = 1000;
 	learnig.training = 5;

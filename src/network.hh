@@ -65,6 +65,16 @@ namespace oct::neu
 	private:
 		void conecting();
 		void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l);
+		/**
+		*\brief Error cuadratico medio
+		*/
+		void mse(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE& );
+
+		void dEdR(Layer<DATATYPE>&);
+		/**
+		*\brief Derivada de la funcion de activacion respecto del paramatro W
+		*/
+		void dRdW(const Perceptron<DATATYPE>&);
 
 	private:
 		//Dendrities dendrities;

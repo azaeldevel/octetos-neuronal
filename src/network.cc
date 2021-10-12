@@ -182,4 +182,39 @@ namespace oct::neu
 			
 			return false;
 		}
+
+	/*void Network::mse(const Data<DATATYPE>& datas, std::vector<DATATYPE>& E, DATATYPE& E_mean)
+	{
+		if(E.size() != size()) E.resize(size());
+
+		for(Index out = 0; out < E.size(); out++)
+		{
+			E[out] = 0;
+		}
+
+		for(Index indexData = 0; indexData < datas.size(); indexData++)
+		{
+			DATATYPE e;
+			spread(datas[indexData].inputs);
+			for(Index out = 0; out < E.size(); out++)//calcula el error en cada salida
+			{
+				e = datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
+				//std::cout << "e = " << e << "\n";
+				E[out] += std::pow(e,DATATYPE(2));
+			}
+		}
+
+		for(Index out = 0; out < E.size(); out++)
+		{
+					E[out] = E[out] / ( DATATYPE(2) * DATATYPE(datas.size()));
+		}
+		E_mean = 0;	
+		for(Index out = 0; out < E.size(); out++)
+		{
+					E_mean += E[out];
+		}
+		if(E.size() > 1) E_mean /= DATATYPE(E.size());
+
+		return E_mean;
+	}*/
 }
