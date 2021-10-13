@@ -29,56 +29,75 @@ namespace oct::neu
 			}
 			
 			std::vector<DATATYPE> Se;
-			Se.resize(size()+1);
+			Se.resize(size()+2);
 			DATATYPE E_prev = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{		
-				if(it > 0) E_prev = Se[lastLayer+1];
-				Se[lastLayer+1] = dMSEdR(datas);
+				if(it > 0) E_prev = Se[lastLayer+2];
+				Se[lastLayer+2] = dMSEdR(datas);
 				if(plotting != NULL)
 				{
 					plotting->last++;
-					oct::math::Plotter::save(filePlotting,plotting->last,Se[lastLayer+1]);
+					oct::math::Plotter::save(filePlotting,plotting->last,Se[lastLayer+2]);
 					filePlotting.flush();
 					plotting->plotter.plottingFile2D(plotting->filename);
 				}
-
-				if(Se[lastLayer+1]  < learning.mE) return true;
+				
+				if(Se[lastLayer+2]  < learning.mE) return true;
 				
 				if(learning.variable)
 				{
-					if(Se[lastLayer+1]  < E_prev) learning.ratio = learning.ratio * learning.p;
-					else learning.ratio = learning.ratio * learning.r;
+					if(Se[lastLayer+2]  < E_prev) learning.ratio = learning.ratio * learning.r;
+					else learning.ratio = learning.ratio * learning.p;
 				}
 				
-				DATATYPE dRdZ;
-				for(int indexLayer = lastLayer; indexLayer >= 0; indexLayer--)
+				DATATYPE dRdZ,layer_dRdZ;
+				
+				DATATYPE e;
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
-					dRdZ = 0;
-					for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+					spread(datas[indexData].inputs);
+					e = 0;
+					for(Index i = 0; i < datas[indexData].outputs.size(); i++)
 					{
-						switch(topology[indexLayer].AF)
-						{
-							case ActivationFuntion::SIGMOIDEA:
-								dRdZ =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
-							break;
-							case ActivationFuntion::IDENTITY:
-								dRdZ = DATATYPE(1);
-							break;
-							case ActivationFuntion::RELU:
-								dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
-							break;
-							default:
-								throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-						};
-						DATATYPE step;						
-						for(Index input = 0; input < NEURONA(indexLayer,neurona).inputs.size(); input++)
-						{
-							step = learning.ratio * Se[indexLayer+1] * dRdZ * (*INPUT(indexLayer,neurona,input));
-							WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) + step;
-						}
+						e += datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]);
 					}
-					Se[indexLayer] = Se[indexLayer+1] * dRdZ;
+					//TODO: dividir por la cantidad de salidas
+					//Se[lastLayer+1] = Se[lastLayer+2];//dMSEdR, error global
+					Se[lastLayer+1] = e;
+					
+					for(int indexLayer = lastLayer; indexLayer >= 0; indexLayer--)
+					{
+						dRdZ = 0;
+						layer_dRdZ = 0;
+						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+						{
+							switch(topology[indexLayer].AF)
+							{
+								case ActivationFuntion::SIGMOIDEA:
+									dRdZ =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
+								break;
+								case ActivationFuntion::IDENTITY:
+									dRdZ = DATATYPE(1);
+								break;
+								case ActivationFuntion::RELU:
+									dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
+								break;
+								default:
+									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+							};
+							DATATYPE step,m;						
+							for(Index input = 0; input < NEURONA(indexLayer,neurona).inputs.size(); input++)
+							{
+								m = Se[indexLayer+1] * dRdZ;
+								step = learning.ratio * m * (*INPUT(indexLayer,neurona,input));
+								WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - step;							
+							}
+							layer_dRdZ += dRdZ;
+						}
+						//std::cout << "dRdZ = " << dRdZ << "\n";
+						Se[indexLayer] = Se[indexLayer+1] * layer_dRdZ;
+					}
 				}
 			}
 			if(plotting != NULL)

@@ -12,10 +12,10 @@ int main()
 	
 	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,4,3,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-4;
+	learnig.ratio = 1.0e-2;
 	learnig.mE = 0.1;
 	learnig.iterations = 1000;
-	learnig.training = 10;
+	learnig.training = 5;
 	learnig.variable = false;
 	oct::neu::Network network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;

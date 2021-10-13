@@ -229,23 +229,17 @@ namespace oct::neu
 	}*/
 	DATATYPE Network::dMSEdR(const std::vector<Data<DATATYPE>>& datas)
 	{
-		//std::cout << "Step 1.1.1.0\n";
 		DATATYPE e = 0;
-		//std::cout << "Step 1.1.2.0\n";
 		for(Index indexData = 0; indexData < datas.size(); indexData++)
 		{
-			//std::cout << "Step 1.1.2.1.0\n";
 			spread(datas[indexData].inputs);
-			//std::cout << "Step 1.1.2.2.0\n";
 			for(Index i = 0; i < datas[indexData].outputs.size(); i++)
 			{
 				e += std::abs(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]));
 			}
-			//std::cout << "Step 1.1.2.3.0\n";
+			//TODO: dividir por la cantidad de salidas
 		}		
-		//std::cout << "Step 1.1.3.0\n";
-		e /= (DATATYPE(2) * DATATYPE(datas.size()));
-		//std::cout << "Step 1.1.4.0\n";
+		e /= (DATATYPE(datas.size()));//DATATYPE(2) * 
 		return e;
 	}
 }
