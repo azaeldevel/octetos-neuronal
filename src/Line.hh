@@ -159,11 +159,11 @@ namespace oct::neu
 			T sensorErr = core::randNumber(0.0,derr);
 			if(sensorErr > 0.5) 
 			{
-				std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] + core::randNumber(0,derr);
+				std::vector<Data<T>>::at(i).inputs[1] += core::randNumber(0,derr);
 			}
 			else 
 			{
-				std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] - core::randNumber(0,derr);
+				std::vector<Data<T>>::at(i).inputs[1] -= core::randNumber(0,derr);
 			}
 		}
 		void garbage(T x0, T y0, T x1, T y1,Index i)

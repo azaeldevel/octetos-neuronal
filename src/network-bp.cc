@@ -27,15 +27,14 @@ namespace oct::neu
 				labelCountData += std::to_string(datas.size());
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
-			//std::cout << "Step 1.0\n";
 			
 			std::vector<DATATYPE> Se;
 			Se.resize(size()+1);
-			
+			DATATYPE E_prev = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{		
+				if(it > 0) E_prev = Se[lastLayer+1];
 				Se[lastLayer+1] = dMSEdR(datas);
-				
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -45,6 +44,12 @@ namespace oct::neu
 				}
 
 				if(Se[lastLayer+1]  < learning.mE) return true;
+				
+				if(learning.variable)
+				{
+					if(Se[lastLayer+1]  < E_prev) learning.ratio = learning.ratio * learning.p;
+					else learning.ratio = learning.ratio * learning.r;
+				}
 				
 				DATATYPE dRdZ;
 				for(int indexLayer = lastLayer; indexLayer >= 0; indexLayer--)
@@ -70,11 +75,11 @@ namespace oct::neu
 						for(Index input = 0; input < NEURONA(indexLayer,neurona).inputs.size(); input++)
 						{
 							step = learning.ratio * Se[indexLayer+1] * dRdZ * (*INPUT(indexLayer,neurona,input));
-							WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - step;
+							WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) + step;
 						}
 					}
 					Se[indexLayer] = Se[indexLayer+1] * dRdZ;
-				}								
+				}
 			}
 			if(plotting != NULL)
 			{

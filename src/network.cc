@@ -177,7 +177,17 @@ namespace oct::neu
 		{
 			for (Index i = 0; i < learning.training; i++)
 			{
+				std::string fn = plotting->filename + "-";
+				fn += std::to_string(i) + ".dat";
+				std::ofstream plotFile(fn);
+				for(Index indexData = 0; indexData < datas.size(); indexData++)
+				{
+					spread(datas[indexData].inputs);
+					oct::math::Plotter::save(plotFile,datas[indexData].inputs[0],datas[indexData].inputs[1],*(outs->at(0)));
+				}
 				if(bp(datas,learning,plotting)) return true;
+				plotFile.flush();
+				plotFile.close();
 			}
 			
 			return false;

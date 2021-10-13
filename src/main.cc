@@ -8,15 +8,15 @@ int main()
 {	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(0,0,1,1,0.03,10,0);
+	oct::neu::Line<double> line(0,0,1,1,0.05,100,0);
 	
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,5,10,2,1);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,4,3,2,1);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 1.0e-3;
+	learnig.ratio = 1.0e-4;
 	learnig.mE = 0.1;
 	learnig.iterations = 1000;
-	learnig.training = 5;
-	
+	learnig.training = 10;
+	learnig.variable = false;
 	oct::neu::Network network(topology,2,1);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
@@ -24,7 +24,7 @@ int main()
 	oct::neu::Plotting<double> plotting;
 	//oct::math::Plotter plotGraph;
 	plotting.plotter.set_noautotitles();
-	plotting.filename = "neuronal.dat";
+	plotting.filename = "neuronal";
 	std::string wintitle = "mean Error ";
 	wintitle = wintitle + " : " + std::to_string(0);
 	plotting.plotter.set_title(wintitle);

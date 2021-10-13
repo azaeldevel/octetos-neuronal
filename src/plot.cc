@@ -111,11 +111,11 @@ namespace oct::math
 	
 	
 	
-	void Plotter::save(std::ofstream& file, double x, double y)
+	void Plotter::save(std::ofstream& file, const double x, const double y)
 	{
 		file << x << "\t" << y << "\n";
 	}
-	void Plotter::save(std::ofstream& file, double x, double y, double z)
+	void Plotter::save(std::ofstream& file, const double x, const double y, const double z)
 	{
 		file << x << "\t" << y << "\t" << z<< "\n";
 	}
