@@ -10,8 +10,8 @@ namespace oct::neu
 {
 		bool Network::bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
-			Index lastlayer = size() - 1;//optener la ultima capa
-			outs = &std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs();
+			Index lastLayer = size() - 1;//optener la ultima capa
+			outs = &std::vector<Layer<DATATYPE>>::at(lastLayer).get_outputs();
 			std::ofstream filePlotting;
 			if(plotting != NULL)
 			{
@@ -27,21 +27,53 @@ namespace oct::neu
 				labelCountData += std::to_string(datas.size());
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
-
-			std::vector<DATATYPE> E;
-			DATATYPE E_prev = 1, E_mean = 0;
+			//std::cout << "Step 1.0\n";
+			
+			std::vector<DATATYPE> Se;
+			Se.resize(size()+1);
 			
 			for(Index it = 0; it < learning.iterations; it++)
-			{			
-				//mse(datas,E,E_mean);				
+			{		
+				Se[lastLayer+1] = dMSEdR(datas);
 				
 				if(plotting != NULL)
 				{
 					plotting->last++;
-					oct::math::Plotter::save(filePlotting,plotting->last,E_mean);
-					//std::cout << "(" << plotting->last << "," << mdEdR_set << ")\n";
+					oct::math::Plotter::save(filePlotting,plotting->last,Se[lastLayer+1]);
 					filePlotting.flush();
 					plotting->plotter.plottingFile2D(plotting->filename);
+				}
+
+				if(Se[lastLayer+1]  < learning.mE) return true;
+				
+				DATATYPE dRdZ;
+				for(int indexLayer = lastLayer; indexLayer >= 0; indexLayer--)
+				{
+					dRdZ = 0;
+					for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+					{
+						switch(topology[indexLayer].AF)
+						{
+							case ActivationFuntion::SIGMOIDEA:
+								dRdZ =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
+							break;
+							case ActivationFuntion::IDENTITY:
+								dRdZ = DATATYPE(1);
+							break;
+							case ActivationFuntion::RELU:
+								dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
+							break;
+							default:
+								throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+						};
+						DATATYPE step;						
+						for(Index input = 0; input < NEURONA(indexLayer,neurona).inputs.size(); input++)
+						{
+							step = learning.ratio * Se[indexLayer+1] * dRdZ * (*INPUT(indexLayer,neurona,input));
+							WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - step;
+						}
+					}
+					Se[indexLayer] = Se[indexLayer+1] * dRdZ;
 				}								
 			}
 			if(plotting != NULL)

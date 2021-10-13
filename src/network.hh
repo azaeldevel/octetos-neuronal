@@ -72,7 +72,7 @@ namespace oct::neu
 		/**
 		*\brief Error cuadratico medio
 		*/
-		void dMSEdR(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE&);
+		DATATYPE dMSEdR(const std::vector<Data<DATATYPE>>& datas);
 		/**
 		*\brief Derivada de la funcion de activacion respecto del paramatro W
 		*/
