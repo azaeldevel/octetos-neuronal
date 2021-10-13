@@ -68,8 +68,14 @@ namespace oct::neu
 		/**
 		*\brief Error cuadratico medio
 		*/
-		void mse(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE& );
-
+		void mse(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE&);
+		/**
+		*\brief Error cuadratico medio
+		*/
+		void dMSEdR(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE&);
+		/**
+		*\brief Derivada de la funcion de activacion respecto del paramatro W
+		*/
 		void dEdR(Layer<DATATYPE>&);
 		/**
 		*\brief Derivada de la funcion de activacion respecto del paramatro W

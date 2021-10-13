@@ -217,4 +217,13 @@ namespace oct::neu
 
 		return E_mean;
 	}*/
+	/*void dMSEdR(const Data<DATATYPE>& datas,std::vector<DATATYPE>&,DATATYPE&)
+	{
+		DATATYPE e = 0;
+		for(Index out = 0; out < datas.input.size(); out++)//calcula el error en cada salida
+		{
+			e += datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
+		}
+		
+	}*/
 }
