@@ -108,16 +108,18 @@ namespace oct::neu
 									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 							};
 							//std::cout << "Step 1.1.2.0\n";
-
-							for(Index weight = 0; weight < NEURONA(lastLayer,neurona).weight.size(); weight++)
-							{
-								for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+							for(Index neuronaLast = 0; neuronaLast < LAYER(lastLayer).size(); neuronaLast++)
+							{	
+								for(Index weightLast = 0; weightLast < NEURONA(lastLayer,neurona).weight.size(); weightLast++)
 								{
-									//std::cout << "Step 1.1.2.1.0\n";
-									step = learning.ratio * S * WEIGHT(indexLayer,neurona,weight) * dRdZ * (*INPUT(indexLayer,neurona,weight));
-									//std::cout << "Step 1.1.2.2.0\n";
-									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
-									//std::cout << "Step 1.1.2.3.0\n";
+									for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+									{
+										//std::cout << "Step 1.1.2.1.0\n";
+										step = learning.ratio * S * WEIGHT(indexLayer,neuronaLast,weightLast) * dRdZ * (*INPUT(indexLayer,neurona,weight));
+										//std::cout << "Step 1.1.2.2.0\n";
+										WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
+										//std::cout << "Step 1.1.2.3.0\n";
+									}
 								}
 							}
 							//std::cout << "Step 1.1.3.0\n";
