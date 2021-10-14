@@ -21,7 +21,7 @@ int main()
 		perceptron.inputs[1] = &dataset[i][1];
 		perceptron.weight[0] = dataset[i][0];
 		perceptron.weight[1] = dataset[i][1];
-		perceptron.spread(oct::neu::ActivationFuntion::SIGMOIDEA);
+		perceptron.spread(oct::neu::ActivationFuntion::SIGMOID);
 		oct::math::Plotter::save(file,dataset[i][0],dataset[i][1],perceptron.out);
 	}	
 	file.flush();

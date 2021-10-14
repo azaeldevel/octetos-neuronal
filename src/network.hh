@@ -68,19 +68,11 @@ namespace oct::neu
 		/**
 		*\brief Error cuadratico medio
 		*/
-		void mse(const Data<DATATYPE>& ,std::vector<DATATYPE>&,DATATYPE&);
-		/**
-		*\brief Error cuadratico medio
-		*/
 		DATATYPE dMSEdR(const std::vector<Data<DATATYPE>>& datas);
 		/**
-		*\brief Derivada de la funcion de activacion respecto del paramatro W
+		*\brief 
 		*/
-		void dEdR(Layer<DATATYPE>&);
-		/**
-		*\brief Derivada de la funcion de activacion respecto del paramatro W
-		*/
-		void dRdW(const Perceptron<DATATYPE>&);
+		real changes_outputlayer(const std::vector<Data<DATATYPE>>& datas);
 
 	private:
 		//Dendrities dendrities;

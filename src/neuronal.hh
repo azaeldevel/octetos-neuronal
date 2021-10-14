@@ -17,6 +17,7 @@
 namespace oct::neu
 {
 	typedef unsigned int Index;
+	typedef DATATYPE real;
 
 	template<typename T> struct Data
 	{

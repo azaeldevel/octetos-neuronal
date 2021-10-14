@@ -10,7 +10,7 @@ namespace oct::neu
 {
 		bool Network::bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
-			Index lastLayer = size() - 1;//optener la ultima capa
+			Index lastLayer = size()-1;
 			outs = &std::vector<Layer<DATATYPE>>::at(lastLayer).get_outputs();
 			std::ofstream filePlotting;
 			if(plotting != NULL)
@@ -33,6 +33,7 @@ namespace oct::neu
 			DATATYPE E_prev = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{		
+				
 				if(it > 0) E_prev = Se[lastLayer+2];
 				Se[lastLayer+2] = dMSEdR(datas);
 				if(plotting != NULL)
@@ -51,54 +52,81 @@ namespace oct::neu
 					else learning.ratio = learning.ratio * learning.p;
 				}
 				
-				DATATYPE dRdZ,layer_dRdZ;
-				
-				DATATYPE e;
+				real dEdZ,dRdZ,step,S=0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
-					spread(datas[indexData].inputs);
-					e = 0;
-					for(Index i = 0; i < datas[indexData].outputs.size(); i++)
-					{
-						e += datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]);
-					}
-					//TODO: dividir por la cantidad de salidas
-					//Se[lastLayer+1] = Se[lastLayer+2];//dMSEdR, error global
-					Se[lastLayer+1] = e;
 					
-					for(int indexLayer = lastLayer; indexLayer >= 0; indexLayer--)
+					dEdZ = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
+
+					//capa de salida
+					for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
 					{
-						dRdZ = 0;
-						layer_dRdZ = 0;
-						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+						switch(topology[lastLayer].AF)
 						{
+							case ActivationFuntion::SIGMOID:
+								dRdZ =  Perceptron<DATATYPE>::sigmoid_D(NEURONA(lastLayer,neurona).result);
+								break;
+							case ActivationFuntion::IDENTITY:
+								dRdZ = DATATYPE(1);
+								break;
+							case ActivationFuntion::RELU:
+								dRdZ = Perceptron<DATATYPE>::relu_D(NEURONA(lastLayer,neurona).result);
+								break;
+							default:
+								throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+						};
+						
+						S += dEdZ * dRdZ;
+						
+						for(Index input = 0; input < NEURONA(lastLayer,neurona).inputs.size(); input++)
+						{
+							step = learning.ratio * S * NEURONA(lastLayer,neurona).result;
+							WEIGHT(lastLayer,neurona,input) = WEIGHT(lastLayer,neurona,input) + step;	
+						}				
+					}
+					//std::cout << "Step 1.0\n";
+					
+					//capa ocultas
+					for(int indexLayer = lastLayer - 1; indexLayer >= 0; indexLayer--)
+					{
+						//std::cout << "Step 1.1.0\n";
+						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+						{		
+							//std::cout << "Step 1.1.1.0\n";
 							switch(topology[indexLayer].AF)
 							{
-								case ActivationFuntion::SIGMOIDEA:
-									dRdZ =  Perceptron<DATATYPE>::sigmoidea_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
-								break;
+								case ActivationFuntion::SIGMOID:
+									dRdZ =  Perceptron<DATATYPE>::sigmoid_D(NEURONA(indexLayer,neurona).result);
+									break;
 								case ActivationFuntion::IDENTITY:
 									dRdZ = DATATYPE(1);
-								break;
+									break;
 								case ActivationFuntion::RELU:
-									dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(indexLayer).at(neurona).result);
-								break;
+									dRdZ = Perceptron<DATATYPE>::relu_D(NEURONA(indexLayer,neurona).result);
+									break;
 								default:
 									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 							};
-							DATATYPE step,m;						
-							for(Index input = 0; input < NEURONA(indexLayer,neurona).inputs.size(); input++)
+							//std::cout << "Step 1.1.2.0\n";
+
+							for(Index weight = 0; weight < NEURONA(lastLayer,neurona).weight.size(); weight++)
 							{
-								m = Se[indexLayer+1] * dRdZ;
-								step = learning.ratio * m * (*INPUT(indexLayer,neurona,input));
-								WEIGHT(indexLayer,neurona,input) = WEIGHT(indexLayer,neurona,input) - step;							
+								for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+								{
+									//std::cout << "Step 1.1.2.1.0\n";
+									step = learning.ratio * S * WEIGHT(indexLayer,neurona,weight) * dRdZ * (*INPUT(indexLayer,neurona,weight));
+									//std::cout << "Step 1.1.2.2.0\n";
+									WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
+									//std::cout << "Step 1.1.2.3.0\n";
+								}
 							}
-							layer_dRdZ += dRdZ;
+							//std::cout << "Step 1.1.3.0\n";
 						}
-						//std::cout << "dRdZ = " << dRdZ << "\n";
-						Se[indexLayer] = Se[indexLayer+1] * layer_dRdZ;
 					}
+					
+					//std::cout << "Step 2.0\n";
 				}
+				
 			}
 			if(plotting != NULL)
 			{
@@ -110,4 +138,47 @@ namespace oct::neu
 			}
 			return false;
 		}
+
+	
+	/*real Network::changes_outputlayer(const std::vector<Data<DATATYPE>>& datas)
+	{
+		Index lastLayer = size()-1;
+		real dEdZ,dRdZ,dZdW,step,S =0;
+		for(Index indexData = 0; indexData < datas.size(); indexData++)
+		{
+			dEdZ = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
+						
+			for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
+			{
+				switch(topology[lastLayer].AF)
+				{
+					case ActivationFuntion::SIGMOID:
+						dRdZ =  Perceptron<DATATYPE>::sigmoid_D(std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result);
+						break;
+					case ActivationFuntion::IDENTITY:
+						dRdZ = DATATYPE(1);
+						break;
+					case ActivationFuntion::RELU:
+						dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result);
+						break;
+					default:
+						throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+				};
+				
+				S += dEdZ * dRdZ;
+				
+				for(Index input = 0; input < NEURONA(lastLayer,neurona).inputs.size(); input++)
+				{
+					S += dEdZ * dRdZ;
+
+					dZdW = std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result;
+					
+					step = dEdZ * dRdZ * dZdW;
+					WEIGHT(lastLayer,neurona,input) = WEIGHT(lastLayer,neurona,input) - step;	
+				}				
+			}		
+		}
+
+	}*/
+	
 }
