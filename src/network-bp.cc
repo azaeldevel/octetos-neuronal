@@ -55,6 +55,7 @@ namespace oct::neu
 				real dEdZ,dRdZ,step,S=0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
+					spread(datas[indexData].inputs);
 					
 					dEdZ = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
 
@@ -115,7 +116,7 @@ namespace oct::neu
 									for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
 									{
 										//std::cout << "Step 1.1.2.1.0\n";
-										step = learning.ratio * S * WEIGHT(indexLayer,neuronaLast,weightLast) * dRdZ * (*INPUT(indexLayer,neurona,weight));
+										step = learning.ratio * S * WEIGHT(indexLayer,neuronaLast,weightLast) * dRdZ * NEURONA(indexLayer,neurona).result;
 										//std::cout << "Step 1.1.2.2.0\n";
 										WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
 										//std::cout << "Step 1.1.2.3.0\n";
@@ -139,48 +140,5 @@ namespace oct::neu
 				filePlotting.close();
 			}
 			return false;
-		}
-
-	
-	/*real Network::changes_outputlayer(const std::vector<Data<DATATYPE>>& datas)
-	{
-		Index lastLayer = size()-1;
-		real dEdZ,dRdZ,dZdW,step,S =0;
-		for(Index indexData = 0; indexData < datas.size(); indexData++)
-		{
-			dEdZ = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
-						
-			for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
-			{
-				switch(topology[lastLayer].AF)
-				{
-					case ActivationFuntion::SIGMOID:
-						dRdZ =  Perceptron<DATATYPE>::sigmoid_D(std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result);
-						break;
-					case ActivationFuntion::IDENTITY:
-						dRdZ = DATATYPE(1);
-						break;
-					case ActivationFuntion::RELU:
-						dRdZ = Perceptron<DATATYPE>::relu_D(std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result);
-						break;
-					default:
-						throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-				};
-				
-				S += dEdZ * dRdZ;
-				
-				for(Index input = 0; input < NEURONA(lastLayer,neurona).inputs.size(); input++)
-				{
-					S += dEdZ * dRdZ;
-
-					dZdW = std::vector<Layer<DATATYPE>>::at(lastLayer).at(neurona).result;
-					
-					step = dEdZ * dRdZ * dZdW;
-					WEIGHT(lastLayer,neurona,input) = WEIGHT(lastLayer,neurona,input) - step;	
-				}				
-			}		
-		}
-
-	}*/
-	
+		}	
 }
