@@ -10,8 +10,10 @@ namespace oct::neu
 {
 		bool Network::bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
+			//std::cout << "Step 1.1.1.0\n";
 			Index lastLayer = size()-1;
 			outs = &std::vector<Layer<DATATYPE>>::at(lastLayer).get_outputs();
+			if(outs->size() != datas[0].outputs.size()) throw oct::core::Exception("La cantidad de entradas no coincide",__FILE__,__LINE__);
 			std::ofstream filePlotting;
 			if(plotting != NULL)
 			{
@@ -27,15 +29,18 @@ namespace oct::neu
 				labelCountData += std::to_string(datas.size());
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
-			
+
+			//std::cout << "Step 1.1.2.0\n";
 			std::vector<DATATYPE> Se;
 			Se.resize(size()+2);
 			DATATYPE E_prev = 0;
 			for(Index it = 0; it < learning.iterations; it++)
-			{		
-				
+			{
+				//std::cout << "Step 1.1.2.1.0\n";
 				if(it > 0) E_prev = Se[lastLayer+2];
+				//std::cout << "Step 1.1.2.2.0\n";
 				Se[lastLayer+2] = dMSEdR(datas);
+				//std::cout << "Step 1.1.2.3.0\n";
 				if(plotting != NULL)
 				{
 					plotting->last++;
@@ -43,22 +48,32 @@ namespace oct::neu
 					filePlotting.flush();
 					plotting->plotter.plottingFile2D(plotting->filename);
 				}
+				//std::cout << "Se[lastLayer+2] " << Se[lastLayer+2] << "\n";
 				
 				if(Se[lastLayer+2]  < learning.mE) return true;
-				
+
+				//std::cout << "Step 1.1.2.5.0\n";
 				if(learning.variable)
 				{
 					if(Se[lastLayer+2]  < E_prev) learning.ratio = learning.ratio * learning.r;
 					else learning.ratio = learning.ratio * learning.p;
 				}
+
+				//std::cout << "Step 1.1.2.6.0\n";
 				
-				real dEdZ,dRdZ,step,S=0;
+				real dEdR,dEdZ,dRdZ,step,S_out,S_hidden=0;
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
+					//std::cout << "Step 1.1.2.6.1.0\n";
 					spread(datas[indexData].inputs);
-					
-					dEdZ = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
+					//std::cout << "Step 1.1.2.6.2.0\n";
+					dEdR = (*LAYER(size()-1).get_outputs()[0]) - datas[indexData].outputs[0];
 
+					//std::cout << ">>>" << "\n";
+					//std::cout << "out=" << (*LAYER(size()-1).get_outputs()[0]) << "\n";
+					//std::cout << "expedtec=" << datas[indexData].outputs[0] << "\n";
+
+					//std::cout << "Step 1.1.2.6.3.0\n";
 					//capa de salida
 					for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
 					{
@@ -77,23 +92,23 @@ namespace oct::neu
 								throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 						};
 						
-						S += dEdZ * dRdZ;
-						
+						S_out += dEdR * dRdZ;
 						for(Index input = 0; input < NEURONA(lastLayer,neurona).inputs.size(); input++)
 						{
-							step = learning.ratio * S * NEURONA(lastLayer,neurona).result;
+							step = learning.ratio * S_out * NEURONA(lastLayer,neurona).result;
 							WEIGHT(lastLayer,neurona,input) = WEIGHT(lastLayer,neurona,input) + step;	
 						}				
 					}
-					//std::cout << "Step 1.0\n";
+					//Se[lastLayer + 1] = S;
+					//std::cout << "Step 1.1.2.6.4.0\n";
 					
 					//capa ocultas
 					for(int indexLayer = lastLayer - 1; indexLayer >= 0; indexLayer--)
 					{
-						//std::cout << "Step 1.1.0\n";
+						//std::cout << "Step 1.1.2.6.4.1.0\n";
 						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
 						{		
-							//std::cout << "Step 1.1.1.0\n";
+							//std::cout << "Step 1.1.2.6.4.1.1.0\n";
 							switch(topology[indexLayer].AF)
 							{
 								case ActivationFuntion::SIGMOID:
@@ -108,28 +123,32 @@ namespace oct::neu
 								default:
 									throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
 							};
-							//std::cout << "Step 1.1.2.0\n";
+
+							//std::cout << "Step 1.1.2.6.4.1.2.0\n";
 							for(Index neuronaLast = 0; neuronaLast < LAYER(lastLayer).size(); neuronaLast++)
 							{	
+								//std::cout << "Step 1.1.2.6.4.1.2.1.0: utilam neurona \n";
 								for(Index weightLast = 0; weightLast < NEURONA(lastLayer,neurona).weight.size(); weightLast++)
 								{
 									for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
 									{
 										//std::cout << "Step 1.1.2.1.0\n";
-										step = learning.ratio * S * WEIGHT(indexLayer,neuronaLast,weightLast) * dRdZ * NEURONA(indexLayer,neurona).result;
+										step = learning.ratio * S_out * WEIGHT(indexLayer,neurona,weightLast) * dRdZ * NEURONA(indexLayer,neurona).result;
 										//std::cout << "Step 1.1.2.2.0\n";
 										WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
 										//std::cout << "Step 1.1.2.3.0\n";
 									}
 								}
+								//std::cout << "Step 1.1.2.6.4.1.2.2.0\n";
 							}
-							//std::cout << "Step 1.1.3.0\n";
+							//std::cout << "Step 1.1.2.6.4.1.3.0\n";
 						}
+						//std::cout << "Step 1.1.2.6.4.2.0\n";
 					}
-					
+					//std::cout << "Step 1.1.2.6.5.0\n";
 					//std::cout << "Step 2.0\n";
 				}
-				
+				//std::cout << "Step 1.1.2.7.0\n";
 			}
 			if(plotting != NULL)
 			{
@@ -139,6 +158,7 @@ namespace oct::neu
 				filePlotting.flush();
 				filePlotting.close();
 			}
+			//std::cout << "Step 1.1.3.0\n";
 			return false;
 		}	
 }

@@ -18,14 +18,6 @@ namespace oct::neu
 		IDENTITY
 	};
 
-	enum Mode
-	{
-		NOTHING,
-		SIGMA,
-		MI,
-		LINEAL
-	};
-
 	template<typename T> struct Perceptron
 	{
 	public:
@@ -42,9 +34,9 @@ namespace oct::neu
 			weight.resize(ins);
 			for(Index i = 0; i < weight.size(); i++)
 			{
-				//double randS = core::randNumber();
-				weight[i] = core::randNumber(0.0,0.5);
-				//else weight[i] = core::randNumber(0.0,0.5) * -1.0;
+				double randS = core::randNumber();
+				if(randS > 0.5)weight[i] = core::randNumber(0.0,0.5);
+				else weight[i] = core::randNumber(0.0,0.5) * -1.0;
 			}
 			//double randS = core::randNumber();
 			//if(randS > 0.5) theta = core::randNumber(0.0,0.5);
@@ -101,39 +93,7 @@ namespace oct::neu
 			
 			return out;
 		}
-		T spread(ActivationFuntion AF,Mode mode)
-		{
-			switch(mode)
-			{
-			case SIGMA:
-				result = sigma();
-				break;
-			case MI:
-				result = mi();
-				break;
-				default:
-					throw oct::core::Exception("Modo desconocido.",__FILE__,__LINE__);
-			};
-			switch(AF)
-			{
-				case ActivationFuntion::SIGMOID:
-					out = sigmoidea(result);
-				break;
-				case ActivationFuntion::IDENTITY:
-					out = result;
-				break;
-				case ActivationFuntion::SCALON:
-					out = scalon(result);
-				break;
-				case ActivationFuntion::RELU:
-					out = relu(result);
-				break;
-				default:
-					throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-			};
-			
-			return out;
-		}
+		
 		void resize(unsigned short ins)
 		{
 			inputs.resize(ins);
@@ -148,34 +108,6 @@ namespace oct::neu
 			for(unsigned short i = 0; i < inputs.size(); i++)
 			{
 				val += (*inputs[i]) * weight[i];
-			}
-			//val += theta;
-
-			return val;
-		}
-		T mi()
-		{
-			T val = 0;
-
-			if(inputs.size() != weight.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
-			
-			for(unsigned short i = 0; i < inputs.size(); i++)
-			{
-				val *= (*inputs[i]) + weight[i];
-			}
-			//val *= theta;
-
-			return val;
-		}
-		T lineal()
-		{
-			T val = 0;
-
-			if(inputs.size() != weight.size()) throw oct::core::Exception("Los tamanos de los vectores involucrados no son iguales",__FILE__,__LINE__);
-			
-			for(unsigned short i = 0; i < inputs.size(); i++)
-			{
-				val *= (*inputs[i]) * weight[i];
 			}
 			//val += theta;
 

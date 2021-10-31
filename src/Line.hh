@@ -27,7 +27,7 @@ namespace oct::neu
 			for(Data<T>& d : *this)
 			{
 				d.inputs.resize(2);
-				d.outputs.resize(1);
+				d.outputs.resize(3);
 			}
 			
 			if( type == 1)
@@ -66,55 +66,7 @@ namespace oct::neu
 				throw core::Exception("Bandera desconocida",__FILE__,__LINE__);
 			}
 		}
-		/**
-		*\param maxerr
-		*\param minerr
-		*/
-		/*Line(T m, T b, T derr, Index count, T xmin, T xmax)
-		{
-			std::vector<Data<T>>::resize(count);
-			for(Data<T>& d : *this)
-			{
-				d.inputs.resize(2);
-				d.outputs.resize(1);
-			}
-
-			//
-			T randPos,randSensor,errOut,randCerteza;
-			bool certeza;
-			for(Index i = 0; i < std::vector<Data<T>>::size(); i++) //uno si y uno no
-			{
-				randCerteza = core::randNumber();
-				certeza = randCerteza > 0.5 ? true : false;
-				//std::cout << "bool " << certeza << "\n";
-				if(certeza)
-				{
-					//valores aceptables
-					std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(xmin,xmax);
-					std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + b;
-					std::vector<Data<T>>::at(i).outputs[0] = 1.0;//aceptable
-					randPos = core::randNumber();
-					randSensor = core::randNumber();
-					if(randPos > 0.5) std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] + (derr * randSensor);
-					else std::vector<Data<T>>::at(i).inputs[1] = std::vector<Data<T>>::at(i).inputs[1] - (derr * randSensor);
-				}
-				else
-				{
-					//errOut = randNumber(1.0,100.0);
-					std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(xmin - (xmin * 10.0),xmax * 10.0);
-					std::vector<Data<T>>::at(i).inputs[1] = core::randNumber(xmin - (xmin * 10.0),xmax * 10.0);//la misma ordena pero cun error fuera de rango
-					T tmepPoint = (m * std::vector<Data<T>>::at(i).inputs[0]) + b;
-					if(std::abs(tmepPoint - std::vector<Data<T>>::at(i).inputs[1]) < 0.01)
-					{
-						std::vector<Data<T>>::at(i).inputs[1] = core::randNumber(xmin - (xmin *10.0),xmax * 10.0);
-					}
-					std::vector<Data<T>>::at(i).outputs[0] = 0.0;//no captable		
-					//if(randPos > 0.5) std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] + (derr * errOut);
-					//else std::vector<Data<T>>::at(i-1).inputs[1] = std::vector<Data<T>>::at(i-1).inputs[1] - (derr * errOut);
-				}
-			}
-		}*/
-
+		
 		void print() const
 		{
 			for(const std::vector<T>& d : *this)
@@ -155,7 +107,10 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = (m * std::vector<Data<T>>::at(i).inputs[0]) + y0;
-			std::vector<Data<T>>::at(i).outputs[0] = 1.0;//aceptable
+			
+			std::vector<Data<T>>::at(i).outputs[0] = std::vector<Data<T>>::at(i).inputs[0];
+			std::vector<Data<T>>::at(i).outputs[1] = std::vector<Data<T>>::at(i).inputs[1];
+			std::vector<Data<T>>::at(i).outputs[2] = 1.0;//aceptable
 			T sensorErr = core::randNumber(0.0,derr);
 			if(sensorErr > 0.5) 
 			{
@@ -170,7 +125,9 @@ namespace oct::neu
 		{
 			std::vector<Data<T>>::at(i).inputs[0] = core::randNumber(x0,x1);
 			std::vector<Data<T>>::at(i).inputs[1] = core::randNumber(y0,y1);
-			std::vector<Data<T>>::at(i).outputs[0] = 0.0;//no captabl
+			std::vector<Data<T>>::at(i).outputs[0] = std::vector<Data<T>>::at(i).inputs[0];
+			std::vector<Data<T>>::at(i).outputs[1] = std::vector<Data<T>>::at(i).inputs[1];
+			std::vector<Data<T>>::at(i).outputs[2] = 0.0;//no captabl
 		}
 	};
 }

@@ -175,6 +175,7 @@ namespace oct::neu
 		
 		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
+			//std::cout << "Step 1.1.0\n";
 			for (Index i = 0; i < learning.training; i++)
 			{
 				std::string fn = plotting->filename + "-";
@@ -189,57 +190,27 @@ namespace oct::neu
 				plotFile.flush();
 				plotFile.close();
 			}
-			
+			//std::cout << "Step 1.2.0\n";
 			return false;
 		}
 
-	/*void Network::mse(const Data<DATATYPE>& datas, std::vector<DATATYPE>& E, DATATYPE& E_mean)
-	{
-		if(E.size() != size()) E.resize(size());
-
-		for(Index out = 0; out < E.size(); out++)
-		{
-			E[out] = 0;
-		}
-
-		for(Index indexData = 0; indexData < datas.size(); indexData++)
-		{
-			DATATYPE e;
-			spread(datas[indexData].inputs);
-			for(Index out = 0; out < E.size(); out++)//calcula el error en cada salida
-			{
-				e = datas[indexData].outputs[out] - (*std::vector<Layer<DATATYPE>>::at(lastlayer).get_outputs()[out]);	
-				//std::cout << "e = " << e << "\n";
-				E[out] += std::pow(e,DATATYPE(2));
-			}
-		}
-
-		for(Index out = 0; out < E.size(); out++)
-		{
-					E[out] = E[out] / ( DATATYPE(2) * DATATYPE(datas.size()));
-		}
-		E_mean = 0;	
-		for(Index out = 0; out < E.size(); out++)
-		{
-					E_mean += E[out];
-		}
-		if(E.size() > 1) E_mean /= DATATYPE(E.size());
-
-		return E_mean;
-	}*/
 	DATATYPE Network::dMSEdR(const std::vector<Data<DATATYPE>>& datas)
 	{
-		DATATYPE e = 0;
+		//std::cout << "Step 1.1.2.2.1.0\n";
+		DATATYPE e = 0,eO = 0;
 		for(Index indexData = 0; indexData < datas.size(); indexData++)
 		{
 			spread(datas[indexData].inputs);
 			for(Index i = 0; i < datas[indexData].outputs.size(); i++)
 			{
-				e += std::abs(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]));
+				//std::cout << "e = " << e << "\n";
+				eO += std::abs(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]));
 			}
-			//TODO: dividir por la cantidad de salidas
-		}		
-		e /= (DATATYPE(datas.size()));//DATATYPE(2) * 
+			eO /= DATATYPE(datas[indexData].outputs.size());
+			e += eO;
+			eO = 0;
+		}
+		e /= (DATATYPE(datas.size()));
 		return e;
 	}
 }
