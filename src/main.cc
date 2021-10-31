@@ -12,7 +12,7 @@ int main()
 	
 	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,4,3,2,3);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 2.0;
+	learnig.ratio = 0.001;
 	learnig.mE = 0.1;
 	learnig.iterations = 1000;
 	learnig.training = 5;

@@ -74,6 +74,8 @@ namespace oct::neu
 		*/
 		real changes_outputlayer(const std::vector<Data<DATATYPE>>& datas);
 
+		DATATYPE dRdZ(Index layer,Index neurona);
+
 	private:
 		//Dendrities dendrities;
 		//LayerWidth layerWidth;

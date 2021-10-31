@@ -204,13 +204,29 @@ namespace oct::neu
 			for(Index i = 0; i < datas[indexData].outputs.size(); i++)
 			{
 				//std::cout << "e = " << e << "\n";
-				eO += std::abs(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]));
+				eO += datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]);
 			}
-			eO /= DATATYPE(datas[indexData].outputs.size());
+			eO /= real(datas[indexData].outputs.size());
 			e += eO;
 			eO = 0;
 		}
-		e /= (DATATYPE(datas.size()));
+		e /= (real(datas.size()));
 		return e;
 	}
+	DATATYPE Network::dRdZ(Index layer,Index neurona)
+	{
+		switch(topology[layer].AF)
+		{
+		case ActivationFuntion::SIGMOID:
+			return  Perceptron<DATATYPE>::sigmoid_D(NEURONA(layer,neurona).result);
+		case ActivationFuntion::IDENTITY:
+			return DATATYPE(1);
+		case ActivationFuntion::RELU:
+			return Perceptron<DATATYPE>::relu_D(NEURONA(layer,neurona).result);
+		default:
+			throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
+		};
+	}
+	
+	
 }
