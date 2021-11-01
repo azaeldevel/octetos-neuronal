@@ -136,7 +136,7 @@ namespace oct::neu
 			labelRatio += std::to_string(learning.ratio);
 			plotGraph->set_label(labelRatio,100,0.15);
 			std::string labeldEdR = "max dEdR = ";
-			labeldEdR += std::to_string(learning.mE);
+			labeldEdR += std::to_string(learning.epsilon);
 			plotGraph->set_label(labeldEdR,100,0.10);
 			if(data.inputs.size() < 2 or data.inputs.size() > 3) throw oct::core::Exception("Dimension no manejable",__FILE__,__LINE__);
 
@@ -204,13 +204,13 @@ namespace oct::neu
 			for(Index i = 0; i < datas[indexData].outputs.size(); i++)
 			{
 				//std::cout << "e = " << e << "\n";
-				eO += datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]);
+				eO += std::pow(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]),real(2));
 			}
 			eO /= real(datas[indexData].outputs.size());
 			e += eO;
 			eO = 0;
 		}
-		e /= (real(datas.size()));
+		e /= real(datas.size());
 		return e;
 	}
 	DATATYPE Network::dRdZ(Index layer,Index neurona)

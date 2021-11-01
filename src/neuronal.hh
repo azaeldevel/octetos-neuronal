@@ -72,7 +72,7 @@ namespace oct::neu
 		T p;
 		T r;
 		bool variable;
-		T mE; 
+		T epsilon; 
 		unsigned int iterations;
 		unsigned int training;
 

@@ -12,11 +12,11 @@ int main()
 	
 	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,4,3,2,3);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 0.001;
-	learnig.mE = 0.1;
+	learnig.ratio = 0.0001;
+	learnig.epsilon = 0.1;
 	learnig.iterations = 1000;
-	learnig.training = 5;
-	learnig.variable = false;
+	learnig.training = 10;
+	learnig.variable = true;
 	oct::neu::Network network(topology,2,3);
 	//std::vector<std::vector<double>*> ds;
 	//ds.push_back(&data);
@@ -41,11 +41,11 @@ int main()
 	unsigned int counFail = 0;
 	for(oct::neu::Data<double>& d : line)
 	{
-		double out = *network.spread(d.inputs)[0];
-		if(out < 0.5 and d.outputs[0] < 0.5 ) 
+		double out = *network.spread(d.inputs)[2];
+		if(out < 0.5 and d.outputs[2] < 0.5 ) 
 		{
 		}
-		else if(out > 0.5 and d.outputs[0] > 0.5)
+		else if(out > 0.5 and d.outputs[2] > 0.5)
 		{
 		}
 		else
@@ -54,7 +54,7 @@ int main()
 			std::cout << "Fallo(" << counFail << ") en ";
 			oct::neu::print(d.inputs);
 			std::cout << ", la prediccion es " << out << ", sin embargo el valor esperado es ";
-			std::cout << d.outputs[0];
+			std::cout << d.outputs[2];
 			std::cout << "\n";
 		}
 	}

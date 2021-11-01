@@ -23,7 +23,7 @@ namespace oct::neu
 				labelRatio += std::to_string(learning.ratio);
 				plotting->plotter.set_label(labelRatio,10,0.15);
 				std::string labeldEdR = "max dEdR = ";
-				labeldEdR += std::to_string(learning.mE);
+				labeldEdR += std::to_string(learning.epsilon);
 				plotting->plotter.set_label(labeldEdR,10,0.10);
 				std::string labelCountData = "Data = ";
 				labelCountData += std::to_string(datas.size());
@@ -31,31 +31,29 @@ namespace oct::neu
 			}
 
 			//std::cout << "Step 1.1.2.0\n";
-			std::vector<DATATYPE> Se;
-			Se.resize(size()+2);
-			DATATYPE E_prev = 0;
+			DATATYPE E_prev = 0, E = 0;
 			for(Index it = 0; it < learning.iterations; it++)
 			{
 				//std::cout << "Step 1.1.2.1.0\n";
-				if(it > 0) E_prev = Se[lastLayer+2];
+				if(it > 0) E_prev = E;
 				//std::cout << "Step 1.1.2.2.0\n";
-				Se[lastLayer+2] = dMSEdR(datas);
+				E = dMSEdR(datas);
 				//std::cout << "Step 1.1.2.3.0\n";
 				if(plotting != NULL)
 				{
 					plotting->last++;
-					oct::math::Plotter::save(filePlotting,plotting->last,Se[lastLayer+2]);
+					oct::math::Plotter::save(filePlotting,plotting->last,E);
 					filePlotting.flush();
 					plotting->plotter.plottingFile2D(plotting->filename);
 				}
 				//std::cout << "Se[lastLayer+2] " << Se[lastLayer+2] << "\n";
 				
-				if(Se[lastLayer+2]  < learning.mE) return true;
+				if(E  < learning.epsilon) return true;
 
 				//std::cout << "Step 1.1.2.5.0\n";
 				if(learning.variable)
 				{
-					if(Se[lastLayer+2]  < E_prev) learning.ratio = learning.ratio * learning.r;
+					if(E  < E_prev) learning.ratio = learning.ratio * learning.r;
 					else learning.ratio = learning.ratio * learning.p;
 				}
 
@@ -72,7 +70,7 @@ namespace oct::neu
 					{
 						S_out += (*LAYER(lastLayer).get_outputs()[out]) - datas[indexData].outputs[out];
 					}
-					std::cout << std::setprecision(6) << "S_out = " << S_out << "\n";
+					//std::cout << std::setprecision(6) << "S_out = " << S_out << "\n";
 					
 					for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
 					{
