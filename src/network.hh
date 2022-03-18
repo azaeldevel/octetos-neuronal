@@ -34,7 +34,7 @@ namespace oct::neu
 
 
 	/**
-	*\brief red neuronal
+	*\brief Red Neuroanl
 	*/	
 	class Network : public std::vector<Layer<DATATYPE>>
 	{
@@ -56,6 +56,7 @@ namespace oct::neu
 		*/		
 		bool bp(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
 		bool trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting);
+		bool trainig(const std::vector<Data<DATATYPE>>& datas, Plotting<DATATYPE>* plotting,unsigned int);
 
 
 		Index max(const Layer<DATATYPE>& layer);
@@ -65,15 +66,23 @@ namespace oct::neu
 	private:
 		void conecting();
 		void errorToMuchInputsRequiered(unsigned short i,const char* f, unsigned int l);
+
+		
 		/**
 		*\brief Error cuadratico medio
 		*/
 		DATATYPE dMSEdR(const std::vector<Data<DATATYPE>>& datas);
+		
+		/**
+		*\brief Error cuadratico medio
+		*/
+		DATATYPE dMSEdR(const Data<DATATYPE>& data);
+		
 		/**
 		*\brief 
 		*/
 		real changes_outputlayer(const std::vector<Data<DATATYPE>>& datas);
-
+		
 		DATATYPE dRdZ(Index layer,Index neurona);
 
 	private:

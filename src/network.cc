@@ -25,7 +25,7 @@ namespace oct::neu
 		{
 			std::vector<Model>::at(i).height = heightLayer;
 		}
-		std::vector<Model>::at(width-1).height = outputs;
+		std::vector<Model>::at(width - 1).height = outputs;
 	}
 	Topology::Topology(const Topology& t) : std::vector<Model>(t)
 	{
@@ -176,11 +176,12 @@ namespace oct::neu
 		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Learning<DATATYPE>& learning, Plotting<DATATYPE>* plotting)
 		{
 			//std::cout << "Step 1.1.0\n";
+			std::ofstream plotFile;
 			for (Index i = 0; i < learning.training; i++)
 			{
 				std::string fn = plotting->filename + "-";
 				fn += std::to_string(i) + ".dat";
-				std::ofstream plotFile(fn);
+				plotFile.open(fn);
 				for(Index indexData = 0; indexData < datas.size(); indexData++)
 				{
 					spread(datas[indexData].inputs);
@@ -194,39 +195,33 @@ namespace oct::neu
 			return false;
 		}
 
-	DATATYPE Network::dMSEdR(const std::vector<Data<DATATYPE>>& datas)
-	{
-		//std::cout << "Step 1.1.2.2.1.0\n";
-		DATATYPE e = 0,eO = 0;
-		for(Index indexData = 0; indexData < datas.size(); indexData++)
+		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Plotting<DATATYPE>* plotting,unsigned int iterations)
 		{
-			spread(datas[indexData].inputs);
-			for(Index i = 0; i < datas[indexData].outputs.size(); i++)
+			//std::cout << "Step 1.1.0\n";
+			oct::neu::Learning<DATATYPE> learnig;
+			learnig.iterations = iterations;
+			std::ofstream plotFile;
+			plotFile.open(plotting->filename + ".dat");
+			for(Index indexData = 0; indexData < datas.size(); indexData++)
 			{
-				//std::cout << "e = " << e << "\n";
-				eO += std::pow(datas[indexData].outputs[i] - (*LAYER(size()-1).get_outputs()[i]),real(2));
+				spread(datas[indexData].inputs);
+				oct::math::Plotter::save(plotFile,datas[indexData].inputs[0],datas[indexData].inputs[1],*(outs->at(0)));
 			}
-			eO /= real(datas[indexData].outputs.size());
-			e += eO;
-			eO = 0;
+			plotFile.flush();
+			plotFile.close();
+			
+			if(bp(datas,learnig,plotting)) return true;
+			
+			plotFile.open(plotting->filename + "-end.dat");
+			for(Index indexData = 0; indexData < datas.size(); indexData++)
+			{
+				spread(datas[indexData].inputs);
+				oct::math::Plotter::save(plotFile,datas[indexData].inputs[0],datas[indexData].inputs[1],*(outs->at(0)));
+			}
+			plotFile.flush();
+			plotFile.close();
+			//std::cout << "Step 1.2.0\n";
+			return false;
 		}
-		e /= real(datas.size());
-		return e;
-	}
-	DATATYPE Network::dRdZ(Index layer,Index neurona)
-	{
-		switch(topology[layer].AF)
-		{
-		case ActivationFuntion::SIGMOID:
-			return  Perceptron<DATATYPE>::sigmoid_D(NEURONA(layer,neurona).result);
-		case ActivationFuntion::IDENTITY:
-			return DATATYPE(1);
-		case ActivationFuntion::RELU:
-			return Perceptron<DATATYPE>::relu_D(NEURONA(layer,neurona).result);
-		default:
-			throw oct::core::Exception("Funcion de activacion desconocida",__FILE__,__LINE__);
-		};
-	}
-	
 	
 }

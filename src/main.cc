@@ -8,14 +8,14 @@ int main()
 {	
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,1);
 	//oct::neu::Line<double> line(1,1,10,10,0.3,100,-1);
-	oct::neu::Line<double> line(0,0,1,1,0.05,100,0);
+	oct::neu::Line<double> line(0,0,1,1,0.05,1000,0);
 	
-	oct::neu::Topology topology(oct::neu::ActivationFuntion::RELU,4,3,2,3);
+	oct::neu::Topology topology(oct::neu::ActivationFuntion::SIGMOID,4,3,2,3);
 	oct::neu::Learning<double> learnig;	
-	learnig.ratio = 0.0001;
+	learnig.ratio = 0.1;
 	learnig.epsilon = 0.1;
-	learnig.iterations = 1000;
-	learnig.training = 10;
+	learnig.iterations = 10000;
+	learnig.training = 2;
 	learnig.variable = true;
 	oct::neu::Network network(topology,2,3);
 	//std::vector<std::vector<double>*> ds;
@@ -32,7 +32,7 @@ int main()
 	oct::core::Shell shell;
 	//if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
 	//std::cout << "Step 1.0\n";
-	if(not network.trainig(line,learnig,&plotting))
+	if(not network.trainig(line,&plotting,1000))
 	{
 		std::cout << "No se entreno correctamente\n";
 		return EXIT_FAILURE;
