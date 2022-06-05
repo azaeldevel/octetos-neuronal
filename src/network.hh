@@ -29,6 +29,12 @@ namespace oct::neu
 		*\param outputs canida de salidas
 		**/
 		Topology(ActivationFuntion AF,Index width, Index heightLayer, unsigned int inputs, unsigned int outputs);
+		/**
+		*\brief Contructor de una sola neurona
+		*\param AF Funcion de activacion
+		*\param inputs catidad de entradas
+		**/
+		Topology(ActivationFuntion AF, unsigned int inputs);
 		Topology(const Topology&);
 	};
 

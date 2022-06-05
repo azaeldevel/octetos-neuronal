@@ -1,10 +1,10 @@
-
 #include <octetos/core/Error.hh>
 #include <cmath>
 #include <iostream>
 
 
 #include "network.hh"
+#include "plot.hh"
 
 namespace oct::neu
 {
@@ -31,81 +31,34 @@ namespace oct::neu
 				plotting->plotter.set_label(labelCountData,10,0.05);
 			}
 
-			//std::cout << "Step 1.1.2.0\n";
-			DATATYPE E_prev = 0;
-			for(Index indexData = 0; indexData < datas.size(); indexData++)
-			{
-				//std::cout << "Step 1.1.2.1.0\n";
-				/*
-				if(it > 0) E_prev = E;
-				//std::cout << "Step 1.1.2.2.0\n";
-				E = dMSEdR(datas[it]);
-				//std::cout << "Step 1.1.2.3.0\n";
-				if(plotting != NULL)
+			Layer<DATATYPE>& layer_out = back();
+			DATATYPE E_prev = 0,S_out,step;
+			for(Index it = 0; it < learning.iterations; it++)	
+			{			
+				//real dEdR,dEdZ,step,S_out,S_hidden=0;	
+				S_out = 0.0;
+				for(Index indexData = 0; indexData < datas.size(); indexData++)		
 				{
-					plotting->last++;
-					oct::math::Plotter::save(filePlotting,plotting->last,E);
-					filePlotting.flush();
-					plotting->plotter.plottingFile2D(plotting->filename);
-				}
-				//std::cout << "Se[lastLayer+2] " << Se[lastLayer+2] << "\n";
-				
-				if(E  < learning.epsilon) return true;
-
-				//std::cout << "Step 1.1.2.5.0\n";
-				if(learning.variable)
-				{
-					if(E  < E_prev) learning.ratio = learning.ratio * learning.r;
-					else learning.ratio = learning.ratio * learning.p;
-				}
-				*/
-
-				//std::cout << "Step 1.1.2.6.0\n";				
-				real dEdR,dEdZ,step,S_out,S_hidden=0;
-				for(Index it = 0; it < learning.iterations; it++)				
-				{
-					//std::cout << "Step 1.1.2.6.1.0\n";
 					spread(datas[indexData].inputs);
 					
-					S_out = 0.0;
-					for(Index out = 0; out < LAYER(lastLayer).size(); out++)
+					for(Index out = 0; out < layer_out.size(); out++)
 					{
 						S_out += real(2) * (datas[indexData].outputs[out] - (*LAYER(lastLayer).get_outputs()[out]));
 					}
-					//std::cout << std::setprecision(6) << "S_out = " << S_out << "\n";
-					
-					for(Index neurona = 0; neurona < LAYER(lastLayer).size(); neurona++)
-					{
-						for(Index input = 0; input < NEURONA(lastLayer,neurona).inputs.size(); input++)
-						{
-							step = learning.ratio * S_out * dRdZ(lastLayer,neurona) * NEURONA(lastLayer,neurona).result;
-							//std::cout << std::setprecision(6) << "step = " << step << "\n";
-							WEIGHT(lastLayer,neurona,input) = WEIGHT(lastLayer,neurona,input) + step;	
-						}				
-					}
-					
-					//capa ocultas
-					for(int indexLayer = lastLayer - 1; indexLayer >= 0; indexLayer--)
-					{
-						//std::cout << "Step 1.1.2.6.4.1.0\n";
-						for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
-						{
-							//std::cout << "Step 1.1.2.6.4.1.2.0\n";
-							for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
-							{
-								//std::cout << "Step 1.1.2.1.0\n";
-								step = learning.ratio * S_out * dRdZ(indexLayer,neurona) * NEURONA(indexLayer,neurona).result;
-								//std::cout << "Step 1.1.2.2.0\n";
-								WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
-								//std::cout << "Step 1.1.2.3.0\n";
-							}
-						}
-						//std::cout << "Step 1.1.2.6.4.2.0\n";
-					}
-					//std::cout << "Step 1.1.2.6.5.0\n";
-					//std::cout << "Step 2.0\n";
 				}
-				//std::cout << "Step 1.1.2.7.0\n";
+				S_out /= real(datas.size());
+				
+				for(int indexLayer = lastLayer - 1; indexLayer >= 0; indexLayer--)
+				{
+					for(Index neurona = 0; neurona < LAYER(indexLayer).size(); neurona++)
+					{
+						for(Index weight = 0; weight < NEURONA(indexLayer,neurona).weight.size(); weight++)
+						{
+							step = learning.ratio * S_out * dRdZ(indexLayer,neurona) * NEURONA(indexLayer,neurona).result;
+							WEIGHT(indexLayer,neurona,weight) = WEIGHT(indexLayer,neurona,weight) + step;
+						}
+					}
+				}
 			}
 			if(plotting)
 			{
@@ -116,7 +69,7 @@ namespace oct::neu
 				filePlotting.close();
 			}
 			//std::cout << "Step 1.1.3.0\n";
-			return false;
+			return true;
 		}	
 		
 	DATATYPE Network::dMSEdR(const std::vector<Data<DATATYPE>>& datas)

@@ -132,7 +132,7 @@ namespace oct::neu
 		}
 		static T scalon(T v)
 		{
-			if(v > 0.5)return T(1);
+			if(v > 0.5) return T(1);
 			else  return T(0);
 		}
 		static T relu(T v)

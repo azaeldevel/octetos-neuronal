@@ -14,7 +14,7 @@ int main()
 	oct::neu::Learning<double> learnig;	
 	learnig.ratio = 0.1;
 	learnig.epsilon = 0.1;
-	learnig.iterations = 10000;
+	learnig.iterations = 1000;
 	learnig.training = 2;
 	learnig.variable = true;
 	oct::neu::Network network(topology,2,3);
@@ -29,10 +29,10 @@ int main()
 	wintitle = wintitle + " : " + std::to_string(0);
 	plotting.plotter.set_title(wintitle);
 	std::ofstream dat;
-	oct::core::Shell shell;
+	//oct::core::Shell shell;
 	//if(shell.exists(plotting.filename)) shell.rm(plotting.filename);
 	//std::cout << "Step 1.0\n";
-	if(not network.trainig(line,&plotting,1000))
+	if(not network.bp(line,learnig,&plotting))
 	{
 		std::cout << "No se entreno correctamente\n";
 		return EXIT_FAILURE;
