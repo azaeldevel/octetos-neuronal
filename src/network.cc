@@ -191,13 +191,12 @@ namespace oct::neu
 				plotFile.flush();
 				plotFile.close();
 			}
-			//std::cout << "Step 1.2.0\n";
+			
 			return false;
 		}
 
 		bool Network::trainig(const std::vector<Data<DATATYPE>>& datas, Plotting<DATATYPE>* plotting,unsigned int iterations)
 		{
-			//std::cout << "Step 1.1.0\n";
 			oct::neu::Learning<DATATYPE> learnig;
 			learnig.iterations = iterations;
 			std::ofstream plotFile;
@@ -220,7 +219,7 @@ namespace oct::neu
 			}
 			plotFile.flush();
 			plotFile.close();
-			//std::cout << "Step 1.2.0\n";
+			
 			return false;
 		}
 	

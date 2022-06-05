@@ -46,7 +46,7 @@ namespace oct::neu
 						S_out += real(2) * (datas[indexData].outputs[out] - (*LAYER(lastLayer).get_outputs()[out]));
 					}
 				}
-				S_out /= real(datas.size());
+				S_out /= real(datas.size() * layer_out.size());
 				
 				for(int indexLayer = lastLayer - 1; indexLayer >= 0; indexLayer--)
 				{
