@@ -35,24 +35,16 @@ namespace oct::neu::v0
         **/
         void link(LAYER& layer)
         {
-            //if(layer.size() != BASE::size()) throw std::domain_error("La cantidad de neuronal en la capa no coincide con ls entreda de esta neuroana");
+            if(layer.size() != BASE::size()) throw std::out_of_range("La cantidad de entradas deve coincidir con la cantiad de neuranas en la capa indicada, " + std::to_string(layer.size()) + " y " + std::to_string(BASE::size()));
 
             for(size_t i = 0; i < BASE::size(); i++)
             {
-                //BASE::at(i).input = &layer[i].output;
+                BASE::at(i).input = &layer[i].output;
             }
         }
 
     public:
         O output;
-    };
-
-    struct Dimension
-    {
-        size_t layers;
-        size_t amoung;//por capa interior
-        size_t inputs;//de la primera capa, por default de cada neurona
-        size_t outputs;//neuronas de slida
     };
 
     template<core::number I,core::number W = I> class Cumulus : public core::array<core::array<Neurona<I,W>>>
@@ -79,6 +71,10 @@ namespace oct::neu::v0
         {
             return BASE::at(0);
         }
+        LAYER& output()
+        {
+            return BASE::at(BASE::size() - 1);
+        }
         size_t layers()const
         {
             return BASE::size();
@@ -92,6 +88,11 @@ namespace oct::neu::v0
                 {
                     BASE::at(i).at(j).link(layer(i - 1));
                 }
+            }
+            std::cout << "\nCapa " << layers() - 1 << "\n";
+            for(size_t j = 0; j < output().size(); j++)//para la neurona j
+            {
+                output().at(j).link(layer(layers() - 2));
             }
         }
 

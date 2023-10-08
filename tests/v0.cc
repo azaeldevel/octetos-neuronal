@@ -23,6 +23,7 @@ void v0_developing()
     neuronal::Neurona<float> neu1;
 
     neuronal::Cumulus<float> cum1(4,2,10,5);
+    neuronal::Cumulus<float> cum2(2,4,10,5);
     /*for(size_t i = 0; i < 10; i++)
     {
         std::cout << "\nCapa " << i << "\n";
