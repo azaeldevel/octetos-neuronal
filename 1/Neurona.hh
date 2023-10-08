@@ -59,6 +59,7 @@ namespace oct::neu::v0
         //Dimension dimension;
     protected:
 
+    public:
         LAYER& layer(size_t index)
         {
             return BASE::at(index);
@@ -83,13 +84,13 @@ namespace oct::neu::v0
         {
             for(size_t i = 1; i < layers() - 1; i++)//en la capa i
             {
-                std::cout << "\nCapa " << i << "\n";
+                //std::cout << "\nCapa " << i << "\n";
                 for(size_t j = 0; j < layer(i).size(); j++)//para la neurona j
                 {
                     BASE::at(i).at(j).link(layer(i - 1));
                 }
             }
-            std::cout << "\nCapa " << layers() - 1 << "\n";
+            //std::cout << "\nCapa " << layers() - 1 << "\n";
             for(size_t j = 0; j < output().size(); j++)//para la neurona j
             {
                 output().at(j).link(layer(layers() - 2));

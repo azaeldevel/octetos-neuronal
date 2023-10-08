@@ -18,12 +18,29 @@ int v0_clean(void)
 
 	return 0;
 }
+
+void init_default(neuronal::Cumulus<float>& cumulo)
+{
+    for(size_t i = 0; i < cumulo.size() ; i++)//layer
+    {
+        for(size_t j = 0; j < cumulo.layer(i).size() ; j++)//neuronas
+        {
+            for(size_t k = 0; k < cumulo.layer(i).at(k).size() ; k++)//inputs
+            {
+                cumulo.layer(i).at(j).at(k).weight = 0.5f;
+            }
+        }
+    }
+}
 void v0_developing()
 {
     neuronal::Neurona<float> neu1;
 
+    float init_valur = 0.5;
     neuronal::Cumulus<float> cum1(4,2,10,5);
+    init_default(cum1);
     neuronal::Cumulus<float> cum2(2,4,10,5);
+    init_default(cum2);
     /*for(size_t i = 0; i < 10; i++)
     {
         std::cout << "\nCapa " << i << "\n";
