@@ -49,8 +49,8 @@ void v0_developing()
     core::array<float> ins1 = {0.5f,0.5f};
     neuronal::Cumulus<float> cum3(2,2,6,2);
     init_default(cum3);
-    std::cout << "\toutput : " << cum1.output().at(0).output << "\n";
+    std::cout << "\toutput : " << cum1.at(0).at(0).at(0).input << "\n";
     cum3.spread(ins1);
-    std::cout << "\toutput : " << cum1.output().at(0).output << "\n";
+    std::cout << "\toutput : " <<  cum1.at(0).at(0).at(0).input << "\n";
 
 }

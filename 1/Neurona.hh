@@ -29,6 +29,7 @@ namespace oct::neu::v0
         Neurona(size_t size) : BASE(size)
         {
         }
+
         /**
         *\brief Enlaza la neurona actual(entradas) con la capa indicada.
         *
@@ -52,7 +53,7 @@ namespace oct::neu::v0
             output = 0;
             for(size_t i = 0; i < BASE::size(); i++)
             {
-                output += BASE::at(i).weight * *BASE::at(i).input;
+                output += BASE::at(i).weight * (*BASE::at(i).input);
             }
         }
 
@@ -101,7 +102,7 @@ namespace oct::neu::v0
                 //std::cout << "\nCapa " << i << "\n";
                 for(size_t j = 0; j < layer(i).size(); j++)//para la neurona j
                 {
-                    BASE::at(i).at(j).link(layer(i - 1));
+                    layer(i).at(j).link(layer(i - 1));
                 }
             }
             //std::cout << "\nCapa " << layers() - 1 << "\n";
@@ -150,16 +151,17 @@ namespace oct::neu::v0
             }
 
             //capa de salida
-            layer(layers - 1).resize(outputs);
+            output().resize(outputs);
             for(size_t i = 0; i < outputs; i++)
             {
-                layer(layers - 1).at(i).resize(amoung);
+                output().at(i).resize(amoung);
             }
 
+            //
             link();
         }
 
-        void spread(core::array<I> const& ds)
+        void spread(const core::array<I>& ds)
         {
             for(size_t i = 0; i < input().size(); i++)
             {
@@ -169,7 +171,7 @@ namespace oct::neu::v0
                 }
             }
 
-            for(size_t i = 0; i < BASE::size(); i++)
+            for(size_t i = 0; i < layers(); i++)
             {
                 for(size_t j = 0; j < layer(i).size(); j++)
                 {
