@@ -12,7 +12,7 @@ namespace oct::neu::v0
 
     template<core::number I,core::number W = I> struct Axion
     {
-        I* input;
+        const I* input;
         W weight;
     };
 
@@ -42,6 +42,20 @@ namespace oct::neu::v0
                 BASE::at(i).input = &layer[i].output;
             }
         }
+
+        /**
+        *\brief evalua la suma ponderada de la neuronal y genera el resultado de output
+        *
+        **/
+        void sigma()
+        {
+            output = 0;
+            for(size_t i = 0; i < BASE::size(); i++)
+            {
+                output += BASE::at(i).weight * *BASE::at(i).input;
+            }
+        }
+
 
     public:
         O output;
@@ -111,6 +125,7 @@ namespace oct::neu::v0
             if(layers == 0) throw std::domain_error("Imposible un red sin capas");
             if(layers == 1) throw std::domain_error("Imposible un red sin capas ocultas");
             if(layers == 2) throw std::domain_error("Imposible un red sin capas ocultas");
+            if(BASE::size() != layers) throw std::domain_error("Imposible un red sin capas");
 
             //primer capa
             layer(0).resize(inputs);
@@ -144,7 +159,25 @@ namespace oct::neu::v0
             link();
         }
 
-        core::array<I> spread(core::array<I> const& ds);
+        void spread(core::array<I> const& ds)
+        {
+            for(size_t i = 0; i < input().size(); i++)
+            {
+                for(size_t j = 0; j < input().at(i).size(); j++)
+                {
+                    input().at(i).at(j).input = &ds[j];
+                }
+            }
+
+            for(size_t i = 0; i < BASE::size(); i++)
+            {
+                for(size_t j = 0; j < layer(i).size(); j++)
+                {
+                    layer(i).at(j).sigma();
+                }
+            }
+
+        }
     };
 
 
