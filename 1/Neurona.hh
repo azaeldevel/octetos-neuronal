@@ -55,8 +55,8 @@ namespace oct::neu::v0
         typedef Neurona<I,W> NEURONA;
 
     private:
-        //size_t layers,amoung,inputs,outputs;
-        //Dimension dimension;
+
+
     protected:
 
     public:
@@ -143,6 +143,8 @@ namespace oct::neu::v0
 
             link();
         }
+
+        core::array<I> spread(core::array<I> const& ds);
     };
 
 
