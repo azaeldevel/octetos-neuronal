@@ -53,8 +53,11 @@ namespace oct::neu::v0
             output = 0;
             for(size_t i = 0; i < BASE::size(); i++)
             {
+                std::cout << "\tweight: " << BASE::at(i).weight << "\n";
+                std::cout << "\tinput: " << *BASE::at(i).input << "\n";
                 output += BASE::at(i).weight * (*BASE::at(i).input);
             }
+            std::cout << "\toutput: " << output << "\n\n";
         }
 
 
@@ -175,6 +178,7 @@ namespace oct::neu::v0
             {
                 for(size_t j = 0; j < layer(i).size(); j++)
                 {
+                    std::cout << "neurona : " << i << "," << j << "\n";
                     layer(i).at(j).sigma();
                 }
             }

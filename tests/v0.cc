@@ -46,11 +46,11 @@ void v0_developing()
         std::cout << "\nCapa " << i << "\n";
         std::cout << "\tsize : " << cum1[i].size() << "\n";
     }*/
-    core::array<float> ins1 = {0.5f,0.5f};
+    core::array<float> ins1 = {2.0f,2.0f};
     neuronal::Cumulus<float> cum3(2,2,6,2);
     init_default(cum3);
-    std::cout << "\toutput : " << cum1.at(0).at(0).at(0).input << "\n";
     cum3.spread(ins1);
-    std::cout << "\toutput : " <<  cum1.at(0).at(0).at(0).input << "\n";
+    std::cout << "\tinput : " << *cum1.output().at(0).at(0).input << "\n";
+    std::cout << "\toutput : " << cum1.output().at(0).output << "\n";
 
 }

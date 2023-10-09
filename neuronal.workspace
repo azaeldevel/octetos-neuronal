@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="../core/core-v3.cbp" />
+		<Project filename="../numbers/numbers.cbp" />
+		<Project filename="neuronal-v1.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>
