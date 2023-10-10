@@ -3,6 +3,8 @@
 
 #include "v0.hh"
 
+#include <cmath>
+
 #include <neuronal/1/Neurona.hh>
 #include <neuronal/1/backp.hh>
 
@@ -45,7 +47,11 @@ void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<flo
         in[i].resize(1);
         out[i].resize(2);
 
+        in[i][0] = actual;
+        out[i][0] = std::sin(in[i][0]);
+        out[i][1] = std::cos(in[i][0]);
 
+        actual += delta;
     }
 
 }

@@ -13,7 +13,7 @@ namespace oct::neu::v0
     private:
     protected:
     public:
-        void training(Cumulus<I,W>& cumulus, const core::array<core::array<I>>& bachI, const core::array<core::array<I>>& bachO)
+        void training(Cumulus<I,W>& cumulus, const core::array<core::array<I>>& bachI, const core::array<core::array<O>>& bachO)
         {
             if(bachI.size() != bachO.size()) throw std::out_of_range("La cantidad de datos no coincide");
 
@@ -21,13 +21,17 @@ namespace oct::neu::v0
 
             for(size_t d = 0; d < bachI.size(); d++)
             {
+                //cumulus.spread(bachO[d]);
+
                 sigma = 0;
+                std::cout << "dato : " << d << "\n";
                 for(size_t i = 0; i < cumulus.output().size(); i++)
                 {
                     if(cumulus.output().size() != bachO[d].size()) throw std::out_of_range("La cantidad de salidas de la red , " + std::to_string(cumulus.output().size()) + ",  no coincide con la cantiad de datos de salida "  + std::to_string(bachO[d].size()));
-                    //bachO[d][i];
-                    //sigma += numbers::sqrterr(bachO[d][i],cumulus.output().at(i).output);
+                    std::cout << "\t"  << bachO[d][i] << " - " << cumulus.output().at(i).output << "\n";
+                    sigma += numbers::sqrterr(bachO[d][i],cumulus.output().at(i).output);
                 }
+                //std::cout << "dato : " << d << " - sigma = " << sigma << "\n";
 
                 /*for(int i = cumulus.layers() - 1; i >= 0 ; i--)
                 {
