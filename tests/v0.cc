@@ -4,6 +4,7 @@
 #include "v0.hh"
 
 #include <neuronal/1/Neurona.hh>
+#include <neuronal/1/backp.hh>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -69,7 +70,8 @@ void v0_developing()
     */
     //std::cout << "\n\tinput : " << *cum2.output().at(0).at(0).input << "\n";
     //std::cout << "\toutput : " << cum2.output().at(0).output << "\n";
-    /*td::cout << "\n";
+    /*
+    std::cout << "\n";
     for(size_t i = 0; i < cum2.layers(); i++)
     {
         for(size_t j = 0; j < cum2.layer(i).size(); j++)
@@ -77,8 +79,15 @@ void v0_developing()
             std::cout << "neurona : " << i << "," << j << "\n";
             std::cout << "\toutput : " << cum2.layer(i).at(j).output << "\n";
         }
-    }*/
+    }
+    */
     CU_ASSERT(core::equal(cum2.output().at(0).output,1.6875f))
     CU_ASSERT(core::equal(cum2.output().at(1).output,1.6875f))
+
+    neuronal::Cumulus<float> cum3(3,3,3,3);
+    init_default(cum3);
+    core::array<core::array<float>> bach1(5);
+    neuronal::Backp<float> back1;
+    back1.training(cum3,bach1);
 
 }
