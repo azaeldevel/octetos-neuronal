@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/neuronal-v1" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option object_output="bin/Debug/obj" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -21,7 +21,7 @@
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/neuronal-v1" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="bin/Release/obj" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>

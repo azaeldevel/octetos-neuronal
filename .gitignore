@@ -22,3 +22,7 @@ tests/Makefile.in
 logs/
 *.svg
 *.data
+
+bin/
+*.depend
+*.layout
