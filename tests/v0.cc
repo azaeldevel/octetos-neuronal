@@ -33,6 +33,24 @@ void init_default(neuronal::Cumulus<float>& cumulo)
         }
     }
 }
+
+void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<float>>& out,size_t size)
+{
+    in.resize(size);
+    out.resize(size);
+
+    float actual = 0,delta = 0.001;
+    for(size_t i = 0; i < size; i++)
+    {
+        in[i].resize(1);
+        out[i].resize(2);
+
+
+    }
+
+}
+
+
 void v0_developing()
 {
     //neuronal::Neurona<float> neu1;
@@ -84,10 +102,12 @@ void v0_developing()
     CU_ASSERT(core::equal(cum2.output().at(0).output,1.6875f))
     CU_ASSERT(core::equal(cum2.output().at(1).output,1.6875f))
 
-    neuronal::Cumulus<float> cum3(3,3,3,3);
+    neuronal::Cumulus<float> cum3(3,2,5,3);
     init_default(cum3);
-    core::array<core::array<float>> bach1(5);
+    core::array<core::array<float>> bach1I;
+    core::array<core::array<float>> bach1O;
+    fill_bach_1(bach1I,bach1O,1000);
     neuronal::Backp<float> back1;
-    back1.training(cum3,bach1);
+    back1.training(cum3,bach1I,bach1O);
 
 }

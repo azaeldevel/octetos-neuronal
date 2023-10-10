@@ -36,7 +36,7 @@ namespace oct::neu::v0
         **/
         void link(LAYER& layer)
         {
-            if(layer.size() != BASE::size()) throw std::out_of_range("La cantidad de entradas deve coincidir con la cantiad de neuranas en la capa indicada, " + std::to_string(layer.size()) + " y " + std::to_string(BASE::size()));
+            if(layer.size() != BASE::size()) throw std::out_of_range("La cantidad neuranas en la capa indicada deve coincidir con la cantidad de entrada en la neurona, " + std::to_string(layer.size()) + " y " + std::to_string(BASE::size()));
 
             for(size_t i = 0; i < BASE::size(); i++)
             {
@@ -65,7 +65,7 @@ namespace oct::neu::v0
         O output;
     };
 
-    template<core::number I,core::number W = I> class Cumulus : public core::array<core::array<Neurona<I,W>>>
+    template<core::number I,core::number W = I,core::number O = I> class Cumulus : public core::array<core::array<Neurona<I,W>>>
     {
     public:
         typedef core::array<core::array<Neurona<I,W>>> BASE;
@@ -102,17 +102,18 @@ namespace oct::neu::v0
         {
             for(size_t i = 1; i < layers() - 1; i++)//en la capa i
             {
-                //std::cout << "\nCapa " << i << "\n";
+                //std::cout << "\nLinking Capa " << i << "\n";
                 for(size_t j = 0; j < layer(i).size(); j++)//para la neurona j
                 {
                     layer(i).at(j).link(layer(i - 1));
                 }
             }
-            //std::cout << "\nCapa " << layers() - 1 << "\n";
+            //std::cout << "\nLinking Capa " << layers() - 1 << "\n";
             for(size_t j = 0; j < output().size(); j++)//para la neurona j
             {
                 output().at(j).link(layer(layers() - 2));
             }
+            //std::cout << "\nLinked\n";
         }
 
     public:
