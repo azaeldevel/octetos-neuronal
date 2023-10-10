@@ -168,20 +168,21 @@ namespace oct::neu::v0
         {
             for(size_t i = 0; i < input().size(); i++)
             {
+                if(input().at(i).size() != ds.size()) throw std::out_of_range("La cantida de datos no es valida, " + std::to_string(input().at(i).size()) + " != " + std::to_string(ds.size()));
                 for(size_t j = 0; j < input().at(i).size(); j++)
                 {
                     input().at(i).at(j).input = &ds[j];
                 }
             }
 
-            for(size_t i = 0; i < layers(); i++)
+            /*for(size_t i = 0; i < layers(); i++)
             {
                 for(size_t j = 0; j < layer(i).size(); j++)
                 {
                     std::cout << "neurona : " << i << "," << j << "\n";
                     layer(i).at(j).sigma();
                 }
-            }
+            }*/
 
         }
     };

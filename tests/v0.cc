@@ -50,15 +50,17 @@ void v0_developing()
     neuronal::Cumulus<float> cum3(2,2,6,2);
     init_default(cum3);
     cum3.spread(ins1);
-    std::cout << "\tinput : " << *cum1.output().at(0).at(0).input << "\n";
-    std::cout << "\toutput : " << cum1.output().at(0).output << "\n";
-    for(size_t i = 0; i < cum1.layers(); i++)
+    std::cout << "\n\tinput : " << *cum3.output().at(0).at(0).input << "\n";
+    std::cout << "\toutput : " << cum3.output().at(0).output << "\n";
+    /*
+    for(size_t i = 0; i < cum3.layers(); i++)
     {
-        for(size_t j = 0; j < cum1.layer(i).size(); j++)
+        for(size_t j = 0; j < cum3.layer(i).size(); j++)
         {
             std::cout << "neurona : " << i << "," << j << "\n";
-            std::cout << "\toutput : " << cum1.layer(i).at(j).output << "\n";
+            std::cout << "\toutput : " << cum3.layer(i).at(j).output << "\n";
         }
     }
+    */
 
 }
