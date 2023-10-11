@@ -47,15 +47,16 @@ void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<flo
     float actual = 0,delta = 0.001,err = 0.01;
     for(size_t i = 0; i < size + sub;i += sub)
     {
-        std::cout << "\tIndice  : " << i << " de " << size <<  "\n";
+        if(i == size) break;
+        //std::cout << "\tIndice  : " << i << " de " << size <<  "\n";
         //correct
-        in[i].resize(3);
-        out[i].resize(2);
-        in[i][0] = actual;
-        in[i][1] = std::sin(actual);
-        in[i][2] = std::cos(actual);
-        out[i][0] = 1.0f;
-        out[i][1] = 0.0f;
+        in[i + 0].resize(3);
+        out[i + 0].resize(2);
+        in[i + 0][0] = actual;
+        in[i + 0][1] = std::sin(actual);
+        in[i + 0][2] = std::cos(actual);
+        out[i + 0][0] = 1.0f;
+        out[i + 0][1] = 0.0f;
 
         //maybe
         in[i + 1].resize(3);
@@ -104,6 +105,14 @@ void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<flo
 
 }
 
+float fun1(float d)
+{
+    return d;
+}
+float dev1(float d)
+{
+    return 1;
+}
 
 void v0_developing()
 {
@@ -111,7 +120,7 @@ void v0_developing()
 
     core::array<float> ins1 = {0.5f,0.5f};
 
-    neuronal::Cumulus<float> cum1(2,2,6,2);
+    neuronal::Cumulus<float> cum1(2,2,6,2,fun1,dev1);
     init_default(cum1);
     cum1.spread(ins1);
     //std::cout << "\n\tinput : " << *cum1.output().at(0).at(0).input << "\n";
@@ -130,7 +139,7 @@ void v0_developing()
     CU_ASSERT(core::equal(cum1.output().at(1).output,0.5f))
 
     core::array<float> ins2 = {0.5f,0.5f,0.5f};
-    neuronal::Cumulus<float> cum2(3,3,3,3);
+    neuronal::Cumulus<float> cum2(3,3,3,3,fun1,dev1);
     init_default(cum2);
     cum2.spread(ins2);
     /*
@@ -156,12 +165,19 @@ void v0_developing()
     CU_ASSERT(core::equal(cum2.output().at(0).output,1.6875f))
     CU_ASSERT(core::equal(cum2.output().at(1).output,1.6875f))
 
-    neuronal::Cumulus<float> cum3(3,2,5,3);
+    std::cout << "\n";
+    neuronal::Cumulus<float> cum3(3,2,5,3,fun1,dev1);
     init_default(cum3);
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
     fill_bach_1(bach1I,bach1O,1000);
-    neuronal::Backp<float> back1;
-    //back1.training(cum3,bach1I,bach1O);
+    neuronal::Backp<float> back1(cum3,bach1I,bach1O,1.0e-1f);
+    float E;
+    for(size_t i = 0; i < 10; i++)
+    {
+        E = back1.training();
+        std::cout << "E = " << E << "\n";
+        std::cout << "\n\n";
 
+    }
 }

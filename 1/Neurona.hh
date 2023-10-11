@@ -16,6 +16,8 @@ namespace oct::neu::v0
         W weight;
     };
 
+    template<core::number I,core::number O = I> O funtion(I);
+
     template<core::number I,core::number W = I,core::number O = I> class Neurona : public core::array<Axion<I,W>>
     {
     public:
@@ -31,7 +33,7 @@ namespace oct::neu::v0
         }
 
         /**
-        *\brief Enlaza la neurona actual(entradas) con la capa indicada.
+        *\brief Enlaza la neurona actual(entradas) con la capa indicada, input i con neurona i.
         *
         **/
         void link(LAYER& layer)
@@ -59,6 +61,13 @@ namespace oct::neu::v0
             }
             //std::cout << "\toutput: " << output << "\n\n";
         }
+        void adjust(W w)
+        {
+            for(size_t i = 0; i < BASE::size(); i++)
+            {
+                BASE::at(i).weight *= w;
+            }
+        }
 
 
     public:
@@ -72,8 +81,14 @@ namespace oct::neu::v0
         typedef core::array<Neurona<I,W>> LAYER;
         typedef Neurona<I,W> NEURONA;
 
-    private:
+        O dev(I d)
+        {
+            return (*dereivation)(d);
+        }
 
+    private:
+        O (*activation)(I);
+        O (*dereivation)(I);
 
     protected:
 
@@ -98,6 +113,9 @@ namespace oct::neu::v0
         {
             return BASE::size();
         }
+        /**
+        *\brief
+        **/
         void link()
         {
             for(size_t i = 1; i < layers() - 1; i++)//en la capa i
@@ -115,6 +133,16 @@ namespace oct::neu::v0
             }
             //std::cout << "\nLinked\n";
         }
+        W weights(W w,LAYER& from,size_t j)const
+        {
+            W r = 0;
+            for(size_t i = 0; i < from.size(); i++)
+            {
+                r += from.at(i).at(j).weight * w;
+            }
+
+            return r;
+        }
 
     public:
         Cumulus() = default;
@@ -125,7 +153,7 @@ namespace oct::neu::v0
         *\param layers cantidad de capas
         *\param amoung cantidad de neuronas en capa interior
         */
-        Cumulus(size_t inputs,size_t outputs,size_t layers,size_t amoung) : BASE(layers)
+        Cumulus(size_t inputs,size_t outputs,size_t layers,size_t amoung,O (*act)(I),O (*dev)(I)) : BASE(layers),activation(act),dereivation(dev)
         {
             if(layers == 0) throw std::domain_error("Imposible un red sin capas");
             if(layers == 1) throw std::domain_error("Imposible un red sin capas ocultas");
