@@ -22,65 +22,78 @@ namespace oct::neu::v0
 
     protected:
     public:
-
-        O error(size_t i) const
+        O Sk(size_t n,size_t d) const
         {
-            if(i == 0 ) return 0;
+            return cumulus.output().at(n).output - bach_out[d][n];
+        }
+        O Sj(size_t n,O sk) const
+        {
+            auto K = cumulus.output();
+            size_t j = cumulus.layers() - 1;
+            O sj = 0;
+            for(size_t w = 0; w < K.at(n).size(); w++)
+            {
+                sj += K.at(n).at(w).weight * sk;
+            }
 
+            return cumulus.dev(K.at(n).output) * sj;
+        }
+        O Sj(size_t j,size_t n,O sk) const
+        {
+            auto K = cumulus.layer(j + 1);
+            O sj = 0;
+            for(size_t w = 0; w < K.at(n).size(); w++)
+            {
+                sj += K.at(n).at(w).weight * sk;
+            }
 
+            return cumulus.dev(K.at(n).output) * sj;
         }
 
         O training()
         {
             if(bach_in.size() != bach_out.size()) throw std::out_of_range("La cantidad de datos no coincide");
 
-            O E = 0,e,ek;
+            O m = 0,E = 0,e;
             //core::array<O> E(cumulus.output().size());
             for(size_t d = 0; d < bach_in.size(); d++)
             {
                 cumulus.spread(bach_in[d]);
 
-                std::cout << "dato : " << d << "\n";
-                e = 0;
-                for(size_t i = 0; i < cumulus.output().size(); i++)
-                {
-                    if(cumulus.output().size() != bach_out[d].size()) throw std::out_of_range("La cantidad de salidas de la red , " + std::to_string(cumulus.output().size()) + ",  no coincide con la cantiad de datos de salida "  + std::to_string(bach_out[d].size()));
-                    //std::cout << "\t" << bachO[d][i] << " - " << cumulus.output().at(i).output << "\n";
-                    //E[i] = numbers::sqrterr(bachO[d][i],cumulus.output().at(i).output);
-                    e += numbers::sqrterr(bach_out[d][i],cumulus.output().at(i).output);
-                }
-                e /= O(cumulus.output().size());
-                std::cout << "\tError = " << e << "\n";
-                /*std::cout << "\tError = ";
-                E.print(std::cout);
-                std::cout << "\n";*/
-                E += e;
+                //std::cout << "dato : " << d << "\n";
 
-                for(size_t i = 0; i < cumulus.output().size(); i++)
+                //capa de salida
+                size_t j = cumulus.layers() - 1;
+                for(size_t n = 0; n < cumulus.output().size(); n++)
                 {
-                    for(size_t j = 0; j < cumulus.output().at(i).size(); j++)
-                    {
-                        ek = cumulus.weights(e * ratio, cumulus.output(),j);
-                        //std::cout << "\t\tek : " << ek << "\n";
-                        cumulus.neurona(i,j).adjust(ek);
-                    }
+                    e = Sj(n,Sk(n,d)) * cumulus.neurona(j,n).output;
+                    cumulus.neurona(j,n).adjust(e * ratio);
+                    E += e;
                 }
-                for(int i = cumulus.layers() - 2; i >= 0 ; i--)
+                E /= O(cumulus.output().size());
+                m += E;
+                //capa penultima
+                j = cumulus.layers() - 2;
+                for(size_t n = 0; n < cumulus.layer(cumulus.layers() - 2).size(); n++)
                 {
-                    for(size_t j = 0; j < cumulus.layer(i).size(); j++)
-                    {
-                        //std::cout << "\t\tneurona : " << i << "," << j << "\n";
-                        //std::cout << "\te : " << e << "\n";
-                        ek = cumulus.weights(e * ratio, cumulus.layer(i + 1),j);
-                        //std::cout << "\t\tek : " << ek << "\n";
-                        cumulus.neurona(i,j).adjust(ek);
-                    }
+                    //Sj(j,n,Sk(n,d));
+                    //e = Sj(j,n,Sk(n,d)) * cumulus.neurona(j,n).output;
+                    //cumulus.neurona(j,n).adjust(e * ratio);
                 }
+                //
+                /*for(int j = cumulus.layers() - 3; j >= 0 ; j--)
+                {
+                    for(size_t n = 0; n < cumulus.layer(j).size(); n++)
+                    {
+                        e = Sj(j,n,Sk(n,d)) * cumulus.neurona(j,n).output;
+                        cumulus.neurona(j,n).adjust(e * ratio);
+                    }
+                }*/
 
             }
-            E /= O(bach_in.size());
+            m /= O(bach_in.size());
 
-            return E;
+            return m;
         }
     };
 

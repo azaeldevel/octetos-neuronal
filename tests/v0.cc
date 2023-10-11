@@ -171,9 +171,9 @@ void v0_developing()
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
     fill_bach_1(bach1I,bach1O,1000);
-    neuronal::Backp<float> back1(cum3,bach1I,bach1O,1.0e-1f);
+    neuronal::Backp<float> back1(cum3,bach1I,bach1O,1.0e-5f);
     float E;
-    for(size_t i = 0; i < 10; i++)
+    for(size_t i = 0; i < 100; i++)
     {
         E = back1.training();
         std::cout << "E = " << E << "\n";

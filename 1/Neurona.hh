@@ -133,12 +133,22 @@ namespace oct::neu::v0
             }
             //std::cout << "\nLinked\n";
         }
-        W weights(W w,LAYER& from,size_t j)const
+        /*W weights(W e,LAYER& from,size_t j)const
         {
             W r = 0;
             for(size_t i = 0; i < from.size(); i++)
             {
-                r += from.at(i).at(j).weight * w;
+                r += from.at(i).at(j).weight * e;
+            }
+
+            return r;
+        }*/
+        W weights(LAYER& from,size_t j)const
+        {
+            W r = 0;
+            for(size_t i = 0; i < from.size(); i++)
+            {
+                r += from.at(i).at(j).weight;
             }
 
             return r;
