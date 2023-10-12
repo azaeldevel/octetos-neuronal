@@ -75,18 +75,23 @@ namespace oct::neu::v0
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> class Perceptron
     {
     public:
-        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+            for(size_t l = 0; l < layers.size(); l++)
+            {
+                layers[l] = Layer<I,W,O,B>(inputs,height,init_weights,init_bias);
+            }
         }
         Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
         {
             layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
         }
-        Perceptron(size_t ins,size_t outs,size_t height,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias)
-        {
 
+        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
+        {
+            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
         }
+
         Perceptron(core::array<Model<I,W,O>> model);
 
     public:
