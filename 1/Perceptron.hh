@@ -52,6 +52,21 @@ namespace oct::neu::v0
             bias[0][0] = (*init_bias)(0);
             outputs[0][0] = 0;
         }
+        Layer(size_t inputs,size_t height,W init_weights,B init_bias)//perceptron simple
+        {
+            weights.resize(height,inputs);
+            bias.resize(height,1);
+            outputs.resize(height,1);
+            for(size_t n = 0; n < weights.rows(); n++)
+            {
+                for(size_t i = 0; i < weights[n].size(); i++)
+                {
+                    weights[n][i] = init_weights;
+                }
+                bias[n][0] = init_bias;
+                outputs[n][0] = 0;
+            }
+        }
         Layer(Model<I,W,O,B> const& m)//perceptron multi-capa
         {
         }
