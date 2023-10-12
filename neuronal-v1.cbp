@@ -41,9 +41,7 @@
 			<Add option="-Wall -pedantic -std=c++20" />
 			<Add directory="../../octetos" />
 		</Compiler>
-		<Unit filename="1/Neurona.hh" />
 		<Unit filename="1/Perceptron.hh" />
-		<Unit filename="1/backp.hh" />
 		<Unit filename="tests/main.cc" />
 		<Unit filename="tests/v0.cc" />
 		<Unit filename="tests/v0.hh" />

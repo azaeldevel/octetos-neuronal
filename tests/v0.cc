@@ -32,6 +32,15 @@ float dev1(float d)
     return 1;
 }
 
+float init_weights_pers1(size_t n,size_t w)
+{
+    return 0;
+}
+float init_bias_pers1(size_t n)
+{
+    return 0;
+}
+
 void v0_developing_old()
 {
 
@@ -39,7 +48,12 @@ void v0_developing_old()
 
 void v0_developing()
 {
-    neuronal::Perceptron<float> pers1(5,fun1,dev1);
+    neuronal::Perceptron<float> pers1(5,fun1,dev1,init_weights_pers1,init_bias_pers1);
+
+    neuronal::Perceptron<float> pers2(5,fun1,dev1,0.0f,0.0f);
+
+
+
 }
 
 
