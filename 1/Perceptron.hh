@@ -72,9 +72,32 @@ namespace oct::neu::v0
         }
     };
 
+    /**
+    *\brief Crea un Perceptron simple un multi-capa
+    **/
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> class Perceptron
     {
-    public:
+    public://contructores
+        /**
+        *\brief Contrulle un perceptron simple
+        *
+        **/
+        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
+        {
+            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+        }
+        /**
+        *\brief Contrulle un perceptron simple
+        *
+        **/
+        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
+        {
+            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+        }
+        /**
+        *\brief Contrulle un perceptron multi-capa
+        *
+        **/
         Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
         {
             for(size_t l = 0; l < layers.size(); l++)
@@ -82,22 +105,18 @@ namespace oct::neu::v0
                 layers[l] = Layer<I,W,O,B>(inputs,height,init_weights,init_bias);
             }
         }
-        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
-        {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
-        }
-
-        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
-        {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
-        }
 
         Perceptron(core::array<Model<I,W,O>> model);
 
     public:
-        void spread(core::array<core::array<I>> in,core::array<core::array<O>> out)
+        void spread(core::array<core::array<I>>& ins)
         {
-
+            for(size_t data = 0; data < ins.size(); data++)
+            {
+                for(size_t layer = 0; layer < layers.size(); layer++)
+                {
+                }
+            }
         }
 
     private:
