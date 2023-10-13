@@ -111,8 +111,13 @@ namespace oct::neu::v0
     public:
         void spread(core::array<core::array<I>>& ins)
         {
+            numbers::matrix<float> inm;
             for(size_t data = 0; data < ins.size(); data++)
             {
+                inm.buffer(ins[data].size(),1,(I*)(ins[data]));
+                layers[0].outputs = (layers[0].weights * inm) + layers[0].bias;
+                layers[0].outputs.print(std::cout);
+
                 for(size_t layer = 0; layer < layers.size(); layer++)
                 {
                 }

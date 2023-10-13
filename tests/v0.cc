@@ -116,26 +116,22 @@ void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<flo
 }
 void v0_developing()
 {
-    neuronal::Perceptron<float> pers1(3,fun1,dev1,init_weights_pers1,init_bias_pers1);
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_1(bach1I,bach1O,100000);
-    size_t data_index = 100;
-    /*std::cout << "Dato : " << data_index << "\n";
-    std::cout << "matrix\n";
-    mx1.print(std::cout);
-    std::cout << "array\n";
-    bach1I[data_index].print(std::cout);*/
+    fill_bach_1(bach1I,bach1O,10);
     neuronal::numbers::matrix<float> mx1;
-    for(size_t i = 0; i < bach1I.size(); i++)
+    /*for(size_t i = 0; i < bach1I.size(); i++)
     {
         std::cout << "\n";
         mx1.buffer(bach1I[i].size(),1,(float*)(bach1I[i]));
         mx1.print(std::cout);
-    }
+    }*/
 
-    neuronal::Perceptron<float> pers2(3,fun1,dev1,0.0f,0.0f);
+
+    neuronal::Perceptron<float> pers1(3,fun1,dev1,init_weights_pers1,init_bias_pers1);
+
+    neuronal::Perceptron<float> pers2(3,fun1,dev1,1.0f,0.5f);
     pers2.spread(bach1I);
 
 
