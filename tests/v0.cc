@@ -7,6 +7,7 @@
 
 #include <neuronal/1/Perceptron.hh>
 #include <neuronal/1/Backp.hh>
+#include <limits>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -120,7 +121,7 @@ void v0_developing()
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_1(bach1I,bach1O,10);
+    fill_bach_1(bach1I,bach1O,1000);
     neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -139,7 +140,7 @@ void v0_developing()
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(3,2,5,4,fun1,0.5f,0.0f);
+    neuronal::Perceptron<float> pers2(3,2,10,10,fun1,0.5f,0.0f);
     pers2.spread(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-3);
@@ -147,7 +148,7 @@ void v0_developing()
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    for(size_t i = 0; i < 500; i++)
+    for(size_t i = 0; i < 100; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";

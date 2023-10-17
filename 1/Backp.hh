@@ -43,6 +43,7 @@ namespace oct::neu::v0
             {
                 e = outputs[d][o] - perceptro.output().outputs[o][0];
                 e = std::pow(e,O(2));
+                //e *= O(2);
                 E += e;
             }
             E /= O(outputs.size());
