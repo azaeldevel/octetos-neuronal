@@ -87,7 +87,7 @@ namespace oct::neu::v0
         *\param init_weights Valor inicial de los pesos
         *\param init_bias Valor inicial de las bias
         **/
-        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
+        Perceptron(size_t ins,O (*activation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
         {
             layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
         }
@@ -95,11 +95,10 @@ namespace oct::neu::v0
         *\brief Contrulle un perceptron simple
         *\param ins Cantidad de entradas
         *\param activation Funcion de activacion
-        *\param dereivation Derivada de la funcion de activacion
         *\param init_weights Funcion para inicializar los pesos
         *\param init_bias Funcion para inicializar las bias
         **/
-        Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
+        Perceptron(size_t ins,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
         {
             layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
         }
@@ -111,21 +110,20 @@ namespace oct::neu::v0
         *\param height Cantidad de neuronas por capa
         *\param l Cantidad de capas
         *\param activation Funcion de activacion
-        *\param dereivation Derivada de la funcion de activacion
         *\param init_weights Valor inicial de los pesos
         *\param init_bias Valor inicial de las bias
         *
         **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,W init_weights,B init_bias) : layers(l),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
         {
             layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
 
             for(size_t l = 1; l < layers.size(); l++)
             {
-                layers[l] = Layer<I,W,O,B>(layers[l - 1].size(),height,init_weights,init_bias);
+                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,init_weights,init_bias);
             }
 
-            output = Layer<I,W,O,B>(layers[layers.size() - 2].size(),outs,init_weights,init_bias);
+            output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,init_weights,init_bias);
         }
         /**
         *\brief Contrulle un perceptron multi-capa
@@ -134,12 +132,11 @@ namespace oct::neu::v0
         *\param height Cantidad de neuronas por capa
         *\param l Cantidad de capas
         *\param activation Funcion de activacion
-        *\param dereivation Derivada de la funcion de activacion
         *\param init_weights Funcion para inicializar los pesos
         *\param init_bias Funcion para inicializar las bias
         *
         **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(l),inputs(ins)
         {
             layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
 
@@ -204,7 +201,11 @@ namespace oct::neu::v0
             return layers.size();
         }
 
-        Layer<I,W,O,B> const& layer(size_t i) const
+        Layer<I,W,O,B> const& operator [](size_t i) const
+        {
+            return layers[i];
+        }
+        Layer<I,W,O,B>& operator [](size_t i)
         {
             return layers[i];
         }

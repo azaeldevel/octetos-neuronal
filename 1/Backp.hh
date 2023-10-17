@@ -9,7 +9,7 @@ namespace oct::neu::v0
     {
     public://constructors
         Backp() = default;
-        Backp(core::array<core::array<I>>& ins,core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p) : inputs(ins),outputs(outs),perceptro(p)
+        Backp(core::array<core::array<I>>& ins,core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I)) : inputs(ins),outputs(outs),perceptro(p)
         {
         }
 
@@ -54,6 +54,7 @@ namespace oct::neu::v0
                     e += perceptro.layer(l + 1)[i].weights[i][i] * error(l + 1);
                 }
             }
+            e *= (*dereivation)(perceptro.layer(l).outputs[n][0]);
 
             return e;
         }
@@ -62,6 +63,7 @@ namespace oct::neu::v0
         core::array<core::array<I>>& inputs;
         core::array<core::array<O>>& outputs;
         Perceptron<I,W,O,B>& perceptro;
+        O (*dereivation)(I);
     };
 }
 
