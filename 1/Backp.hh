@@ -43,6 +43,20 @@ namespace oct::neu::v0
 
             return S;
         }
+        O error(size_t l, size_t n)
+        {
+            O e = 0;
+            if(l == perceptro.size() - 1) return error();
+            else if(l < perceptro.size() - 1)
+            {
+                for(size_t i = 0; i < perceptro.layer(l).size(); i++)
+                {
+                    e += perceptro.layer(l + 1)[i].weights[i][i] * error(l + 1);
+                }
+            }
+
+            return e;
+        }
 
     private:
         core::array<core::array<I>>& inputs;

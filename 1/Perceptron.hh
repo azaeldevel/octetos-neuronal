@@ -199,6 +199,16 @@ namespace oct::neu::v0
             return layers[0];
         }
 
+        size_t size() const
+        {
+            return layers.size();
+        }
+
+        Layer<I,W,O,B> const& layer(size_t i) const
+        {
+            return layers[i];
+        }
+
     private:
         core::array<Layer<I,W,O,B>> layers;
         size_t inputs;

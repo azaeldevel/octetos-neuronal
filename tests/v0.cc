@@ -136,7 +136,7 @@ void v0_developing()
     in1[2] = 0.5f;
     neuronal::Perceptron<float> pers1(3,fun1,dev1,0.5f,0.0f);
     pers1.spread(in1);
-    pers1.output().outputs.print(std::cout);
+    //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
     neuronal::Perceptron<float> pers2(3,2,5,4,fun1,dev1,0.0f,0.0f);
