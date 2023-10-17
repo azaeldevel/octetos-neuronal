@@ -129,9 +129,16 @@ void v0_developing()
     }*/
 
 
-    neuronal::Perceptron<float> pers1(3,fun1,dev1,init_weights_pers1,init_bias_pers1);
+    core::array<float> in1(3);
+    in1[0] = 0.5f;
+    in1[1] = 0.5f;
+    in1[2] = 0.5f;
+    neuronal::Perceptron<float> pers1(3,fun1,dev1,0.5f,0.0f);
+    pers1.spread(in1);
+    //pers1.output().outputs.print(std::cout);
+    CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(3,fun1,dev1,1.0f,0.5f);
+    neuronal::Perceptron<float> pers2(3,2,5,4,fun1,dev1,0.5f,0.0f);
     pers2.spread(bach1I);
 
 
