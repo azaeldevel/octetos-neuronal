@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include <neuronal/1/Perceptron.hh>
+#include <neuronal/1/Backp.hh>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -135,14 +136,15 @@ void v0_developing()
     in1[2] = 0.5f;
     neuronal::Perceptron<float> pers1(3,fun1,dev1,0.5f,0.0f);
     pers1.spread(in1);
-    //pers1.output().outputs.print(std::cout);
+    pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(3,2,5,4,fun1,dev1,0.5f,0.0f);
+    neuronal::Perceptron<float> pers2(3,2,5,4,fun1,dev1,0.0f,0.0f);
     pers2.spread(bach1I);
 
-
-
+    neuronal::Backp<float> back1(bach1I,bach1O,pers2);
+    float e1 = back1.cost();
+    std::cout << "Error : " << e1 << "\n";
 
 }
 

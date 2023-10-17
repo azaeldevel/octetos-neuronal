@@ -159,19 +159,19 @@ namespace oct::neu::v0
             const numbers::matrix<I> inm(ins.size(),1,(I*)(ins));
             //std::cout << "\n";
             //inm.print(std::cout);
-            //std::cout << "\n";
-            //layers[0].weights.print(std::cout);
-            //std::cout << "\n";
-            //layers[0].bias.print(std::cout);
-            //std::cout << "\n";
-            layers[0].outputs = layers[0].weights * inm + layers[0].bias;
-            //layers[0].outputs.print(std::cout);
-            //std::cout << "\n";
+            /*std::cout << "\n";
+            input().weights.print(std::cout);
+            std::cout << "\n";
+            input().bias.print(std::cout);
+            std::cout << "\n";*/
+            input().outputs = input().weights * inm + input().bias;
+            /*input().outputs.print(std::cout);
+            std::cout << "\n";*/
 
             for(size_t layer = 1; layer < layers.size(); layer++)
             {
                 layers[layer].outputs = layers[layer].weights * layers[layer - 1].outputs + layers[layer].bias;
-                layers[layer].outputs.print(std::cout);
+                //layers[layer].outputs.print(std::cout);
             }
         }
         void spread(core::array<core::array<I>>& ins)
