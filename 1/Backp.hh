@@ -16,6 +16,7 @@ namespace oct::neu::v0
     public://fuciones miembros
         void iteration()
         {
+            O e;
             for(size_t d = 0; d < inputs.size() ; d++)
             {
                 perceptro.spread(inputs[d]);
@@ -24,9 +25,11 @@ namespace oct::neu::v0
                 {
                     for(size_t n = 0; n < perceptro[l].height; n++)
                     {
+                        e = dEdw(l,n,d);
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] -= dEdw(l,n,d) * ratio;
+                            //std::cout << "dEdw : " << dEdw(l,n,d) << "\n";
+                            perceptro[l].weights[n][w] -= e * ratio;
                         }
                     }
                 }
@@ -39,7 +42,7 @@ namespace oct::neu::v0
             for(size_t o = 0; o < outputs[d].size(); o++)
             {
                 e = outputs[d][o] - perceptro.output().outputs[o][0];
-                e *= O(2);
+                e = std::pow(e,O(2));
                 E += e;
             }
             E /= O(outputs.size());
@@ -84,20 +87,24 @@ namespace oct::neu::v0
             O E = 0, e;
             for(size_t o = 0; o < outputs[d].size(); o++)
             {
-                e = outputs[d][o] - perceptro.output().outputs[o][0];
+                e = perceptro.output().outputs[o][0] - outputs[d][o];
                 e *= O(2);
                 E += e;
             }
             E /= O(outputs.size());
+            //std::cout << "dEdo : " << E << "\n";
 
             return E;
         }
         O dOdf(size_t l, size_t n)
         {
+            //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
             return (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
         }
         O dEdw(size_t l, size_t n,size_t d)
         {
+            //std::cout << "output : " << perceptro[l].outputs[n][0] << "\n";
+            //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
             return dEdo(d) * dOdf(l,n) * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
         }
 
