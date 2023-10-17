@@ -1,5 +1,5 @@
-#ifndef PERCEPTRON_HH_INCLUDED
-#define PERCEPTRON_HH_INCLUDED
+#ifndef OCTETOS_NEURONAL_V1_PERCEPTRON_HH
+#define OCTETOS_NEURONAL_V1_PERCEPTRON_HH
 
 
 #include <core/3/numbers.hh>
@@ -182,9 +182,21 @@ namespace oct::neu::v0
             }
         }
 
+        /**
+        *\brief Optiene la capa de salida
+        *
+        */
         Layer<I,W,O,B>& output()
         {
             return layers[layers.size() - 1];
+        }
+        /**
+        *\brief Optiene la capa de entrada
+        *
+        */
+        Layer<I,W,O,B>& input()
+        {
+            return layers[0];
         }
 
     private:
