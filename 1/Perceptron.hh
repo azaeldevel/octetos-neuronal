@@ -152,7 +152,7 @@ namespace oct::neu::v0
         Perceptron(core::array<Model<I,W,O>> model);
 
     public:
-        void spread(core::array<I>& ins)
+        void feedforward(core::array<I>& ins)
         {
             const numbers::matrix<I> inm(ins.size(),1,(I*)(ins));
             //std::cout << "\n";
@@ -172,11 +172,11 @@ namespace oct::neu::v0
                 //layers[layer].outputs.print(std::cout);
             }
         }
-        void spread(core::array<core::array<I>>& ins)
+        void feedforward(core::array<core::array<I>>& ins)
         {
             for(size_t data = 0; data < ins.size(); data++)
             {
-                spread(ins[data]);
+                feedforward(ins[data]);
             }
         }
 

@@ -19,7 +19,7 @@ namespace oct::neu::v0
             O e;
             for(size_t d = 0; d < inputs.size() ; d++)
             {
-                perceptro.spread(inputs[d]);
+                perceptro.feedforward(inputs[d]);
 
                 for(int l = perceptro.size() - 1; l >= 0 ; l--)
                 {
@@ -38,13 +38,11 @@ namespace oct::neu::v0
         O error(size_t d)
         {
             O E = 0, e;
-            perceptro.spread(inputs[d]);
+            perceptro.feedforward(inputs[d]);
             for(size_t o = 0; o < outputs[d].size(); o++)
             {
                 e = outputs[d][o] - perceptro.output().outputs[o][0];
-                e = std::pow(e,O(2));
-                //e *= O(2);
-                E += e;
+                E += std::pow(e,O(2));
             }
             E /= O(outputs.size());
 

@@ -121,7 +121,7 @@ void v0_developing()
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_1(bach1I,bach1O,1000);
+    fill_bach_1(bach1I,bach1O,50);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -136,19 +136,19 @@ void v0_developing()
     in1[1] = 0.5f;
     in1[2] = 0.5f;
     neuronal::Perceptron<float> pers1(3,fun1,0.5f,0.0f);
-    pers1.spread(in1);
+    pers1.feedforward(in1);
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(3,2,5,5,fun1,0.5f,0.0f);
-    pers2.spread(bach1I);
+    neuronal::Perceptron<float> pers2(3,2,5,3,fun1,1.0f,0.0f);
+    pers2.feedforward(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-3);
     float e1;//= back1.cost();
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    for(size_t i = 0; i < 100; i++)
+    for(size_t i = 0; i < 5000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
