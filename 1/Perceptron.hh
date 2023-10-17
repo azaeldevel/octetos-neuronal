@@ -27,9 +27,10 @@ namespace oct::neu::v0
         numbers::matrix<B> bias;
         numbers::matrix<O> outputs;
         size_t height;
+        O (*activation)(I);
 
         Layer() = default;
-        Layer(size_t inputs,W init_weights,B init_bias) : height(1)//perceptron simple
+        Layer(size_t inputs,O (*a)(I),W init_weights,B init_bias) : height(1),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
             bias.resize(height,1);
@@ -41,7 +42,7 @@ namespace oct::neu::v0
             bias[0][0] = init_bias;
             outputs[0][0] = 0;
         }
-        Layer(size_t inputs,W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : height(1)//perceptron simple
+        Layer(size_t inputs,O (*a)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : height(1),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
             bias.resize(height,1);
@@ -53,7 +54,7 @@ namespace oct::neu::v0
             bias[0][0] = (*init_bias)(0);
             outputs[0][0] = 0;
         }
-        Layer(size_t inputs,size_t h,W init_weights,B init_bias) : height(h)//perceptron simple
+        Layer(size_t inputs,size_t h,O (*a)(I),W init_weights,B init_bias) : height(h),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
             bias.resize(height,1);
@@ -89,7 +90,7 @@ namespace oct::neu::v0
         **/
         Perceptron(size_t ins,O (*activation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+            layers[0] = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
         }
         /**
         *\brief Contrulle un perceptron simple
@@ -100,7 +101,7 @@ namespace oct::neu::v0
         **/
         Perceptron(size_t ins,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+            layers[0] = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
         }
 
         /**
@@ -116,14 +117,14 @@ namespace oct::neu::v0
         **/
         Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+            input() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
 
             for(size_t l = 1; l < layers.size(); l++)
             {
-                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,init_weights,init_bias);
+                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,activation,init_weights,init_bias);
             }
 
-            output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,init_weights,init_bias);
+            output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,activation,init_weights,init_bias);
         }
         /**
         *\brief Contrulle un perceptron multi-capa
@@ -142,7 +143,7 @@ namespace oct::neu::v0
 
             for(size_t l = 1; l < layers.size() - 1; l++)
             {
-                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,init_weights,init_bias);
+                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,activation,init_weights,init_bias);
             }
 
             output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,init_weights,init_bias);

@@ -142,10 +142,16 @@ void v0_developing()
     neuronal::Perceptron<float> pers2(3,2,5,4,fun1,0.0f,0.0f);
     pers2.spread(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1);
-    float e1 = back1.cost();
-    std::cout << "Error : " << e1 << "\n";
-
+    neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-2);
+    float e1;//= back1.cost();
+    //std::cout << "Error : " << e1 << "\n";
+    //back1.iteration()
+    for(size_t i = 0; i < 100; i++)
+    {
+        e1 = back1.error();
+        std::cout << "Error : " << e1 << "\n";
+        back1.iteration();
+    }
 }
 
 
