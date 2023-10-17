@@ -81,7 +81,11 @@ namespace oct::neu::v0
     public://contructores
         /**
         *\brief Contrulle un perceptron simple
-        *
+        *\param ins Cantidad de entradas
+        *\param activation Funcion de activacion
+        *\param dereivation Derivada de la funcion de activacion
+        *\param init_weights Valor inicial de los pesos
+        *\param init_bias Valor inicial de las bias
         **/
         Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
         {
@@ -89,7 +93,11 @@ namespace oct::neu::v0
         }
         /**
         *\brief Contrulle un perceptron simple
-        *
+        *\param ins Cantidad de entradas
+        *\param activation Funcion de activacion
+        *\param dereivation Derivada de la funcion de activacion
+        *\param init_weights Funcion para inicializar los pesos
+        *\param init_bias Funcion para inicializar las bias
         **/
         Perceptron(size_t ins,O (*activation)(I),O (*dereivation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
         {
@@ -98,6 +106,14 @@ namespace oct::neu::v0
 
         /**
         *\brief Contrulle un perceptron multi-capa
+        *\param ins Cantidad de entradas
+        *\param outs Cantidad salidas
+        *\param height Cantidad de neuronas por capa
+        *\param l Cantidad de capas
+        *\param activation Funcion de activacion
+        *\param dereivation Derivada de la funcion de activacion
+        *\param init_weights Valor inicial de los pesos
+        *\param init_bias Valor inicial de las bias
         *
         **/
         Perceptron(size_t ins,size_t outs,size_t height,size_t l,W init_weights,B init_bias) : layers(l),inputs(ins)
@@ -113,6 +129,14 @@ namespace oct::neu::v0
         }
         /**
         *\brief Contrulle un perceptron multi-capa
+        *\param ins Cantidad de entradas
+        *\param outs Cantidad salidas
+        *\param height Cantidad de neuronas por capa
+        *\param l Cantidad de capas
+        *\param activation Funcion de activacion
+        *\param dereivation Derivada de la funcion de activacion
+        *\param init_weights Funcion para inicializar los pesos
+        *\param init_bias Funcion para inicializar las bias
         *
         **/
         Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),O (*dereivation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
