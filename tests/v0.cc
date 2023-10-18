@@ -8,6 +8,7 @@
 #include <neuronal/1/Perceptron.hh>
 #include <neuronal/1/Backp.hh>
 #include <limits>
+#include <random>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -116,12 +117,103 @@ void fill_bach_1(core::array<core::array<float>>& in,core::array<core::array<flo
     }
 
 }
+
+void fill_bach_2(core::array<core::array<float>>& in,core::array<core::array<float>>& out,size_t size)
+{
+    size_t sub = 5;
+    size = size/sub;
+    size = size*sub;
+    in.resize(size);
+    out.resize(size);
+
+    float actual = 0,delta = 0.001,err = 0.01;
+
+    std::random_device rd;
+    std::uniform_real_distribution<float> dist(err,1.0);
+
+    for(size_t i = 0; i < size + sub;i += sub)
+    {
+        if(i == size) break;
+        //std::cout << "\tIndice  : " << i << " de " << size <<  "\n";
+        //correct
+        in[i + 0].resize(6);
+        out[i + 0].resize(2);
+        in[i + 0][0] = actual;
+        in[i + 0][1] = std::sin(actual);
+        actual += delta;
+        in[i + 0][2] = actual;
+        in[i + 0][3] = std::sin(actual);
+        actual += delta;
+        in[i + 0][4] = actual;
+        in[i + 0][5] = std::sin(actual);
+        out[i + 0][0] = 1.0f;
+        out[i + 0][1] = 0.0f;
+
+        //fail
+        in[i + 1].resize(6);
+        out[i + 1].resize(2);
+        in[i + 1][0] = actual;
+        in[i + 1][1] = std::sin(actual) + dist(rd);
+        actual += delta;
+        in[i + 1][2] = actual;
+        in[i + 1][3] = std::sin(actual)  + dist(rd);
+        actual += delta;
+        in[i + 1][4] = actual;
+        in[i + 1][5] = std::sin(actual)  + dist(rd);
+        out[i + 1][0] = 0.0f;
+        out[i + 1][1] = 1.0f;
+
+        //fail
+        in[i + 2].resize(6);
+        out[i + 2].resize(2);
+        in[i + 2][0] = actual;
+        in[i + 2][1] = std::sin(actual) - dist(rd);
+        actual += delta;
+        in[i + 2][2] = actual;
+        in[i + 2][3] = std::sin(actual)  - dist(rd);
+        actual += delta;
+        in[i + 2][4] = actual;
+        in[i + 2][5] = std::sin(actual)  - dist(rd);
+        out[i + 2][0] = 0.0f;
+        out[i + 2][1] = 1.0f;
+
+        //fail
+        in[i + 3].resize(6);
+        out[i + 3].resize(2);
+        in[i + 3][0] = actual;
+        in[i + 3][1] = std::sin(actual) + (2 * dist(rd));
+        actual += delta;
+        in[i + 3][2] = actual;
+        in[i + 3][3] = std::sin(actual)  + (2 * dist(rd));
+        actual += delta;
+        in[i + 3][4] = actual;
+        in[i + 3][5] = std::sin(actual)  + (2 * dist(rd));
+        out[i + 3][0] = 0.0f;
+        out[i + 3][1] = 1.0f;
+
+        //fail
+        in[i + 4].resize(6);
+        out[i + 4].resize(2);
+        in[i + 4][0] = actual;
+        in[i + 4][1] = std::sin(actual) - (2 * dist(rd));
+        actual += delta;
+        in[i + 4][2] = actual;
+        in[i + 4][3] = std::sin(actual)  - (2 * dist(rd));
+        actual += delta;
+        in[i + 4][4] = actual;
+        in[i + 4][5] = std::sin(actual)  - (2 * dist(rd));
+        out[i + 4][0] = 0.0f;
+        out[i + 4][1] = 1.0f;
+    }
+
+}
+
 void v0_developing()
 {
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_1(bach1I,bach1O,100);
+    fill_bach_2(bach1I,bach1O,100);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -140,28 +232,33 @@ void v0_developing()
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(3,2,5,3,fun1,1.0f,0.0f);
+    neuronal::Perceptron<float> pers2(6,2,2,3,fun1,1.0f,0.0f);
     pers2.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-3);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
     float e1;//= back1.cost();
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    for(size_t i = 0; i < 5000; i++)
+    for(size_t i = 0; i < 10000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(std::abs(e1) < 0.001) break;
+        if(std::abs(e1) < 0.01) break;
         back1.iteration();
     }
 
-    core::array<float> in2(3);
+
+    core::array<float> in2(6);
     in2[0] = 0.09;
     in2[1] = std::sin(in2[0]);
-    in2[2] = std::cos(in2[0]);
+    in2[2] = in2[0] + 0.01f;
+    in2[3] = std::sin(in2[2]);
+    in2[4] = in2[2] + 0.01f;
+    in2[5] = std::sin(in2[4]);
     pers2.feedforward(in2);
     pers2.output().outputs.print(std::cout);
+
 }
 
 

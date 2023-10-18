@@ -16,7 +16,6 @@ namespace oct::neu::v0
     public://fuciones miembros
         void iteration()
         {
-            O e;
             for(size_t d = 0; d < inputs.size() ; d++)
             {
                 perceptro.feedforward(inputs[d]);
@@ -28,7 +27,7 @@ namespace oct::neu::v0
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
                             //std::cout << "dEdw : " << dEdw(l,n,d) << "\n";
-                            perceptro[l].weights[n][w] -= dEdw(l,n,d) * ratio;
+                            perceptro[l].weights[n][w] -= dEdw(l,n,d,n) * ratio;
                         }
                     }
                 }
@@ -105,13 +104,28 @@ namespace oct::neu::v0
             //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
             return dEdo(d) * dOdf(l,n) * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
         }
-        /*O dEdw(size_t l, size_t n,size_t d,size_t w)
+        O dEdw(size_t l, size_t n,size_t d,size_t w)
         {
             //std::cout << "output : " << perceptro[l].outputs[n][0] << "\n";
             //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
+            O e = 0;
+            if(l == perceptro.size() - 1)
+            {
+                for(size_t i = 0; i < perceptro[l].height; i++)
+                {
+                    e += dEdw(l,n,d) * perceptro[l].weights[i][w];
+                }
+            }
+            else
+            {
+                for(size_t i = 0; i < perceptro[l + 1].height; i++)
+                {
+                    e += dEdw(l,n,d) * perceptro[l + 1].weights[i][w];
+                }
+            }
 
-            return dEdw(l,n,d);
-        }*/
+            return e;
+        }
 
     private:
         core::array<core::array<I>>& inputs;
