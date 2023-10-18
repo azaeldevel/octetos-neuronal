@@ -121,7 +121,7 @@ void v0_developing()
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_1(bach1I,bach1O,50);
+    fill_bach_1(bach1I,bach1O,100);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -152,9 +152,16 @@ void v0_developing()
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(std::abs(e1) < 0.01) break;
+        if(std::abs(e1) < 0.001) break;
         back1.iteration();
     }
+
+    core::array<float> in2(3);
+    in2[0] = 0.09;
+    in2[1] = std::sin(in2[0]);
+    in2[2] = std::cos(in2[0]);
+    pers2.feedforward(in2);
+    pers2.output().outputs.print(std::cout);
 }
 
 

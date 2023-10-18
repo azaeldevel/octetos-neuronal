@@ -25,11 +25,10 @@ namespace oct::neu::v0
                 {
                     for(size_t n = 0; n < perceptro[l].height; n++)
                     {
-                        e = dEdw(l,n,d);
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
                             //std::cout << "dEdw : " << dEdw(l,n,d) << "\n";
-                            perceptro[l].weights[n][w] -= e * ratio;
+                            perceptro[l].weights[n][w] -= dEdw(l,n,d) * ratio;
                         }
                     }
                 }
@@ -53,7 +52,7 @@ namespace oct::neu::v0
             O S = 0;
             for(size_t d = 0; d < inputs.size(); d++)
             {
-                S = error(d);
+                S += error(d);
             }
             S /= O(inputs.size());
 
@@ -106,6 +105,13 @@ namespace oct::neu::v0
             //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
             return dEdo(d) * dOdf(l,n) * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
         }
+        /*O dEdw(size_t l, size_t n,size_t d,size_t w)
+        {
+            //std::cout << "output : " << perceptro[l].outputs[n][0] << "\n";
+            //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
+
+            return dEdw(l,n,d);
+        }*/
 
     private:
         core::array<core::array<I>>& inputs;
