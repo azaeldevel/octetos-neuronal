@@ -49,19 +49,18 @@ namespace oct::neu::v0
                         for(size_t n = 0; n < perceptro[l].height; n++)
                         {
 
-                            std::uniform_int_distribution<int> dist(0,perceptro[l].weights.columns() - 1);
+                            //std::uniform_int_distribution<int> dist(0,perceptro[l].weights.columns() - 1);
                             //for(size_t o = 0; o < perceptro.output().height; o++)
                             {
-                                //for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
+                                for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                                 {
                                     //std::cout << "\tdEdw : " << dEdw(l,n,d,o) << "\n";
-                                    size_t w = dist(rd);
+                                    //size_t w = dist(rd);
                                     perceptro[l].weights[n][w] -= E(l,n,d,o,w) * ratio;
                                 }
                             }
                         }
                     }
-
                     //perceptro.feedforward(inputs[d]);
                 }
             }
@@ -113,7 +112,7 @@ namespace oct::neu::v0
 
         O dEdo(size_t d,size_t o)
         {
-            O e = perceptro.output().outputs[o][0] - outputs[d][o];
+            O e = std::abs(perceptro.output().outputs[o][0] - outputs[d][o]);
             e *= O(2);
             //std::cout << "dEdo : " << e << "\n";
 
