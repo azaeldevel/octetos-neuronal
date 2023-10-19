@@ -45,7 +45,7 @@ namespace oct::neu::v0
                     errors[errors.size() - 1][0] = dEdo(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro[errors.size() - 1].weights[o][w] += dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
+                        perceptro[errors.size() - 1].weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
                     }
                 }
 
@@ -55,7 +55,7 @@ namespace oct::neu::v0
                     {
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] += dEdw(l,n,get_error_in(l,n)) * ratio;
+                            perceptro[l].weights[n][w] -= dEdw(l,n,get_error_in(l,n)) * ratio;
                         }
                     }
                     errors[l].back() = 0;

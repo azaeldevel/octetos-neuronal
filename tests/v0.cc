@@ -210,7 +210,7 @@ void fill_bach_2(core::array<core::array<float>>& in,core::array<core::array<flo
 template<core::number T> class FunctionBach
 {
 public:
-    FunctionBach(T e,T c) : error(e), cube(c), dist_coordendades(0,c),dist_tang(0,1000),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10),outputs(2)
+    FunctionBach(T e,T c) : error(e), cube(c), dist_coordendades(0,c),dist_tang(std::numeric_limits<T>::epsilon(),1.0f - std::numeric_limits<T>::epsilon()),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10),outputs(2)
     {
     }
 
@@ -238,7 +238,7 @@ public:
                 x += dist_coordendades_delta(rd);
                 bach[i][(j * 2) + 0] = x; //corrdenada x
                 //std::cout << (j * 2) + 0 << ",";
-                bach[i][(j * 2) + 1] = m * x + b; //corrdenada y
+                bach[i][(j * 2) + 1] = (m * x) + b; //corrdenada y
                 //std::cout << (j * 2) + 1 << ",";
             }
             //std::cout << "\n";
@@ -364,7 +364,7 @@ void v0_developing()
         bach1O[i].print(std::cout);
         std::cout << "\n" ;
     }
-    neuronal::Perceptron<float> pers2(6,2,3,5,fun1,1.0e-1f,0.0f);
+    neuronal::Perceptron<float> pers2(6,2,5,10,fun1,1.0e-1f,0.0f);
     pers2.feedforward(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
@@ -372,15 +372,15 @@ void v0_developing()
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    /*
+
     float e1;//= back1.cost();
-    for(size_t i = 0; i < 100000; i++)
+    for(size_t i = 0; i < 1000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
         if(e1 < 1.0e-3f) break;
         back1.iteration();
-    }*/
+    }
 
 
     /*core::array<float> in2(6);
