@@ -104,7 +104,7 @@ namespace oct::neu::v0
         O dodw(size_t l, size_t n,O error)
         {
             //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
-            O E = (*derivaties[l])((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
+            O E = (*derivaties[l])(perceptro[l].outputs[n][0]);
             O ws = 0;
             if(l == perceptro.size() - 1)
             {
