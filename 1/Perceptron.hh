@@ -77,8 +77,10 @@ namespace oct::neu::v0
     /**
     *\brief Crea un Perceptron simple un multi-capa
     **/
-    template<core::number I,core::number W = I,core::number O = I,core::number B = I> class Perceptron
+    template<core::number I,core::number W = I,core::number O = I,core::number B = I> class Perceptron : public core::array<Layer<I,W,O,B>>
     {
+    public:
+        typedef core::array<Layer<I,W,O,B>> BASE;
     public://contructores
         /**
         *\brief Contrulle un perceptron simple
@@ -88,9 +90,9 @@ namespace oct::neu::v0
         *\param init_weights Valor inicial de los pesos
         *\param init_bias Valor inicial de las bias
         **/
-        Perceptron(size_t ins,O (*activation)(I),W init_weights,B init_bias) : layers(1),inputs(ins)
+        Perceptron(size_t ins,O (*activation)(I),W init_weights,B init_bias) : BASE(1),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
         }
         /**
         *\brief Contrulle un perceptron simple
@@ -99,9 +101,9 @@ namespace oct::neu::v0
         *\param init_weights Funcion para inicializar los pesos
         *\param init_bias Funcion para inicializar las bias
         **/
-        Perceptron(size_t ins,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(1),inputs(ins)
+        Perceptron(size_t ins,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : BASE(1),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
         }
 
         /**
@@ -115,16 +117,16 @@ namespace oct::neu::v0
         *\param init_bias Valor inicial de las bias
         *
         **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W init_weights,B init_bias) : layers(l),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W init_weights,B init_bias) : BASE(l),inputs(ins)
         {
-            input() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
 
-            for(size_t l = 1; l < layers.size(); l++)
+            for(size_t l = 1; l < BASE::size(); l++)
             {
-                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,activation,init_weights,init_bias);
+                BASE::at(l) = Layer<I,W,O,B>(BASE::at(l - 1).height,height,activation,init_weights,init_bias);
             }
 
-            output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,activation,init_weights,init_bias);
+            BASE::back() = Layer<I,W,O,B>(BASE::at(BASE::size() - 2).height,outs,activation,init_weights,init_bias);
         }
         /**
         *\brief Contrulle un perceptron multi-capa
@@ -137,16 +139,16 @@ namespace oct::neu::v0
         *\param init_bias Funcion para inicializar las bias
         *
         **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : layers(l),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : BASE(l),inputs(ins)
         {
-            layers[0] = Layer<I,W,O,B>(inputs,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(inputs,init_weights,init_bias);
 
-            for(size_t l = 1; l < layers.size() - 1; l++)
+            for(size_t l = 1; l < BASE::size() - 1; l++)
             {
-                layers[l] = Layer<I,W,O,B>(layers[l - 1].height,height,activation,init_weights,init_bias);
+                BASE::at(l) = Layer<I,W,O,B>(BASE::at(l - 1).height,height,activation,init_weights,init_bias);
             }
 
-            output() = Layer<I,W,O,B>(layers[layers.size() - 2].height,outs,init_weights,init_bias);
+            BASE::back() = Layer<I,W,O,B>(BASE::at(BASE::size() - 2).height,outs,init_weights,init_bias);
         }
 
         Perceptron(core::array<Model<I,W,O>> model);
@@ -162,13 +164,13 @@ namespace oct::neu::v0
             std::cout << "\n";
             input().bias.print(std::cout);
             std::cout << "\n";*/
-            input().outputs = input().weights * inm + input().bias;
+            BASE::front().outputs = BASE::front().weights * inm + BASE::front().bias;
             /*input().outputs.print(std::cout);
             std::cout << "\n";*/
 
-            for(size_t layer = 1; layer < layers.size(); layer++)
+            for(size_t layer = 1; layer < BASE::size(); layer++)
             {
-                layers[layer].outputs = layers[layer].weights * layers[layer - 1].outputs + layers[layer].bias;
+                BASE::at(layer).outputs = BASE::at(layer).weights * BASE::at(layer - 1).outputs + BASE::at(layer).bias;
                 //layers[layer].outputs.print(std::cout);
             }
         }
@@ -184,35 +186,35 @@ namespace oct::neu::v0
         *\brief Optiene la capa de salida
         *
         */
-        Layer<I,W,O,B>& output()
+        /*Layer<I,W,O,B>& output()
         {
             return layers[layers.size() - 1];
-        }
+        }*/
         /**
         *\brief Optiene la capa de entrada
         *
         */
-        Layer<I,W,O,B>& input()
+        /*Layer<I,W,O,B>& input()
         {
             return layers[0];
-        }
+        }*/
 
-        size_t size() const
+        /*size_t size() const
         {
             return layers.size();
-        }
+        }*/
 
-        Layer<I,W,O,B> const& operator [](size_t i) const
+        /*Layer<I,W,O,B> const& operator [](size_t i) const
         {
             return layers[i];
         }
         Layer<I,W,O,B>& operator [](size_t i)
         {
             return layers[i];
-        }
+        }*/
 
     private:
-        core::array<Layer<I,W,O,B>> layers;
+        //core::array<Layer<I,W,O,B>> layers;
         size_t inputs;
 
     protected:
