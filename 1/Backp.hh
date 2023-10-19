@@ -14,7 +14,7 @@ namespace oct::neu::v0
     {
     public://constructors
         Backp() = default;
-        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r) : inputs(ins),outputs(outs),perceptro(p),derivation(d),ratio(r),errors(p.size())
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
         {
             for(size_t i = 0; i < p.size(); i++)
             {
@@ -23,6 +23,10 @@ namespace oct::neu::v0
                 {
                     errors[i][j] = 0;
                 }
+            }
+            for(size_t i = 0; i < derivaties.size(); i++)
+            {
+                derivaties[i] = d;
             }
         }
 
@@ -100,7 +104,7 @@ namespace oct::neu::v0
         O dodw(size_t l, size_t n,O error)
         {
             //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
-            O E = (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
+            O E = (*derivaties[l])((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
             O ws = 0;
             if(l == perceptro.size() - 1)
             {
@@ -147,9 +151,10 @@ namespace oct::neu::v0
         const core::array<core::array<I>>& inputs;
         const core::array<core::array<O>>& outputs;
         Perceptron<I,W,O,B>& perceptro;
-        O (*derivation)(I);
+        core::array<O (*)(I)> derivaties;
         W ratio;
         core::array<core::array<O>> errors;
+
     };
 }
 
