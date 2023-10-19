@@ -207,12 +207,99 @@ void fill_bach_2(core::array<core::array<float>>& in,core::array<core::array<flo
 
 }
 
+template<core::number T> class FunctionBach
+{
+public:
+    FunctionBach(T e,T c) : error(e), cube(c), dist_coordendades(0,c),dist_tang(0,1000),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10)
+    {
+    }
+
+    /**
+    *\brief Crea un lote de datos para la linea en 2D
+    */
+    core::array<core::array<T>> in_line(size_t amoung,size_t sub)
+    {
+        core::array<core::array<T>> bach;
+        bach.resize(amoung);
+        for(size_t i = 0; i < amoung; i++)
+        {
+            bach[i].resize(2 * sub); // dos cordanada(2D) por cada sub
+        }
+
+        T m = dist_tang(rd);
+        T b = dist_coordendades(rd);
+        T x;
+
+        for(size_t i = 0; i < amoung; i++)
+        {
+            x = dist_coordendades(rd);
+            for(size_t j = 0; j < sub; j++)
+            {
+                x += dist_coordendades_delta(rd);
+                bach[i][(j * 2) + 0] = x; //corrdenada x
+                std::cout << (j * 2) + 0 << ",";
+                bach[i][(j * 2) + 1] = m * x + b; //corrdenada y
+                std::cout << (j * 2) + 1 << ",";
+            }
+            std::cout << "\n";
+        }
+
+        return bach;
+    }
+    /**
+    *\brief Crea un lote de datos para la salida de la red
+    */
+    core::array<core::array<T>> out_line(size_t amoung,size_t sub)
+    {
+        core::array<core::array<T>> bach;
+        bach.resize(amoung);
+        for(size_t i = 0; i < amoung; i++)
+        {
+            bach[i].resize(1); // dos cordanada(2D) por cada sub
+        }
+
+
+        for(size_t i = 0; i < amoung; i++)
+        {
+            for(size_t j = 0; j < sub; j++)
+            {
+                bach[i][0] = T(1); //corrdenada x
+            }
+        }
+
+        return bach;
+    }
+
+    void generate(core::array<core::array<float>>& ins, core::array<core::array<float>>& outs,size_t amoung,size_t sub)
+    {
+        //
+        size_t miniback = 5;
+        size_t sets = 0;
+        core::array<core::array<T>> minidatain;
+
+        if(amoung < sets + miniback) return;
+        minidatain = in_line(miniback,sub);
+
+        ins.push_back(minidatain);
+        sets += miniback;
+
+
+
+    }
+
+private:
+    T error;
+    T cube;
+    std::random_device rd;
+    std::uniform_real_distribution<float> dist_coordendades;
+    std::uniform_real_distribution<float> dist_tang;
+    std::uniform_real_distribution<float> dist_coordendades_delta;
+};
 void v0_developing()
 {
-
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_2(bach1I,bach1O,1000);
+    //fill_bach_2(bach1I,bach1O,1000);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -220,7 +307,12 @@ void v0_developing()
         mx1.buffer(bach1I[i].size(),1,(float*)(bach1I[i]));
         mx1.print(std::cout);
     }*/
-
+    FunctionBach<float> fill_bach_3(1.0e-3,1000);
+    fill_bach_3.generate(bach1I,bach1O,100,3);
+    for(size_t i = 0; i < bach1I.size(); i++)
+    {
+        bach1I[i].printLn(std::cout);
+    }
 
     core::array<float> in1(3);
     in1[0] = 0.5f;
