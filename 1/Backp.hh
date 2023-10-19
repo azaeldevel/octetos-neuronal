@@ -34,19 +34,25 @@ namespace oct::neu::v0
         void iteration()
         {
 
-            for(size_t o = 0; o < perceptro.back().height; o++)
+            for(size_t d = 0; d < inputs.size() ; d++)
             {
-                //perceptro.feedforward(inputs[d]);
+                perceptro.feedforward(inputs[d]);
 
-                for(size_t d = 0; d < inputs.size() ; d++)
+                for(size_t o = 0; o < perceptro.back().height; o++)
                 {
-                    perceptro.feedforward(inputs[d]);
+                    //perceptro.feedforward(inputs[d]);
 
-                    errors[errors.size() - 1][0] = dEdo(d,o);
+                    errors[errors.size() - 1][o] = dEdo(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro[errors.size() - 1].weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
+                        perceptro.back().weights[o][w] += dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
                     }
+                    errors.back().back() = 0;
+                    for(size_t n = 0; n < perceptro.back().height; n++)
+                    {
+                        errors.back().back() += errors.back()[n];
+                    }
+                    errors.back().back() /= O(errors.back().size());
                 }
 
                 for(int l = perceptro.size() - 2; l >= 0 ; l--)
@@ -55,7 +61,7 @@ namespace oct::neu::v0
                     {
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] -= dEdw(l,n,get_error_in(l,n)) * ratio;
+                            perceptro[l].weights[n][w] += dEdw(l,n,get_error_in(l,n)) * ratio;
                         }
                     }
                     errors[l].back() = 0;
@@ -134,16 +140,18 @@ namespace oct::neu::v0
         {
             if(l == perceptro.size() - 1)
             {
-                return errors[l][0];
+                return errors[l].back();
             }
             else if(l == perceptro.size() - 2)
             {
-                return errors[l][0];
+                return errors[l].back();
             }
             else
             {
                 return errors[l].back();
             }
+
+            return 0;
         }
 
 
