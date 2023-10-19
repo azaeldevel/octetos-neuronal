@@ -212,7 +212,7 @@ void v0_developing()
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_2(bach1I,bach1O,100);
+    fill_bach_2(bach1I,bach1O,1000);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -231,24 +231,24 @@ void v0_developing()
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.back().outputs[0][0],0.75f))
 
-    //neuronal::Perceptron<float> pers2(6,2,3,5,fun1,1.0e-1f,0.0f);
-    //pers2.feedforward(bach1I);
+    neuronal::Perceptron<float> pers2(6,2,3,5,fun1,1.0e-1f,0.0f);
+    pers2.feedforward(bach1I);
 
-    /*neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
     float e1;//= back1.cost();
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    for(size_t i = 0; i < 10; i++)
+    for(size_t i = 0; i < 100000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(std::abs(e1) < 1.0e-3f) break;
+        if(e1 < 1.0e-3f) break;
         back1.iteration();
-    }*/
+    }
 
 
-    /*core::array<float> in2(6);
+    core::array<float> in2(6);
     in2[0] = 0.09;
     in2[1] = std::sin(in2[0]);
     in2[2] = in2[0] + 0.01f;
@@ -256,7 +256,7 @@ void v0_developing()
     in2[4] = in2[2] + 0.01f;
     in2[5] = std::sin(in2[4]);
     pers2.feedforward(in2);
-    pers2.back().outputs.print(std::cout);*/
+    pers2.back().outputs.print(std::cout);
 
 }
 

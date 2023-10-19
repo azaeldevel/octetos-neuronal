@@ -182,36 +182,7 @@ namespace oct::neu::v0
             }
         }
 
-        /**
-        *\brief Optiene la capa de salida
-        *
-        */
-        /*Layer<I,W,O,B>& output()
-        {
-            return layers[layers.size() - 1];
-        }*/
-        /**
-        *\brief Optiene la capa de entrada
-        *
-        */
-        /*Layer<I,W,O,B>& input()
-        {
-            return layers[0];
-        }*/
 
-        /*size_t size() const
-        {
-            return layers.size();
-        }*/
-
-        /*Layer<I,W,O,B> const& operator [](size_t i) const
-        {
-            return layers[i];
-        }
-        Layer<I,W,O,B>& operator [](size_t i)
-        {
-            return layers[i];
-        }*/
 
     private:
         //core::array<Layer<I,W,O,B>> layers;

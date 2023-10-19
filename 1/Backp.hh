@@ -18,7 +18,11 @@ namespace oct::neu::v0
         {
             for(size_t i = 0; i < p.size(); i++)
             {
-                //errors[i].resize(p[i].height + 1; i++);
+                errors[i].resize(p[i].height + 1);
+                for(size_t j = 0; j < errors[i].size(); j++)
+                {
+                    errors[i][j] = 0;
+                }
             }
         }
 
@@ -34,15 +38,28 @@ namespace oct::neu::v0
                 {
                     perceptro.feedforward(inputs[d]);
 
-                    for(size_t n = 0; n < perceptro.back().height; n++)
+                    errors[errors.size() - 1][0] = dEdo(d,o);
+                    for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
-                        {
-                            //std::cout << "dEdw : " << dEdw(l,n,d) << "\n";
+                        perceptro[errors.size() - 1].weights[o][w] += dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
+                    }
+                }
 
-                                //perceptro.back().weights[n][w] -= dEdw(perceptro.size() - 1,n,d,o) * ratio;
+                for(int l = perceptro.size() - 2; l >= 0 ; l--)
+                {
+                    for(size_t n = 0; n < perceptro[l].height; n++)
+                    {
+                        for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
+                        {
+                            perceptro[l].weights[n][w] += dEdw(l,n,get_error_in(l,n)) * ratio;
                         }
                     }
+                    errors[l].back() = 0;
+                    for(size_t n = 0; n < perceptro[l].height; n++)
+                    {
+                        errors[l].back() += errors[l][n];
+                    }
+                    errors[l].back() /= O(errors[l].size());
                 }
             }
         }
@@ -71,57 +88,58 @@ namespace oct::neu::v0
             return S;
         }
 
-
-
-
-        /*O dEdw(size_t l, size_t n)
-        {
-            return error(l,n) * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
-        }*/
-
         O dEdo(size_t d,size_t o)
         {
-            O e = std::abs(perceptro.output().outputs[o][0] - outputs[d][o]);
+            O e = std::abs(perceptro.back().outputs[o][0] - outputs[d][o]);
             e *= O(2);
             //std::cout << "dEdo : " << e << "\n";
 
             return e;
         }
 
-        O dodw(size_t l, size_t n)
-        {
-            //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
-            return (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
-        }
-
-
-        O dodf(size_t l, size_t n,O error)
+        O dodw(size_t l, size_t n,O error)
         {
             //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
             O E = (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0]));
-            O e = 0;
+            O ws = 0;
             if(l == perceptro.size() - 1)
             {
                 for(size_t i = 0; i < perceptro[l].height; i++)
                 {
-                    e += perceptro[l].weights[i][n];
+                    ws += perceptro[l].weights[i][n];
                 }
             }
             else
             {
                 for(size_t i = 0; i < perceptro[l + 1].height; i++)
                 {
-                    e += perceptro[l + 1].weights[i][n];
+                    ws += perceptro[l + 1].weights[i][n];
                 }
             }
 
-            return E * e * error;
+            return E * ws * error;
         }
         O dEdw(size_t l, size_t n,O error)
         {
             //std::cout << "output : " << perceptro[l].outputs[n][0] << "\n";
             //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
             return error * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
+        }
+
+        O get_error_in(size_t l, size_t n) const
+        {
+            if(l == perceptro.size() - 1)
+            {
+                return errors[l][0];
+            }
+            else if(l == perceptro.size() - 2)
+            {
+                return errors[l][0];
+            }
+            else
+            {
+                return errors[l].back();
+            }
         }
 
 
