@@ -210,7 +210,7 @@ void fill_bach_2(core::array<core::array<float>>& in,core::array<core::array<flo
 template<core::number T> class FunctionBach
 {
 public:
-    FunctionBach(T e,T c) : error(e), cube(c), dist_coordendades(0,c),dist_tang(0,1000),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10)
+    FunctionBach(T e,T c) : error(e), cube(c), dist_coordendades(0,c),dist_tang(0,1000),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10),outputs(2)
     {
     }
 
@@ -237,11 +237,11 @@ public:
             {
                 x += dist_coordendades_delta(rd);
                 bach[i][(j * 2) + 0] = x; //corrdenada x
-                std::cout << (j * 2) + 0 << ",";
+                //std::cout << (j * 2) + 0 << ",";
                 bach[i][(j * 2) + 1] = m * x + b; //corrdenada y
-                std::cout << (j * 2) + 1 << ",";
+                //std::cout << (j * 2) + 1 << ",";
             }
-            std::cout << "\n";
+            //std::cout << "\n";
         }
 
         return bach;
@@ -255,8 +255,13 @@ public:
         bach.resize(amoung);
         for(size_t i = 0; i < amoung; i++)
         {
-            bach[i].resize(1); // dos cordanada(2D) por cada sub
+            bach[i].resize(outputs); // dos cordanada(2D) por cada sub
+            for(size_t j = 0; j < outputs; j++)
+            {
+                bach[i][j] = 0; // dos cordanada(2D) por cada sub
+            }
         }
+
 
 
         for(size_t i = 0; i < amoung; i++)
@@ -275,15 +280,46 @@ public:
         //
         size_t miniback = 5;
         size_t sets = 0;
-        core::array<core::array<T>> minidatain;
+        core::array<core::array<T>> mini_data_in,mini_data_out;
 
         if(amoung < sets + miniback) return;
-        minidatain = in_line(miniback,sub);
-
-        ins.push_back(minidatain);
+        mini_data_in = in_line(miniback,sub);
+        mini_data_out = out_line(miniback,sub);
+        ins.push_back(mini_data_in);
+        outs.push_back(mini_data_out);
         sets += miniback;
 
 
+        if(amoung < sets + miniback) return;
+        mini_data_in = in_line(miniback,sub);
+        mini_data_out = out_line(miniback,sub);
+        ins.push_back(mini_data_in);
+        outs.push_back(mini_data_out);
+        sets += miniback;
+
+
+        if(amoung < sets + miniback) return;
+        mini_data_in = in_line(miniback,sub);
+        mini_data_out = out_line(miniback,sub);
+        ins.push_back(mini_data_in);
+        outs.push_back(mini_data_out);
+        sets += miniback;
+
+
+        if(amoung < sets + miniback) return;
+        mini_data_in = in_line(miniback,sub);
+        mini_data_out = out_line(miniback,sub);
+        ins.push_back(mini_data_in);
+        outs.push_back(mini_data_out);
+        sets += miniback;
+
+
+        if(amoung < sets + miniback) return;
+        mini_data_in = in_line(miniback,sub);
+        mini_data_out = out_line(miniback,sub);
+        ins.push_back(mini_data_in);
+        outs.push_back(mini_data_out);
+        sets += miniback;
 
     }
 
@@ -294,6 +330,7 @@ private:
     std::uniform_real_distribution<float> dist_coordendades;
     std::uniform_real_distribution<float> dist_tang;
     std::uniform_real_distribution<float> dist_coordendades_delta;
+    size_t outputs;
 };
 void v0_developing()
 {
@@ -307,12 +344,7 @@ void v0_developing()
         mx1.buffer(bach1I[i].size(),1,(float*)(bach1I[i]));
         mx1.print(std::cout);
     }*/
-    FunctionBach<float> fill_bach_3(1.0e-3,1000);
-    fill_bach_3.generate(bach1I,bach1O,100,3);
-    for(size_t i = 0; i < bach1I.size(); i++)
-    {
-        bach1I[i].printLn(std::cout);
-    }
+
 
     core::array<float> in1(3);
     in1[0] = 0.5f;
@@ -323,24 +355,35 @@ void v0_developing()
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.back().outputs[0][0],0.75f))
 
+    FunctionBach<float> fill_bach_3(1.0e-3,1000);
+    fill_bach_3.generate(bach1I,bach1O,100,3);
+    for(size_t i = 0; i < bach1I.size(); i++)
+    {
+        bach1I[i].print(std::cout);
+        std::cout << " -- " ;
+        bach1O[i].print(std::cout);
+        std::cout << "\n" ;
+    }
     neuronal::Perceptron<float> pers2(6,2,3,5,fun1,1.0e-1f,0.0f);
     pers2.feedforward(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
-    float e1;//= back1.cost();
+
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
+    /*
+    float e1;//= back1.cost();
     for(size_t i = 0; i < 100000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
         if(e1 < 1.0e-3f) break;
         back1.iteration();
-    }
+    }*/
 
 
-    core::array<float> in2(6);
+    /*core::array<float> in2(6);
     in2[0] = 0.09;
     in2[1] = std::sin(in2[0]);
     in2[2] = in2[0] + 0.01f;
@@ -348,7 +391,7 @@ void v0_developing()
     in2[4] = in2[2] + 0.01f;
     in2[5] = std::sin(in2[4]);
     pers2.feedforward(in2);
-    pers2.back().outputs.print(std::cout);
+    pers2.back().outputs.print(std::cout);*/
 
 }
 
