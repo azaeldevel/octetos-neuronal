@@ -8,7 +8,6 @@
 #include <neuronal/1/Perceptron.hh>
 #include <neuronal/1/Backp.hh>
 #include <limits>
-#include <random>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -126,7 +125,7 @@ void fill_bach_2(core::array<core::array<float>>& in,core::array<core::array<flo
     in.resize(size);
     out.resize(size);
 
-    float actual = 0,delta = 0.001,err = 0.01;
+    float actual = 0,delta = 1.0e-2f,err = 1.0e-3f;
 
     std::random_device rd;
     std::uniform_real_distribution<float> dist(err,1.0);
@@ -213,7 +212,7 @@ void v0_developing()
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
-    fill_bach_2(bach1I,bach1O,100);
+    fill_bach_2(bach1I,bach1O,10);
     //neuronal::numbers::matrix<float> mx1;
     /*for(size_t i = 0; i < bach1I.size(); i++)
     {
@@ -232,7 +231,7 @@ void v0_developing()
     //pers1.output().outputs.print(std::cout);
     CU_ASSERT(core::equal(pers1.output().outputs[0][0],0.75f))
 
-    neuronal::Perceptron<float> pers2(6,2,2,3,fun1,1.0f,0.0f);
+    neuronal::Perceptron<float> pers2(6,2,3,5,fun1,1.0e-1f,0.0f);
     pers2.feedforward(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers2,dev1,1.0e-4);
@@ -240,11 +239,11 @@ void v0_developing()
     //std::cout << "Error : " << e1 << "\n";
     //back1.iteration()
     std::cout << "\n";
-    for(size_t i = 0; i < 10000; i++)
+    for(size_t i = 0; i < 10; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(std::abs(e1) < 0.01) break;
+        if(std::abs(e1) < 1.0e-3f) break;
         back1.iteration();
     }
 
