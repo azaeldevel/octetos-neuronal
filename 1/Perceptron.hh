@@ -113,14 +113,14 @@ namespace oct::neu::v0
             std::cout << "\n";*/
             for(size_t i = 0; i < BASE::front().weights.rows(); i++)
             {
-                BASE::front().outputs[i][0] = ins[i] * BASE::front().weights[i][0] + BASE::front().bias[i][0];
+                BASE::front().outputs[i][0] = ins[i] * BASE::front().weights[i][0];//+ BASE::front().bias[i][0]
             }
-            /*input().outputs.print(std::cout);
+            /*BASE::front().outputs.print(std::cout);
             std::cout << "\n";*/
 
             for(size_t layer = 1; layer < BASE::size(); layer++)
             {
-                BASE::at(layer).outputs = BASE::at(layer).weights * BASE::at(layer - 1).outputs + BASE::at(layer).bias;
+                BASE::at(layer).outputs = BASE::at(layer).weights * BASE::at(layer - 1).outputs;// + BASE::at(layer).bias
                 //layers[layer].outputs.print(std::cout);
             }
         }

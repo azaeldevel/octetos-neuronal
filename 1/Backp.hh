@@ -72,7 +72,7 @@ namespace oct::neu::v0
                     errors[errors.size() - 1][o] = dEdo(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] += dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
+                        perceptro.back().weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
                     }
                     errors.back().back() = 0;
                     for(size_t n = 0; n < perceptro.back().height; n++)
@@ -88,7 +88,7 @@ namespace oct::neu::v0
                     {
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] += dEdw(l,n,get_error_in(l,n)) * ratio;
+                            perceptro[l].weights[n][w] -= dEdw(l,n,get_error_in(l,n)) * ratio;
                         }
                     }
                     errors[l].back() = 0;
@@ -109,27 +109,30 @@ namespace oct::neu::v0
                 e = outputs[d][o] - perceptro.back().outputs[o][0];
                 E += std::pow(e,O(2));
             }
-            E /= O(outputs.size());
+            E /= O(outputs.size() * 2);
 
             return E;
         }
         O error()
         {
+            std::cout << "Error \n";
             O S = 0;
             for(size_t d = 0; d < inputs.size(); d++)
             {
                 S += error(d);
+                std::cout << "\t" << S << "\n";
             }
             S /= O(inputs.size());
+            std::cout << "\tTotal : " << S << "\n";
 
             return S;
         }
 
         O dEdo(size_t d,size_t o)
         {
-            O e = std::abs(perceptro.back().outputs[o][0] - outputs[d][o]);
+            O e = perceptro.back().outputs[o][0] - outputs[d][o];
             e *= O(2);
-            //std::cout << "dEdo : " << e << "\n";
+            std::cout << "dEdo : " << e << "\n";
 
             return e;
         }
