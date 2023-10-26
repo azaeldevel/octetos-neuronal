@@ -30,45 +30,26 @@ namespace oct::neu::v0
         O (*activation)(I);
 
         Layer() = default;
-        Layer(size_t inputs,O (*a)(I),W init_weights,B init_bias) : height(1),activation(a)//perceptron simple
+        Layer(size_t inputs,O (*a)(I)) : height(1),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
             bias.resize(height,1);
             outputs.resize(height,1);
-            for(size_t i = 0; i < weights.columns(); i++)
-            {
-                weights[0][i] = init_weights;
-            }
-            bias[0][0] = init_bias;
+            bias[0][0] = 0;
             outputs[0][0] = 0;
         }
-        Layer(size_t inputs,O (*a)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : height(1),activation(a)//perceptron simple
-        {
-            weights.resize(height,inputs);
-            bias.resize(height,1);
-            outputs.resize(height,1);
-            for(size_t i = 0; i < weights.rows(); i++)
-            {
-                weights[0][i] = (*init_weights)(1,i);
-            }
-            bias[0][0] = (*init_bias)(0);
-            outputs[0][0] = 0;
-        }
-        Layer(size_t inputs,size_t h,O (*a)(I),W init_weights,B init_bias) : height(h),activation(a)//perceptron simple
+        Layer(size_t inputs,size_t h,O (*a)(I)) : height(h),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
             bias.resize(height,1);
             outputs.resize(height,1);
             for(size_t n = 0; n < height; n++)
             {
-                for(size_t i = 0; i < inputs; i++)
-                {
-                    weights[n][i] = init_weights;
-                }
-                bias[n][0] = init_bias;
+                bias[n][0] = 0;
                 outputs[n][0] = 0;
             }
         }
+
         Layer(Model<I,W,O,B> const& m)//perceptron multi-capa
         {
         }
@@ -90,20 +71,9 @@ namespace oct::neu::v0
         *\param init_weights Valor inicial de los pesos
         *\param init_bias Valor inicial de las bias
         **/
-        Perceptron(size_t ins,O (*activation)(I),W init_weights,B init_bias) : BASE(1),inputs(ins)
+        Perceptron(size_t ins,O (*activation)(I)) : BASE(1),inputs(ins)
         {
-            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
-        }
-        /**
-        *\brief Contrulle un perceptron simple
-        *\param ins Cantidad de entradas
-        *\param activation Funcion de activacion
-        *\param init_weights Funcion para inicializar los pesos
-        *\param init_bias Funcion para inicializar las bias
-        **/
-        Perceptron(size_t ins,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : BASE(1),inputs(ins)
-        {
-            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(1,inputs,activation);
         }
 
         /**
@@ -117,38 +87,16 @@ namespace oct::neu::v0
         *\param init_bias Valor inicial de las bias
         *
         **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W init_weights,B init_bias) : BASE(l),inputs(ins)
+        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I)) : BASE(l),inputs(ins)
         {
-            BASE::front() = Layer<I,W,O,B>(inputs,activation,init_weights,init_bias);
+            BASE::front() = Layer<I,W,O,B>(1,inputs,activation);
 
             for(size_t l = 1; l < BASE::size(); l++)
             {
-                BASE::at(l) = Layer<I,W,O,B>(BASE::at(l - 1).height,height,activation,init_weights,init_bias);
+                BASE::at(l) = Layer<I,W,O,B>(BASE::at(l - 1).height,height,activation);
             }
 
-            BASE::back() = Layer<I,W,O,B>(BASE::at(BASE::size() - 2).height,outs,activation,init_weights,init_bias);
-        }
-        /**
-        *\brief Contrulle un perceptron multi-capa
-        *\param ins Cantidad de entradas
-        *\param outs Cantidad salidas
-        *\param height Cantidad de neuronas por capa
-        *\param l Cantidad de capas
-        *\param activation Funcion de activacion
-        *\param init_weights Funcion para inicializar los pesos
-        *\param init_bias Funcion para inicializar las bias
-        *
-        **/
-        Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I),W (*init_weights)(size_t n,size_t w),B (*init_bias)(size_t n)) : BASE(l),inputs(ins)
-        {
-            BASE::front() = Layer<I,W,O,B>(inputs,init_weights,init_bias);
-
-            for(size_t l = 1; l < BASE::size() - 1; l++)
-            {
-                BASE::at(l) = Layer<I,W,O,B>(BASE::at(l - 1).height,height,activation,init_weights,init_bias);
-            }
-
-            BASE::back() = Layer<I,W,O,B>(BASE::at(BASE::size() - 2).height,outs,init_weights,init_bias);
+            BASE::back() = Layer<I,W,O,B>(BASE::at(BASE::size() - 2).height,outs,activation);
         }
 
         Perceptron(core::array<Model<I,W,O>> model);
@@ -156,7 +104,6 @@ namespace oct::neu::v0
     public:
         void feedforward(const core::array<I>& ins)
         {
-            const numbers::matrix<I> inm(ins.size(),1,(const I*)(ins));
             //std::cout << "\n";
             //inm.print(std::cout);
             /*std::cout << "\n";
@@ -164,7 +111,10 @@ namespace oct::neu::v0
             std::cout << "\n";
             input().bias.print(std::cout);
             std::cout << "\n";*/
-            BASE::front().outputs = BASE::front().weights * inm + BASE::front().bias;
+            for(size_t i = 0; i < BASE::front().weights.rows(); i++)
+            {
+                BASE::front().outputs[i][0] = ins[i] * BASE::front().weights[i][0] + BASE::front().bias[i][0];
+            }
             /*input().outputs.print(std::cout);
             std::cout << "\n";*/
 

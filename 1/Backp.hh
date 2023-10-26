@@ -30,6 +30,33 @@ namespace oct::neu::v0
             }
         }
 
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,W init_weights,B init_bias) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
+        {
+            for(size_t i = 0; i < p.size(); i++)
+            {
+                errors[i].resize(p[i].height + 1);
+                for(size_t j = 0; j < errors[i].size(); j++)
+                {
+                    errors[i][j] = 0;
+                }
+            }
+            for(size_t i = 0; i < derivaties.size(); i++)
+            {
+                derivaties[i] = d;
+            }
+            for(size_t i = 0; i < p.size(); i++)
+            {
+                for(size_t j = 0; j < p[i].height; j++)
+                {
+                    for(size_t k = 0; k < p[i].weights.rows(); k++)
+                    {
+                        p[i].weights[j][k] = init_weights;
+                    }
+                    p[i].bias[j][0] = init_bias;
+                }
+            }
+        }
+
     public://fuciones miembros
         void iteration()
         {
