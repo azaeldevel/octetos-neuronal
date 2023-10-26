@@ -8,6 +8,7 @@
 #include <neuronal/1/Perceptron.hh>
 #include <neuronal/1/Backp.hh>
 #include <limits>
+#include <cmath>
 
 namespace neuronal = oct::neu::v0;
 namespace core = oct::core::v3;
@@ -32,6 +33,14 @@ float fun1(float d)
 float dev1(float d)
 {
     return 1;
+}
+float sigmoid_D(float x)
+{
+    return x * (1 - x);
+}
+float sigmoid(float x)
+{
+    return 1/(1 + std::pow(std::numbers::e,-x));
 }
 
 float init_weights_pers1(size_t n,size_t w)
@@ -337,16 +346,16 @@ void v0_developing()
     core::array<core::array<float>> bach1I {{0.0f,0.0f},{0.0f,1.0f},{1.0f,0.0f},{1.0f,1.0f}};
     //bach1I[3].print(std::cout);
     core::array<core::array<float>> bach1O {{0.0f},{0.0f},{0.0f},{1.0f}};
-    neuronal::Perceptron<float> pers1(2,1,2,3,fun1);
+    neuronal::Perceptron<float> pers1(2,1,3,3,sigmoid);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,dev1,1.0e-3,1.0e-2,1.0e-2);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.0e-5,1.0f,1.0e-2);
     float e1;
     for(size_t i = 0; i < 100000; i++)
     {
         e1 = back1.error();
         std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(e1 < 1.0e-1f) break;
+        if(e1 < 1.0e-2f) break;
         back1.iteration();
     }
 

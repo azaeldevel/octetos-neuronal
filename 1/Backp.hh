@@ -115,15 +115,15 @@ namespace oct::neu::v0
         }
         O error()
         {
-            std::cout << "Error \n";
+            //std::cout << "Error \n";
             O S = 0;
             for(size_t d = 0; d < inputs.size(); d++)
             {
                 S += error(d);
-                std::cout << "\t" << S << "\n";
+                //std::cout << "\t" << S << "\n";
             }
             S /= O(inputs.size());
-            std::cout << "\tTotal : " << S << "\n";
+            //std::cout << "\tTotal : " << S << "\n";
 
             return S;
         }
@@ -132,7 +132,7 @@ namespace oct::neu::v0
         {
             O e = perceptro.back().outputs[o][0] - outputs[d][o];
             e *= O(2);
-            std::cout << "dEdo : " << e << "\n";
+            //std::cout << "dEdo : " << e << "\n";
 
             return e;
         }
