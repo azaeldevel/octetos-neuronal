@@ -13,8 +13,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-DOCTETOS_NEURONAL_V0_TTD" />
-					<Add option="-DOCTETOS_NUMBERS_V0_TTD" />
+					<Add option="-DOCTETOS_NEURONAL_V1_TTD" />
+					<Add option="-DOCTETOS_NUMBERS_V1_TTD" />
 					<Add option="-DOCTETOS_NUMBERS_TTD=0" />
 					<Add option="-DOCTETOS_CORE_TTD=3" />
 					<Add option="-DOCTETOS_CORE_V3_TDD" />
@@ -30,7 +30,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-DOCTETOS_NEURONAL_V0_TTD" />
+					<Add option="-DOCTETOS_NEURONAL_V1_TTD" />
+					<Add option="-DOCTETOS_NUMBERS_V1_TTD" />
+					<Add option="-DOCTETOS_NUMBERS_TTD=0" />
+					<Add option="-DOCTETOS_CORE_TTD=3" />
+					<Add option="-DOCTETOS_CORE_V3_TDD" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -44,8 +48,8 @@
 		<Unit filename="1/Backp.hh" />
 		<Unit filename="1/Perceptron.hh" />
 		<Unit filename="tests/main.cc" />
-		<Unit filename="tests/v0.cc" />
-		<Unit filename="tests/v0.hh" />
+		<Unit filename="tests/v1.cc" />
+		<Unit filename="tests/v1.hh" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

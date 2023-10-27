@@ -10,6 +10,25 @@
 namespace oct::neu::v0
 {
 
+    template<core::number W> class Random
+    {
+    public:
+        Random(W e) : dist(-e,e)
+        {
+        }
+        Random(W min, W max) : dist(min,max)
+        {
+        }
+        W next()
+        {
+            return dist(rd);
+        }
+    private:
+    std::random_device rd;
+    std::uniform_real_distribution<float> dist;
+
+    };
+
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> class Backp
     {
     public://constructors
@@ -53,6 +72,32 @@ namespace oct::neu::v0
                         p[i].weights[j][k] = init_weights;
                     }
                     p[i].bias[j][0] = init_bias;
+                }
+            }
+        }
+
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,Random<W>& rand) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
+        {
+            for(size_t i = 0; i < p.size(); i++)
+            {
+                errors[i].resize(p[i].height + 1);
+                for(size_t j = 0; j < errors[i].size(); j++)
+                {
+                    errors[i][j] = 0;
+                }
+            }
+            for(size_t i = 0; i < derivaties.size(); i++)
+            {
+                derivaties[i] = d;
+            }
+            for(size_t i = 0; i < p.size(); i++)
+            {
+                for(size_t j = 0; j < p[i].height; j++)
+                {
+                    for(size_t k = 0; k < p[i].weights.rows(); k++)
+                    {
+                        p[i].weights[j][k] = rand.next();
+                    }
                 }
             }
         }
