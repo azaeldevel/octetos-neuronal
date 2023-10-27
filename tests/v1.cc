@@ -531,21 +531,14 @@ public:
     bool is(const T& data) const
     {
         if(std::numeric_limits<T>::epsilon() < data and data < error + std::numeric_limits<T>::epsilon()) return false;
-        if(core::equal(T(0),data)) return false;
+        //else if(std::numeric_limits<T>::epsilon() < data and data < error + std::numeric_limits<T>::epsilon()) return false;
+        else if(core::equal(T(0),data)) return false;
         else if(std::numeric_limits<T>::epsilon() - error - T(1) < data and data < std::numeric_limits<T>::epsilon() + error + T(1)) return true;
         //else if(data > T(1)) return true;
 
         return false;
     }
-    bool check_and(bool a, bool b, bool out) const
-    {
-        if(a and b and out) return true;
-        else if(a or b)
-        {
-            if(out) return false;
-            else return true;
-        }
-    }
+
 private:
     T error;
     Gate gate;
@@ -582,11 +575,11 @@ void v1_Gate_AND()
     std::cout << "\n\n";*/
 
 
-    neuronal::Perceptron<float> pers1(2,1,10,4,identity);
+    neuronal::Perceptron<float> pers1(2,1,5,4,identity);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,identity_D,1.11976e-7,random);
-    back1.training(150,500,std::cout);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,identity_D,1.61936e-7,random);
+    back1.training(100,500,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
