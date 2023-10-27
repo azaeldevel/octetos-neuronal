@@ -60,7 +60,6 @@ namespace oct::neu::v0
     public://fuciones miembros
         void iteration()
         {
-
             for(size_t d = 0; d < inputs.size() ; d++)
             {
                 perceptro.feedforward(inputs[d]);
@@ -72,7 +71,7 @@ namespace oct::neu::v0
                     errors[errors.size() - 1][o] = dEdo(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][0]) * ratio;
+                        perceptro.back().weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][o]) * ratio;
                     }
                     errors.back().back() = 0;
                     for(size_t n = 0; n < perceptro.back().height; n++)
