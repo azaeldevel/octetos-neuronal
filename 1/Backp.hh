@@ -183,6 +183,29 @@ namespace oct::neu::v0
             return 0;
         }
 
+    public:
+        void training(size_t epoch, size_t it)
+        {
+            for(size_t e = 0; e < epoch; e++)
+            {
+                for(size_t i = 0; i < it; i++)
+                {
+                    iteration();
+                }
+            }
+        }
+
+        void training(size_t epoch, size_t it,std::ostream& out)
+        {
+            for(size_t e = 0; e < epoch; e++)
+            {
+                out << "Error : " << error() << "\n";
+                for(size_t i = 0; i < it; i++)
+                {
+                    iteration();
+                }
+            }
+        }
 
     private:
         const core::array<core::array<I>>& inputs;

@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "v0.hh"
+#include "v1.hh"
 
 #include <cmath>
 
@@ -576,14 +576,7 @@ void v1_Gate_AND()
     pers1.feedforward(bach1I);
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.583e-7,1.0f,1.0e-2);
-    float e1;
-    for(size_t i = 0; i < 100000; i++)
-    {
-        e1 = back1.error();
-        //std::cout << "Error " << i  << " : " << e1 << "\n";
-        if(e1 < 1.0e-4f) break;
-        back1.iteration();
-    }
+    back1.training(100,1000,std::cout);
 
 
     for(size_t i = 0; i < bach2I.size(); i++)
