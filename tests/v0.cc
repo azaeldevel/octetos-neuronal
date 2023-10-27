@@ -347,10 +347,12 @@ void v0_developing()
                                             {0.05f,0.0f},{0.0f,1.0f},{1.0f,0.0f},{1.0f,1.0f},
                                             {0.01f,0.09f},{0.023f,1.0f},{1.01f,0.0f},{1.08f,1.0f},
                                             {0.02f,0.01f},{0.011f,1.0f},{1.029f,0.0f},{1.065f,1.01f},
-                                            {0.03f,0.009f},{0.065f,1.0f},{1.0873f,0.0f},{1.16f,1.01f}
+                                            {0.03f,0.009f},{0.065f,1.0f},{1.0873f,0.0f},{1.1f,1.01f},
+                                            {0.1f,0.009f},{0.0998f,1.0f},{1.0873f,0.0f},{1.1000f,1.01f}
                                             };
     //bach1I[3].print(std::cout);
     core::array<core::array<float>> bach1O {
+                                            {0.0f},{0.0f},{0.0f},{1.0f},
                                             {0.0f},{0.0f},{0.0f},{1.0f},
                                             {0.0f},{0.0f},{0.0f},{1.0f},
                                             {0.0f},{0.0f},{0.0f},{1.0f},
@@ -359,7 +361,7 @@ void v0_developing()
     neuronal::Perceptron<float> pers1(2,1,5,3,sigmoid);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.0e-6,1.0f,1.0e-2);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.5e-7,1.0f,1.0e-2);
     float e1;
     for(size_t i = 0; i < 100000; i++)
     {
@@ -368,7 +370,7 @@ void v0_developing()
         if(e1 < 1.0e-3f) break;
         back1.iteration();
     }
-    core::array<core::array<float>> bach1I_1 {{0.1f,0.0f},{0.09f,1.09f},{1.0f,0.0f},{1.03f,1.01f}};
+    core::array<core::array<float>> bach1I_1 {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
     std::cout << "Outputs\n";
     for(size_t i = 0; i < bach1I_1.size(); i++)
     {
