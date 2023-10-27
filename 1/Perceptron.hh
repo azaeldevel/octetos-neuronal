@@ -12,6 +12,26 @@ namespace oct::neu::v0
     namespace numbers = oct::nums::v0;
     namespace core = oct::core::v3;
 
+    float sigmoid_D(float x)
+    {
+        return x * (1 - x);
+    }
+    float sigmoid(float x)
+    {
+        return 1/(1 + std::pow(std::numbers::e,-x));
+    }
+
+    float identity(float d)
+    {
+        return d;
+    }
+    float identity_D(float d)
+    {
+        return 1;
+    }
+
+
+
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> struct Model
     {
         size_t inputs;

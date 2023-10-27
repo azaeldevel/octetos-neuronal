@@ -34,23 +34,6 @@ float dev1(float d)
 {
     return 1;
 }
-float sigmoid_D(float x)
-{
-    return x * (1 - x);
-}
-float sigmoid(float x)
-{
-    return 1/(1 + std::pow(std::numbers::e,-x));
-}
-
-float identity(float d)
-{
-    return d;
-}
-float identity_D(float d)
-{
-    return 1;
-}
 
 
 
@@ -174,10 +157,10 @@ void v1_Gate_AND()
     std::cout << "\n\n";*/
 
 
-    neuronal::Perceptron<float> pers1(2,1,5,4,identity);
+    neuronal::Perceptron<float> pers1(2,1,5,4,neuronal::identity);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,identity_D,1.61936e-7,random);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.61936e-7,random);
     back1.training(100,500,std::cout);
 
     size_t back1_fails = 0;
@@ -536,10 +519,10 @@ void v0_developing()
                                             {0.0f},{0.0f},{0.0f},{1.0f},
                                             {0.0f},{0.0f},{0.0f},{1.0f}
                                             };
-    neuronal::Perceptron<float> pers1(2,1,5,3,sigmoid);
+    neuronal::Perceptron<float> pers1(2,1,5,3,neuronal::sigmoid);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.5e-7,1.0f,1.0e-2);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::sigmoid_D,1.5e-7,1.0f,1.0e-2);
     float e1;
     for(size_t i = 0; i < 100000; i++)
     {
