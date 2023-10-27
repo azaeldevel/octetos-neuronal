@@ -9,9 +9,10 @@
 #define infimium 0.0001
 #define CU_ASSERT_DECIMAL(V,R,I) CU_ASSERT(abs(V - R) < infimium)
 
-int v0_init(void);
-int v0_clean(void);
+int v1_init(void);
+int v1_clean(void);
 
-void v0_developing();
+void v1_developing();
+void v1_Gate_AND();
 
 #endif
