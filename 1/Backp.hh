@@ -199,7 +199,8 @@ namespace oct::neu::v0
         {
             for(size_t e = 0; e < epoch; e++)
             {
-                out << "Error : " << error() << "\n";
+                out << "Epoca : " << e;
+                out << "\tError : " << error() << "\n";
                 for(size_t i = 0; i < it; i++)
                 {
                     iteration();

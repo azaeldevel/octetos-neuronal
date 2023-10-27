@@ -43,6 +43,15 @@ float sigmoid(float x)
     return 1/(1 + std::pow(std::numbers::e,-x));
 }
 
+float identity(float d)
+{
+    return d;
+}
+float identity_D(float d)
+{
+    return 1;
+}
+
 float init_weights_pers1(size_t n,size_t w)
 {
     return 0;
@@ -572,13 +581,13 @@ void v1_Gate_AND()
     std::cout << "\n\n";*/
 
 
-    neuronal::Perceptron<float> pers1(2,1,5,3,sigmoid);
+    neuronal::Perceptron<float> pers1(2,1,10,4,identity);
     pers1.feedforward(bach1I);
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,sigmoid_D,1.583e-7,1.0f,1.0e-2);
-    back1.training(100,1000,std::cout);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,identity_D,1.11976e-7,1.0f,1.0e-2);
+    back1.training(150,500,std::cout);
 
-
+    size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
     {
         pers1.feedforward(bach2I[i]);
@@ -589,6 +598,7 @@ void v1_Gate_AND()
                 bach2I[i].print(std::cout);
                 std::cout << " --> ";
                 std::cout << bach_and_1.is(pers1.back().outputs[0][0]) << " Fail\n";
+                back1_fails++;
             }
         }
         else
@@ -598,10 +608,13 @@ void v1_Gate_AND()
                 bach2I[i].print(std::cout);
                 std::cout << " --> ";
                 std::cout << bach_and_1.is(pers1.back().outputs[0][0]) << " Fail\n";
+                back1_fails++;
             }
         }
     }
+    if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
     std::cout << "\n\n";
+    CU_ASSERT(back1_fails == 0);
 }
 
 
