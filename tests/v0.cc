@@ -374,9 +374,9 @@ void v0_developing()
     neuronal::Perceptron<float> pers2(2,2,3,3,sigmoid);
     pers1.feedforward(bach2I);
 
-    neuronal::Backp<float> back2(bach2I,bach2O,pers2,sigmoid_D,1.0e-5,1.0f,1.0e-2);
+    neuronal::Backp<float> back2(bach2I,bach2O,pers2,sigmoid_D,1.5e-7,1.0f,1.0e-2);
     float e2;
-    for(size_t i = 0; i < 60000; i++)
+    for(size_t i = 0; i < 1000000; i++)
     {
         e2 = back2.error();
         std::cout << "Error " << i  << " : " << e2 << "\n";
