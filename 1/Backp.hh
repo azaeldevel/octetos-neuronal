@@ -13,10 +13,7 @@ namespace oct::neu::v0
     template<core::number W> class Random
     {
     public:
-        Random(W e) : dist(-e,e)
-        {
-        }
-        Random(W min, W max) : dist(min,max)
+        Random() : gen{rd()},dist(1.0f,0.5f)
         {
         }
         W next()
@@ -25,7 +22,8 @@ namespace oct::neu::v0
         }
     private:
     std::random_device rd;
-    std::uniform_real_distribution<float> dist;
+    std::mt19937 gen;
+    std::normal_distribution<float> dist;
 
     };
 
@@ -113,10 +111,10 @@ namespace oct::neu::v0
                 {
                     //perceptro.feedforward(inputs[d]);
 
-                    errors[errors.size() - 1][o] = dEdo(d,o);
+                    errors[errors.size() - 1][o] = dCdf(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] -= dEdw(errors.size() - 1,o,errors[errors.size() - 1][o]) * ratio;
+                        perceptro.back().weights[o][w] -= dfdw(errors.size() - 1,o,w,errors[errors.size() - 1][o]) * ratio;
                     }
                     errors.back().back() = 0;
                     for(size_t n = 0; n < perceptro.back().height; n++)
@@ -126,13 +124,13 @@ namespace oct::neu::v0
                     errors.back().back() /= O(errors.back().size());
                 }
 
-                for(int l = perceptro.size() - 2; l >= 0 ; l--)
+                for(int l = perceptro.size() - 2; l > 0 ; l--)
                 {
                     for(size_t n = 0; n < perceptro[l].height; n++)
                     {
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] -= dEdw(l,n,get_error_in(l,n)) * ratio;
+                            perceptro[l].weights[n][w] -= dfdw(l,n,w,get_error_in(l,n)) * ratio;
                         }
                     }
                     errors[l].back() = 0;
@@ -141,6 +139,10 @@ namespace oct::neu::v0
                         errors[l].back() += errors[l][n];
                     }
                     errors[l].back() /= O(errors[l].size());
+                }
+                for(size_t n = 0; n < perceptro.front().height; n++)
+                {
+                    perceptro.front().weights[n][0] -= dfdo(0,n,0,get_error_in(0,n)) * perceptro.front().weights[n][0] * ratio;
                 }
             }
         }
@@ -172,6 +174,7 @@ namespace oct::neu::v0
             return S;
         }
 
+        /*
         O dEdo(size_t d,size_t o)
         {
             O e = perceptro.back().outputs[o][0] - outputs[d][o];
@@ -180,7 +183,6 @@ namespace oct::neu::v0
 
             return e;
         }
-
         O dodw(size_t l, size_t n,O error)
         {
             //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
@@ -205,10 +207,30 @@ namespace oct::neu::v0
         }
         O dEdw(size_t l, size_t n,O error)
         {
-            //std::cout << "output : " << perceptro[l].outputs[n][0] << "\n";
-            //std::cout << "dEdw : " << (*perceptro[l].activation)(perceptro[l].outputs[n][0]) << "\n";
             return error * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
+        }*/
+
+
+        /*
+        *
+        */
+        O dCdf(size_t d,size_t o)
+        {
+            return (perceptro.back().outputs[o][0] - outputs[d][o]) * O(2);
         }
+        O dfdo(size_t l, size_t n,size_t w,O error)
+        {
+            return (*derivaties[l])(perceptro[l].outputs[n][0]);
+        }
+        O dodw(size_t l, size_t n,size_t w,O error)
+        {
+            return (*derivaties[l - 1])(perceptro[l - 1].outputs[w][0]);
+        }
+        O dfdw(size_t l, size_t n,size_t w,O error)
+        {
+            return dfdo(l,n,w,error) * dodw(l,n,w,error);
+        }
+
 
         O get_error_in(size_t l, size_t n) const
         {
