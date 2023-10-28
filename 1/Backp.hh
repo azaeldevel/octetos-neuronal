@@ -13,12 +13,12 @@ namespace oct::neu::v0
     template<core::number W> class Random
     {
     public:
-        Random() : gen{rd()},dist(1.0f,0.5f)
+        Random() : gen{rd()},dist(1.0f,0.25f)
         {
         }
         W next()
         {
-            return dist(rd);
+            return dist(gen);
         }
     private:
     std::random_device rd;
@@ -31,7 +31,7 @@ namespace oct::neu::v0
     {
     public://constructors
         Backp() = default;
-        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,O err) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size()),max_err(err)
         {
             for(size_t i = 0; i < p.size(); i++)
             {
@@ -46,8 +46,7 @@ namespace oct::neu::v0
                 derivaties[i] = d;
             }
         }
-
-        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,W init_weights,B init_bias) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,W init_weights,O err) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size()),max_err(err)
         {
             for(size_t i = 0; i < p.size(); i++)
             {
@@ -69,12 +68,10 @@ namespace oct::neu::v0
                     {
                         p[i].weights[j][k] = init_weights;
                     }
-                    p[i].bias[j][0] = init_bias;
                 }
             }
         }
-
-        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,Random<W>& rand) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size())
+        Backp(const core::array<core::array<I>>& ins,const core::array<core::array<O>>& outs,Perceptron<I,W,O,B>& p,O (*d)(I),W r,Random<W>& rand,O err) : inputs(ins),outputs(outs),perceptro(p),derivaties(p.size()),ratio(r),errors(p.size()),max_err(err)
         {
             for(size_t i = 0; i < p.size(); i++)
             {
@@ -264,10 +261,17 @@ namespace oct::neu::v0
 
         void training(size_t epoch, size_t it,std::ostream& out)
         {
+            O actual_error;
             for(size_t e = 0; e < epoch; e++)
             {
+                actual_error = error();
                 out << "Epoca : " << e;
                 out << "\tError : " << error() << "\n";
+                if(max_err > actual_error)
+                {
+                    out << "Max error : " << actual_error << "\n";
+                    return;
+                }
                 for(size_t i = 0; i < it; i++)
                 {
                     iteration();
@@ -282,6 +286,7 @@ namespace oct::neu::v0
         core::array<O (*)(I)> derivaties;
         W ratio;
         core::array<core::array<O>> errors;
+        O max_err;
 
     };
 }

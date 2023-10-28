@@ -44,7 +44,7 @@ namespace oct::neu::v0
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> struct Layer
     {
         numbers::matrix<W> weights;
-        numbers::matrix<B> bias;
+        //numbers::matrix<B> bias;
         numbers::matrix<O> outputs;
         size_t height;
         O (*activation)(I);
@@ -53,25 +53,38 @@ namespace oct::neu::v0
         Layer(size_t inputs,O (*a)(I)) : height(1),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
-            bias.resize(height,1);
+            //bias.resize(height,1);
             outputs.resize(height,1);
-            bias[0][0] = 0;
+            //bias[0][0] = 0;
             outputs[0][0] = 0;
         }
         Layer(size_t inputs,size_t h,O (*a)(I)) : height(h),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
-            bias.resize(height,1);
+            //bias.resize(height,1);
             outputs.resize(height,1);
             for(size_t n = 0; n < height; n++)
             {
-                bias[n][0] = 0;
                 outputs[n][0] = 0;
             }
         }
 
         Layer(Model<I,W,O,B> const& m)//perceptron multi-capa
         {
+        }
+
+        Layer(const Layer& o) : weights(o.weights),outputs(o.outputs),height(o.height),activation(o.activation)
+        {
+        }
+
+        Layer& operator = (const Layer& o)
+        {
+            weights = o.weights;
+            outputs = o.outputs;
+            height = o.height;
+            activation = o.activation;
+
+            return *this;
         }
     };
 
@@ -83,13 +96,11 @@ namespace oct::neu::v0
     public:
         typedef core::array<Layer<I,W,O,B>> BASE;
     public://contructores
+
         /**
         *\brief Contrulle un perceptron simple
         *\param ins Cantidad de entradas
         *\param activation Funcion de activacion
-        *\param dereivation Derivada de la funcion de activacion
-        *\param init_weights Valor inicial de los pesos
-        *\param init_bias Valor inicial de las bias
         **/
         Perceptron(size_t ins,O (*activation)(I)) : BASE(1),inputs(ins)
         {
@@ -104,7 +115,6 @@ namespace oct::neu::v0
         *\param l Cantidad de capas
         *\param activation Funcion de activacion
         *\param init_weights Valor inicial de los pesos
-        *\param init_bias Valor inicial de las bias
         *
         **/
         Perceptron(size_t ins,size_t outs,size_t height,size_t l,O (*activation)(I)) : BASE(l),inputs(ins)
