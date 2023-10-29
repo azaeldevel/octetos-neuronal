@@ -146,14 +146,16 @@ void v1_Gate_AND()
     bach_and_1.generate(bach1I,bach1O,100);
     bach_and_1.generate(bach2I,bach2O,10);
     std::cout << "Data\n";
-    /*for(size_t i = 0; i < bach1I.size(); i++)
+    /*
+    for(size_t i = 0; i < bach1I.size(); i++)
     {
         bach1I[i].print(std::cout);
         std::cout << " --> ";
         bach1O[i].print(std::cout);
         std::cout << "\n";
     }
-    std::cout << "\n\n";*/
+    std::cout << "\n\n";
+    */
 
 
     neuronal::Perceptron<float> pers1(2,1,3,3,neuronal::identity);
@@ -162,7 +164,7 @@ void v1_Gate_AND()
     //random.next();
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.0e-3,1,1.0e-3);
-    /*back1.training(10,100,std::cout);
+    back1.training(10,100,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
@@ -191,7 +193,7 @@ void v1_Gate_AND()
     }
     if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
     std::cout << "\n\n";
-    CU_ASSERT(back1_fails == 0);*/
+    CU_ASSERT(back1_fails == 0);
 }
 
 
