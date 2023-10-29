@@ -139,6 +139,7 @@ namespace oct::neu::v0
                     }
                     errors[l].back() /= O(errors[l].size());
                 }
+                //capa mde entradas
                 for(size_t n = 0; n < perceptro.front().height; n++)
                 {
                     perceptro.front().weights[n][0] -= dfdo(0,n,0,get_error_in(0,n)) * perceptro.front().weights[n][0] * ratio;
