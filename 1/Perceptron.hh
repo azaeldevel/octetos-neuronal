@@ -69,10 +69,7 @@ namespace oct::neu::v0
             }
         }
 
-        Layer(Model<I,W,O,B> const& m)//perceptron multi-capa
-        {
-        }
-
+        Layer(Model<I,W,O,B> const& m);
         Layer(const Layer& o) : weights(o.weights),outputs(o.outputs),height(o.height),activation(o.activation)
         {
         }

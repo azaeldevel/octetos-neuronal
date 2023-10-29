@@ -152,7 +152,9 @@ void v1_Gate_AND()
     core::array<core::array<float>> bach2O;
     bach_and_1.generate(bach1I,bach1O,1000);
     bach_and_1.generate(bach2I,bach2O,10);
-    /*std::cout << "Data\n";
+
+    std::cout << "Data\n";
+    /*
     for(size_t i = 0; i < bach1I.size(); i++)
     {
         bach1I[i].print(std::cout);
@@ -173,7 +175,8 @@ void v1_Gate_AND()
         }
 
     }
-    std::cout << ">>>>>>>>>\n";*/
+    std::cout << "\n\n";
+    */
 
     pers1.feedforward(bach1I);
 
