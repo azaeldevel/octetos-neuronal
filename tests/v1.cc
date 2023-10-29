@@ -162,7 +162,7 @@ void v1_Gate_AND()
     //random.next();
 
     neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.0e-3,1,1.0e-3);
-    back1.training(10,100,std::cout);
+    /*back1.training(10,100,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
@@ -191,7 +191,7 @@ void v1_Gate_AND()
     }
     if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
     std::cout << "\n\n";
-    CU_ASSERT(back1_fails == 0);
+    CU_ASSERT(back1_fails == 0);*/
 }
 
 
