@@ -137,7 +137,7 @@ void v1_Gate_AND()
 {
     BachGates<float> bach_and_1(1.0e-1f,BachGates<float>::Gate::AND);
     neuronal::Random<float> random;
-    neuronal::Perceptron<float> pers1(2,1,5,4,neuronal::identity);
+    neuronal::Perceptron<float> pers1(2,1,2,2,neuronal::identity);
 
     core::array<core::array<float>> bach1I_1 {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
     CU_ASSERT(bach_and_1.is(bach1I_1[0][0]) == false);
@@ -153,8 +153,8 @@ void v1_Gate_AND()
     bach_and_1.generate(bach1I,bach1O,1000);
     bach_and_1.generate(bach2I,bach2O,10);
 
-    std::cout << "Data\n";
     /*
+    std::cout << "Data\n";
     for(size_t i = 0; i < bach1I.size(); i++)
     {
         bach1I[i].print(std::cout);
@@ -162,8 +162,10 @@ void v1_Gate_AND()
         bach1O[i].print(std::cout);
         std::cout << "\n";
     }
-    std::cout << "\n\n";*/
-    /*for(size_t i = 0; i < bach2I.size(); i++)
+    std::cout << "\n\n";
+    */
+    /*
+    for(size_t i = 0; i < bach2I.size(); i++)
     {
         if(bach_and_1.is(bach2I[i][0]))
         {

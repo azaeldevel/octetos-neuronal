@@ -120,7 +120,7 @@ namespace oct::neu::v0
                     }
                     errors.back().back() /= O(errors.back().size());
                 }
-
+                //
                 for(int l = perceptro.size() - 2; l > 0 ; l--)
                 {
                     for(size_t n = 0; n < perceptro[l].height; n++)
