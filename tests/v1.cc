@@ -137,7 +137,7 @@ void v1_Gate_AND()
 {
     BachGates<float> bach_and_1(1.0e-1f,BachGates<float>::Gate::AND);
     neuronal::Random<float> random;
-    neuronal::Perceptron<float> pers1(2,1,3,3,neuronal::identity);
+    neuronal::Perceptron<float> pers1(2,1,4,3,neuronal::identity);
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
@@ -181,7 +181,7 @@ void v1_Gate_AND()
 
     //random.next();
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.871e-8,1,1.0e-6);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.171e-8,1,1.0e-6);
     back1.training(300,100,std::cout);
 
     size_t back1_fails = 0;
