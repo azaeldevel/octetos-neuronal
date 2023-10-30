@@ -111,7 +111,7 @@ namespace oct::neu::v0
                     errors.back()[o] = dCdf(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] -= dfdw(errors.size() - 1,o,w,errors.back()[o]) * errors.back()[o] * ratio;
+                        perceptro.back().weights[o][w] -= dfdw(errors.size() - 1,o,w) * errors.back()[o] * ratio;
                     }
                     errors.back().back() = 0;
                     for(size_t n = 0; n < perceptro.back().height; n++)
@@ -127,8 +127,8 @@ namespace oct::neu::v0
                     {
                         for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                         {
-                            perceptro[l].weights[n][w] -= dfdw(l,n,w,get_error_in(l,n)) * get_error_in(l,n) * ratio;
-                            errors[l][n] += dfdw(l,n,w,get_error_in(l,n)) * get_error_in(l,n);
+                            perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_in(l,n) * ratio;
+                            errors[l][n] += dfdw(l,n,w) * get_error_in(l,n);
                         }
                     }
                     errors[l].back() = 0;
@@ -142,7 +142,7 @@ namespace oct::neu::v0
                 //capa mde entradas
                 for(size_t n = 0; n < perceptro.front().height; n++)
                 {
-                    perceptro.front().weights[n][0] -= dfdo(0,n,0,get_error_in(0,n)) * perceptro.front().weights[n][0] * ratio;
+                    perceptro.front().weights[n][0] -= dfdo(0,n,0) * perceptro.front().weights[n][0] * get_error_in(0,n) * ratio;
                 }
             }
         }
@@ -174,34 +174,6 @@ namespace oct::neu::v0
             return S;
         }
 
-        /*
-        O dodw(size_t l, size_t n,O error)
-        {
-            //std::cout << "dOdf : " << (*derivation)((*perceptro[l].activation)(perceptro[l].outputs[n][0])) << "\n";
-            O E = (*derivaties[l])(perceptro[l].outputs[n][0]);
-            O ws = 0;
-            if(l == perceptro.size() - 1)
-            {
-                for(size_t i = 0; i < perceptro[l].height; i++)
-                {
-                    ws += perceptro[l].weights[i][n];
-                }
-            }
-            else
-            {
-                for(size_t i = 0; i < perceptro[l + 1].height; i++)
-                {
-                    ws += perceptro[l + 1].weights[i][n];
-                }
-            }
-
-            return E * ws * error;
-        }
-        O dEdw(size_t l, size_t n,O error)
-        {
-            return error * (*perceptro[l].activation)(perceptro[l].outputs[n][0]);
-        }*/
-
 
         /*
         *
@@ -210,17 +182,17 @@ namespace oct::neu::v0
         {
             return (perceptro.back().outputs[o][0] - outputs[d][o]) * O(2);
         }
-        O dfdo(size_t l, size_t n,size_t w,O error)
+        O dfdo(size_t l, size_t n,size_t w)
         {
             return (*derivaties[l])(perceptro[l].outputs[n][0]);
         }
-        O dodw(size_t l, size_t n,size_t w,O error)
+        O dodw(size_t l, size_t n,size_t w)
         {
             return (*derivaties[l - 1])(perceptro[l - 1].outputs[w][0]);
         }
-        O dfdw(size_t l, size_t n,size_t w,O error)
+        O dfdw(size_t l, size_t n,size_t w)
         {
-            return dfdo(l,n,w,error) * dodw(l,n,w,error);
+            return dfdo(l,n,w) * dodw(l,n,w);
         }
 
 

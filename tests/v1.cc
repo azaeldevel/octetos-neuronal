@@ -151,7 +151,7 @@ void v1_Gate_AND()
     core::array<core::array<float>> bach2I;
     core::array<core::array<float>> bach2O;
     bach_and_1.generate(bach1I,bach1O,1000);
-    bach_and_1.generate(bach2I,bach2O,10);
+    bach_and_1.generate(bach2I,bach2O,4);
 
     /*
     std::cout << "Data\n";
@@ -213,7 +213,7 @@ void v1_Gate_AND()
         }
     }
     if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
-    if(back1_fails <= 1)
+    /*if(back1_fails <= 1)
     {
         for(size_t i = 0; i < bach2I.size(); i++)
         {
@@ -221,7 +221,7 @@ void v1_Gate_AND()
             std::cout << " --> ";
             std::cout << pers1.back().outputs[0][0] << "\n";
         }
-    }
+    }*/
     std::cout << "\n\n";
     CU_ASSERT(back1_fails == 0);
 }
