@@ -137,22 +137,20 @@ void v1_Gate_AND()
 {
     BachGates<float> bach_and_1(1.0e-1f,BachGates<float>::Gate::AND);
     neuronal::Random<float> random;
-    neuronal::Perceptron<float> pers1(2,1,2,2,neuronal::identity);
-
-    core::array<core::array<float>> bach1I_1 {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
-    CU_ASSERT(bach_and_1.is(bach1I_1[0][0]) == false);
-    CU_ASSERT(bach_and_1.is(bach1I_1[0][1]) == false);
-    CU_ASSERT(bach_and_1.is(bach1I_1[1][0]) == false);
-    CU_ASSERT(bach_and_1.is(bach1I_1[1][1]) == true);
-
+    neuronal::Perceptron<float> pers1(2,1,3,3,neuronal::identity);
 
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
     core::array<core::array<float>> bach2I;
     core::array<core::array<float>> bach2O;
     bach_and_1.generate(bach1I,bach1O,1000);
-    bach_and_1.generate(bach2I,bach2O,4);
+    bach_and_1.generate(bach2I,bach2O,10);
 
+    core::array<core::array<float>> bach3I {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
+    CU_ASSERT(bach_and_1.is(bach3I[0][0]) == false);
+    CU_ASSERT(bach_and_1.is(bach3I[0][1]) == false);
+    CU_ASSERT(bach_and_1.is(bach3I[1][0]) == false);
+    CU_ASSERT(bach_and_1.is(bach3I[1][1]) == true);
     /*
     std::cout << "Data\n";
     for(size_t i = 0; i < bach1I.size(); i++)
@@ -175,7 +173,6 @@ void v1_Gate_AND()
         {
             std::cout << bach2I[i][0] << " --> false\n";
         }
-
     }
     std::cout << "\n\n";
     */
@@ -184,14 +181,14 @@ void v1_Gate_AND()
 
     //random.next();
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.21e-7,1,1.0e-2);
-    back1.training(100,100,std::cout);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.871e-8,1,1.0e-6);
+    back1.training(300,100,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
     {
         pers1.feedforward(bach2I[i]);
-        if(bach_and_1.is(bach2I[i][0]) and bach_and_1.is(bach2I[i][1]))
+        /*if(bach_and_1.is(bach2I[i][0]) and bach_and_1.is(bach2I[i][1]))
         {
             if(pers1.back().outputs[0][0] < 1)
             {
@@ -210,6 +207,11 @@ void v1_Gate_AND()
                 std::cout << pers1.back().outputs[0][0] << " Fail\n";
                 back1_fails++;
             }
+        }*/
+        {
+            bach2I[i].print(std::cout);
+            std::cout << " --> ";
+            std::cout << pers1.back().outputs[0][0] << "\n";
         }
     }
     if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
