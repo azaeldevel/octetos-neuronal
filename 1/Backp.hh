@@ -239,6 +239,8 @@ namespace oct::neu::v0
                 actual_error = error();
                 out << "Epoca : " << e;
                 out << "\tError : " << error() << "\n";
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(5ms);
                 if(max_err > actual_error)
                 {
                     out << "Max error : " << actual_error << "\n";

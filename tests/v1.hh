@@ -13,5 +13,6 @@ int v1_clean(void);
 void v1_developing();
 void v1_Gate_AND();
 void v1_Gate_OR();
+void v1_Gate_ORAND();
 
 #endif
