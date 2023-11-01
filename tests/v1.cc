@@ -506,8 +506,8 @@ void v1_Gate_ORAND()
 
     //random.next();
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.781e-11,1,1.0e-6);
-    back1.training(10,100,std::cout);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.781e-13,1,1.0e-6);
+    back1.training(1000,100,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
@@ -536,7 +536,7 @@ void v1_Gate_ORAND()
         {
             bach2I[i].print(std::cout);
             std::cout << " --> ";
-            std::cout << pers1.back().outputs[0][0] << "\n";
+            std::cout << pers1.back().outputs[0][0] << "," << pers1.back().outputs[0][1] << "\n";
         }
     }
     if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
