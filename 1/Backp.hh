@@ -103,7 +103,7 @@ namespace oct::neu::v0
         void iteration()
         {
             using namespace std::chrono_literals;
-            std::this_thread::sleep_for(10ms);
+            std::this_thread::sleep_for(1ms);
 
             for(size_t d = 0; d < inputs.size() ; d++)
             {
