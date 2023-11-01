@@ -122,6 +122,8 @@ public:
         {
             in[i].resize(2);
             out[i].resize(2);
+            out[i][0] = 0;
+            out[i][1] = 0;
         }
         for(size_t i = 0; i < amoung; i++)
         {
@@ -462,13 +464,14 @@ void v1_Gate_ORAND()
 {
     BachGates<float> bach_and_1(1.0e-1f,BachGates<float>::Gate::ORAND);
     neuronal::Random<float> random;
-    neuronal::Perceptron<float> pers1(2,2,3,3,neuronal::identity);
-
+    neuronal::Perceptron<float> pers1(2,2,5,5,neuronal::identity);
     core::array<core::array<float>> bach1I;
     core::array<core::array<float>> bach1O;
     core::array<core::array<float>> bach2I;
     core::array<core::array<float>> bach2O;
-    bach_and_1.generate(bach1I,bach1O,100);
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.781e-20,1,1.0e-6);
+
+    bach_and_1.generate(bach1I,bach1O,1000);
     bach_and_1.generate(bach2I,bach2O,10);
 
     core::array<core::array<float>> bach3I {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
@@ -506,8 +509,8 @@ void v1_Gate_ORAND()
 
     //random.next();
 
-    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.781e-13,1,1.0e-6);
-    back1.training(1000,100,std::cout);
+
+    back1.training(10,100,std::cout);
 
     size_t back1_fails = 0;
     for(size_t i = 0; i < bach2I.size(); i++)
