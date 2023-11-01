@@ -106,51 +106,53 @@ namespace oct::neu::v0
             //std::this_thread::sleep_for(1ms);
             for(size_t d = 0; d < inputs.size() ; d++)
             {
-                perceptro.feedforward(inputs[d]);
+                //perceptro.feedforward(inputs[d]);
                 //perceptro[perceptro.size() - 2].weights.print(std::cout);
 
                 for(size_t o = 0; o < perceptro.back().height; o++)
                 {
-                    //perceptro.feedforward(inputs[d]);
+                    perceptro.feedforward(inputs[d]);
 
-                    errors.back()[o] = dCdf(d,o);
+                    errors.back().back() = dCdf(d,o);
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] -= dfdw(errors.size() - 1,o,w) * errors.back()[o] * ratio;
-                        //std::cout << "dfdw = " << dfdw(errors.size() - 1,o,w) << "\terror = " << errors.back()[o] << "\n";
+                        perceptro.back().weights[o][w] -= dfdw(perceptro.size() - 1,o,w) * errors.back().back() * ratio;
+                        //std::cout << "dfdw = " << dfdw(errors.size() - 1,o,w) << "\terror = " << errors.back().back() << "\n";
                     }
-                    errors.back().back() = 0;
+                    /*errors.back().back() = 0;
                     for(size_t n = 0; n < perceptro.back().height; n++)
                     {
                         errors.back().back() += errors.back()[n];
                     }
-                    errors.back().back() /= O(errors.back().size());
+                    errors.back().back() /= O(errors.back().size());*/
                     //std::cout << "\terror = " << errors.back().back() << "\n";
+
+                    for(int l = perceptro.size() - 2; l > 0 ; l--)
+                    {
+                        for(size_t n = 0; n < perceptro[l].height; n++)
+                        {
+                            for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
+                            {
+                                //std::cout << "Layer : " << l << "\t" << "dfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
+                                perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_for(l) * ratio;
+                                errors[l][n] += dfdw(l,n,w) * get_error_for(l);
+                            }
+                        }
+                        errors[l].back() = 0;
+                        for(size_t n = 0; n < perceptro[l].height; n++)
+                        {
+                            errors[l].back() += errors[l][n];
+                        }
+                        errors[l].back() /= O(errors[l].size());
+                    }
+                    //capa mde entradas
+                    for(size_t n = 0; n < perceptro.front().height; n++)
+                    {
+                        perceptro.front().weights[n][0] -= dfdo(0,n,0) * perceptro.front().weights[n][0] * get_error_for(0) * ratio;
+                    }
                 }
                 //
-                for(int l = perceptro.size() - 2; l > 0 ; l--)
-                {
-                    for(size_t n = 0; n < perceptro[l].height; n++)
-                    {
-                        for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
-                        {
-                            //std::cout << "Layer : " << l << "\t" << "dfdw = " << dfdw(l,n,w) << "\terror = " << get_error_in(l,n) << "\n";
-                            perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_for(l) * ratio;
-                            errors[l][n] += dfdw(l,n,w) * get_error_for(l);
-                        }
-                    }
-                    errors[l].back() = 0;
-                    for(size_t n = 0; n < perceptro[l].height; n++)
-                    {
-                        errors[l].back() += errors[l][n];
-                    }
-                    errors[l].back() /= O(errors[l].size());
-                }
-                //capa mde entradas
-                for(size_t n = 0; n < perceptro.front().height; n++)
-                {
-                    perceptro.front().weights[n][0] -= dfdo(0,n,0) * perceptro.front().weights[n][0] * get_error_for(0) * ratio;
-                }
+
             }
         }
         O error(size_t d)
@@ -205,16 +207,7 @@ namespace oct::neu::v0
 
         O get_error_for(size_t l) const
         {
-            if(l == perceptro.size() - 1)
-            {
-                return errors[l].back();
-            }
-            else
-            {
-                return errors[l + 1].back();
-            }
-
-            return 0;
+            return errors[l + 1].back();
         }
 
     public:
