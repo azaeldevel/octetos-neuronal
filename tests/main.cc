@@ -36,7 +36,13 @@ int main(int argc, char *argv[])
 		return CU_get_error();
 	}*/
 
-	if ((NULL == CU_add_test(pSuite_v1, "NN for AND gate..", v1_Gate_AND)))
+	/*if ((NULL == CU_add_test(pSuite_v1, "NN for AND gate..", v1_Gate_AND)))
+	{
+		CU_cleanup_registry();
+		return CU_get_error();
+	}*/
+
+	if ((NULL == CU_add_test(pSuite_v1, "NN for OR gate..", v1_Gate_OR)))
 	{
 		CU_cleanup_registry();
 		return CU_get_error();

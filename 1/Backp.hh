@@ -102,9 +102,8 @@ namespace oct::neu::v0
     public://fuciones miembros
         void iteration()
         {
-            using namespace std::chrono_literals;
-            std::this_thread::sleep_for(1ms);
-
+            //using namespace std::chrono_literals;
+            //std::this_thread::sleep_for(1ms);
             for(size_t d = 0; d < inputs.size() ; d++)
             {
                 perceptro.feedforward(inputs[d]);
@@ -223,6 +222,8 @@ namespace oct::neu::v0
         {
             for(size_t e = 0; e < epoch; e++)
             {
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(5ms);
                 for(size_t i = 0; i < it; i++)
                 {
                     iteration();
