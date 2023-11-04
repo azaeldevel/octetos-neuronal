@@ -1,7 +1,6 @@
 #ifndef OCTETOS_NEURONAL_V1_PERCEPTRON_HH
 #define OCTETOS_NEURONAL_V1_PERCEPTRON_HH
 
-#include <random>
 
 #include <core/3/numbers.hh>
 #include <core/3/array.hh>
@@ -42,11 +41,6 @@ namespace oct::neu::v0
         O (*dereivation)(I);
     };
 
-    float random1(std::random_device& rd, std::normal_distribution<float>& dist)
-    {
-        return dist(rd);
-    }
-
 
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> struct Layer
     {
@@ -60,9 +54,6 @@ namespace oct::neu::v0
         Layer(size_t inputs,O (*a)(I)) : height(1),activation(a)//perceptron simple
         {
             weights.resize(height,inputs);
-            std::random_device rd;
-            std::uniform_real_distribution<float> dist_error(-0.5f,0.5f);
-            weights[0][0] = dist_error(rd);
             //bias.resize(height,1);
             outputs.resize(height,1);
             //bias[0][0] = 0;
@@ -73,11 +64,9 @@ namespace oct::neu::v0
             weights.resize(height,inputs);
             //bias.resize(height,1);
             outputs.resize(height,1);
-            std::random_device rd;
-            std::uniform_real_distribution<float> dist_error(-0.5f,0.5f);
             for(size_t n = 0; n < height; n++)
             {
-                outputs[n][0] = dist_error(rd);
+                outputs[n][0] = 0;
             }
         }
 
