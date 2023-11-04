@@ -313,10 +313,121 @@ void v1_Gate_AND()
 
 }
 
-
-
-
-void v0_developing()
+template<core::number T> class FunctionBach
 {
+public:
+    FunctionBach(T e,T c,size_t outs,core::array<core::array<T>>& inb, core::array<core::array<T>>& outb) : error(e), cube(c), dist_coordendades(0,c),dist_tang(std::numeric_limits<T>::epsilon(),1.0f - std::numeric_limits<T>::epsilon()),dist_coordendades_delta(std::numeric_limits<T>::epsilon(),c / 10),outputs(outs),input_bach(&inb),output_bach(&outb)
+    {
+    }
 
+    /**
+    *\brief Crea un lote de datos para la linea en 2D
+    */
+    void line(size_t index_out,size_t amoung)
+    {
+        core::array<core::array<T>> bin,bout;
+        bin.resize(amoung);
+        bout.resize(amoung);
+        for(size_t i = 0; i < amoung; i++)
+        {
+            bin[i].resize(2); // dos cordanada(2D) por cada sub
+            bout[i].resize(outputs);
+            for(size_t j = 0; j < outputs; j++)
+            {
+                bout[i][j] = 0;
+            }
+        }
+
+        T m = dist_tang(rd);
+        T b = dist_coordendades(rd);
+        T x;
+
+        for(size_t i = 0; i < amoung; i++)
+        {
+            x = dist_coordendades(rd);
+            x += dist_coordendades_delta(rd);
+            bin[i][0] = x;
+            bin[i][1] = (m * x) + b;
+            bout[i][index_out] = 1;
+        }
+
+        input_bach->push_back(bin);
+        output_bach->push_back(bout);
+    }
+
+    /**
+    *\brief Crea un lote de datos para la random
+    */
+    void random(size_t index_out,size_t amoung)
+    {
+        core::array<core::array<T>> bin,bout;
+        bin.resize(amoung);
+        bout.resize(amoung);
+        for(size_t i = 0; i < amoung; i++)
+        {
+            bin[i].resize(2); // dos cordanada(2D) por cada sub
+            bout[i].resize(outputs);
+            for(size_t j = 0; j < outputs; j++)
+            {
+                bout[i][j] = 0;
+            }
+        }
+
+        for(size_t i = 0; i < amoung; i++)
+        {
+            bin[i][0] = dist_coordendades(rd);
+            bin[i][1] = dist_coordendades(rd);
+            bout[i][index_out] = 1;
+        }
+
+        input_bach->push_back(bin);
+        output_bach->push_back(bout);
+    }
+
+
+
+private:
+    T error;
+    T cube;
+    std::random_device rd;
+    std::uniform_real_distribution<float> dist_coordendades;
+    std::uniform_real_distribution<float> dist_tang;
+    std::uniform_real_distribution<float> dist_coordendades_delta;
+    size_t outputs;
+    core::array<core::array<T>>* input_bach;
+    core::array<core::array<T>>* output_bach;
+};
+
+
+void v1_developing()
+{
+    core::array<core::array<float>> line_bachin_1;
+    core::array<core::array<float>> line_bachout_1;
+    neuronal::Random<float> random(10.0f);
+    FunctionBach<float> bach1_fill(1.0e-2,100,2,line_bachin_1,line_bachout_1);
+    bach1_fill.line(1,100);
+    bach1_fill.random(0,10);
+    bach1_fill.line(1,1000);
+    bach1_fill.random(0,10);
+    bach1_fill.line(1,100);
+    bach1_fill.random(0,10);
+    bach1_fill.line(1,500);
+    /*
+    for(size_t i = 0; i < line_bachin_1.size(); i++)
+    {
+        line_bachin_1[i].printLn(std::cout);
+    }
+    */
+    neuronal::Perceptron<float> pers1(2,2,10,5,neuronal::identity);
+    neuronal::Backp<float> back1(line_bachin_1,line_bachout_1,pers1,neuronal::identity_D,1.31e-2,random,1.0e-3);
+    back1.training(100,100,std::cout);
+    for(size_t i = 0; i < line_bachin_1.size(); i++)
+    {
+        pers1.feedforward(line_bachin_1[i]);
+        {
+            line_bachin_1[i].print(std::cout);
+            std::cout << " --> ";
+            std::cout << pers1.back().outputs[0][0] << "\n";
+        }
+    }
 }
