@@ -404,22 +404,16 @@ void v1_developing()
     core::array<core::array<float>> line_bachin_1;
     core::array<core::array<float>> line_bachout_1;
     neuronal::Random<float> random(10.0f);
-    FunctionBach<float> bach1_fill(1.0e-2,100,2,line_bachin_1,line_bachout_1);
-    bach1_fill.line(1,100);
-    bach1_fill.random(0,10);
-    bach1_fill.line(1,1000);
-    bach1_fill.random(0,10);
-    bach1_fill.line(1,100);
-    bach1_fill.random(0,10);
-    bach1_fill.line(1,500);
+    FunctionBach<float> bach1_fill(1.0e-2,100,1,line_bachin_1,line_bachout_1);
+    bach1_fill.line(0,1000);
     /*
     for(size_t i = 0; i < line_bachin_1.size(); i++)
     {
         line_bachin_1[i].printLn(std::cout);
     }
     */
-    neuronal::Perceptron<float> pers1(2,2,10,5,neuronal::identity);
-    neuronal::Backp<float> back1(line_bachin_1,line_bachout_1,pers1,neuronal::identity_D,1.31e-2,random,1.0e-3);
+    neuronal::Perceptron<float> pers1(2,1,10,5,neuronal::identity);
+    neuronal::Backp<float> back1(line_bachin_1,line_bachout_1,pers1,neuronal::identity_D,1.0e-2,random,1.0e-3);
     back1.training(100,100,std::cout);
     for(size_t i = 0; i < line_bachin_1.size(); i++)
     {
