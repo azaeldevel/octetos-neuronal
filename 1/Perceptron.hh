@@ -42,6 +42,12 @@ namespace oct::neu::v0
         O (*dereivation)(I);
     };
 
+    float random1(std::random_device& rd, std::normal_distribution<float>& dist)
+    {
+        return dist(rd);
+    }
+
+
     template<core::number I,core::number W = I,core::number O = I,core::number B = I> struct Layer
     {
         numbers::matrix<W> weights;
