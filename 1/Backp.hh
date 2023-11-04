@@ -89,14 +89,17 @@ namespace oct::neu::v0
 
                     for(int l = perceptro.size() - 2; l > 0 ; l--)
                     {
+                        std::cout << "Layer : " << l ;
                         for(size_t n = 0; n < perceptro[l].height; n++)
                         {
+                            std::cout << "\t Neuron : " << n ;
                             for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                             {
-                                //std::cout << "Layer : " << l << "\t" << "dfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
+                                std::cout << "dfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
                                 perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_for(l) * ratio;
                                 errors[l][n] += dfdw(l,n,w) * get_error_for(l);
                             }
+                            std::cout << "\n";
                         }
                         errors[l].back() = 0;
                         for(size_t n = 0; n < perceptro[l].height; n++)
@@ -106,9 +109,12 @@ namespace oct::neu::v0
                         errors[l].back() /= O(errors[l].size());
                     }
                     //capa mde entradas
+                    //std::cout << "Layer : 0\n" ;
                     for(size_t n = 0; n < perceptro.front().height; n++)
                     {
-                        perceptro.front().weights[n][0] -= dfdo(0,n,0) * perceptro.front().weights[n][0] * get_error_for(0) * ratio;
+                        //std::cout << "\t\tNeuron : " << n << "\tdfdw(0,n,0) = "  << dfdo(0,n,0) * dodw(n) << "\terror = " << get_error_for(0);
+                        perceptro.front().weights[n][0] -= dfdo(0,n,0) * dodw(n) * perceptro.front().weights[n][0] * inputs[d][n] * get_error_for(0) * ratio;
+                        //std::cout << "\tweight : " << perceptro.front().weights[n][0] << "\n";
                     }
                 }
                 //
@@ -164,7 +170,11 @@ namespace oct::neu::v0
         */
         O dodw(size_t l, size_t n,size_t w)
         {
-            return (*derivaties[l - 1])(perceptro[l - 1].outputs[w][0]);
+            return (*derivaties[l - 1])(perceptro[l - 1].outputs[n][0]);
+        }
+        O dodw(size_t n)
+        {
+            return (*derivaties[0])(perceptro[0].outputs[n][0]);
         }
 
         /**
