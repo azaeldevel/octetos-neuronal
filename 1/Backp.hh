@@ -143,28 +143,42 @@ namespace oct::neu::v0
             return S;
         }
 
-
-        /*
-        *
+        /**
+        *\brief The derivative of funtion error
         */
         O dCdf(size_t d,size_t o)
         {
             return (perceptro.back().outputs[o][0] - outputs[d][o]) * O(2);
         }
+
+        /**
+        *\brief The derivative of activation funtion with respect to the weighted sum
+        */
         O dfdo(size_t l, size_t n,size_t w)
         {
             return (*derivaties[l])(perceptro[l].outputs[n][0]);
         }
+
+        /**
+        *\brief The derivative weighted sum with respect to the weight w
+        */
         O dodw(size_t l, size_t n,size_t w)
         {
             return (*derivaties[l - 1])(perceptro[l - 1].outputs[w][0]);
         }
+
+        /**
+        *\brief The derivative of activation funtion with respect to the weight w
+        */
         O dfdw(size_t l, size_t n,size_t w)
         {
             return dfdo(l,n,w) * dodw(l,n,w);
         }
 
 
+        /**
+        *\brief Read la saved error for use in the atual layer
+        */
         O get_error_for(size_t l) const
         {
             return errors[l + 1].back();
