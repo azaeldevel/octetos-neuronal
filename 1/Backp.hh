@@ -15,7 +15,10 @@ namespace oct::neu::v0
     template<core::number W> class Random
     {
     public:
-        Random() : gen{rd()},dist(1.0f,0.25f)
+        Random() : dist(0,1)
+        {
+        }
+        Random(W r) : dist(-r,r)
         {
         }
         W next()
@@ -23,9 +26,8 @@ namespace oct::neu::v0
             return dist(gen);
         }
     private:
-    std::random_device rd;
-    std::mt19937 gen;
-    std::normal_distribution<float> dist;
+    std::default_random_engine gen;
+    std::uniform_real_distribution<float> dist;
 
     };
 
@@ -64,28 +66,29 @@ namespace oct::neu::v0
         {
             //using namespace std::chrono_literals;
             //std::this_thread::sleep_for(1ms);
+            W delta;
             for(size_t d = 0; d < inputs.size() ; d++)
             {
                 //perceptro.feedforward(inputs[d]);
                 //perceptro[perceptro.size() - 2].weights.print(std::cout);
+                //std::cout << "Data : " << d << "\n";
 
                 for(size_t o = 0; o < perceptro.back().height; o++)
                 {
                     perceptro.feedforward(inputs[d]);
 
                     errors.back().back() = dCdf(d,o);
+                    //std::cout << "\tNeuron : " << o << "\n";
                     for(size_t w = 0; w < perceptro.back().weights.columns(); w++)
                     {
-                        perceptro.back().weights[o][w] -= dfdw(perceptro.size() - 1,o,w) * errors.back().back() * ratio;
+                        delta = dfdw(perceptro.size() - 1,o,w) * errors.back().back() * ratio;
+                        //std::cout << "\t\tweight : " << w << "\n";
+                        //std::cout << "\t\t\tdfdw = "  << dfdw(perceptro.size() - 1,o,w) << "\terror = " << errors.back().back() << "\tdelta = " << delta;
+                        perceptro.back().weights[o][w] -= delta;
                         //std::cout << "dfdw = " << dfdw(errors.size() - 1,o,w) << "\terror = " << errors.back().back() << "\n";
+                        //std::cout << "\tweight : " << perceptro.back().weights[o][w] << "\n";
+                        //std::cout << "\n";
                     }
-                    /*errors.back().back() = 0;
-                    for(size_t n = 0; n < perceptro.back().height; n++)
-                    {
-                        errors.back().back() += errors.back()[n];
-                    }
-                    errors.back().back() /= O(errors.back().size());*/
-                    //std::cout << "\terror = " << errors.back().back() << "\n";
 
                     for(int l = perceptro.size() - 2; l > 0 ; l--)
                     {
@@ -95,7 +98,7 @@ namespace oct::neu::v0
                             std::cout << "\t Neuron : " << n ;
                             for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                             {
-                                std::cout << "dfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
+                                std::cout << "\tdfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
                                 perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_for(l) * ratio;
                                 errors[l][n] += dfdw(l,n,w) * get_error_for(l);
                             }
@@ -112,8 +115,8 @@ namespace oct::neu::v0
                     //std::cout << "Layer : 0\n" ;
                     for(size_t n = 0; n < perceptro.front().height; n++)
                     {
-                        //std::cout << "\t\tNeuron : " << n << "\tdfdw(0,n,0) = "  << dfdo(0,n,0) * dodw(n) << "\terror = " << get_error_for(0);
-                        perceptro.front().weights[n][0] -= dfdo(0,n,0) * dodw(n) * perceptro.front().weights[n][0] * inputs[d][n] * get_error_for(0) * ratio;
+                        //std::cout << "\t\tNeuron : " << n << "\tdfdw(0,n,0) = "  << dfdo(0,n,0) * dodw(d,n) << "\terror = " << get_error_for(0);
+                        perceptro.front().weights[n][0] -= dfdo(0,n,0) * dodw(d,n) * get_error_for(0) * ratio;
                         //std::cout << "\tweight : " << perceptro.front().weights[n][0] << "\n";
                     }
                 }
@@ -170,11 +173,11 @@ namespace oct::neu::v0
         */
         O dodw(size_t l, size_t n,size_t w)
         {
-            return (*derivaties[l - 1])(perceptro[l - 1].outputs[n][0]);
+            return perceptro[l - 1].outputs[w][0];
         }
-        O dodw(size_t n)
+        O dodw(size_t d,size_t n)
         {
-            return (*derivaties[0])(perceptro[0].outputs[n][0]);
+            return inputs[d][n];
         }
 
         /**
