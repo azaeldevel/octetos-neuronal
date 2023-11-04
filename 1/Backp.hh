@@ -92,17 +92,18 @@ namespace oct::neu::v0
 
                     for(int l = perceptro.size() - 2; l > 0 ; l--)
                     {
-                        std::cout << "Layer : " << l ;
+                        //std::cout << "Layer : " << l ;
                         for(size_t n = 0; n < perceptro[l].height; n++)
                         {
-                            std::cout << "\t Neuron : " << n ;
+                            //std::cout << "\t Neuron : " << n ;
                             for(size_t w = 0; w < perceptro[l].weights.columns(); w++)
                             {
-                                std::cout << "\tdfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
-                                perceptro[l].weights[n][w] -= dfdw(l,n,w) * get_error_for(l) * ratio;
+                                delta = dfdw(l,n,w) * get_error_for(l) * ratio;
+                                //std::cout << "\tdfdw = " << dfdw(l,n,w) << "\terror = " << get_error_for(l) << "\n";
+                                perceptro[l].weights[n][w] -= delta;
                                 errors[l][n] += dfdw(l,n,w) * get_error_for(l);
                             }
-                            std::cout << "\n";
+                            //std::cout << "\n";
                         }
                         errors[l].back() = 0;
                         for(size_t n = 0; n < perceptro[l].height; n++)
