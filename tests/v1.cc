@@ -313,6 +313,48 @@ void v1_Gate_AND()
 
 }
 
+void v1_Gate_OR()
+{
+    BachGates<float> bach_and_1(1.0e-1f,BachGates<float>::Gate::OR);
+    neuronal::Random<float> random(0.5f);
+    neuronal::Perceptron<float> pers1(2,1,3,2,neuronal::identity);
+
+    core::array<core::array<float>> bach1I;
+    core::array<core::array<float>> bach1O;
+    core::array<core::array<float>> bach2I;
+    core::array<core::array<float>> bach2O;
+    bach_and_1.generate(bach1I,bach1O,1000);
+    bach_and_1.generate(bach2I,bach2O,10);
+
+    neuronal::Backp<float> back1(bach1I,bach1O,pers1,neuronal::identity_D,1.31e-3,random,1.0e-4);
+    back1.training(100,100);
+    /*size_t back1_fails = 0;
+    for(size_t i = 0; i < bach2I.size(); i++)
+    {
+        pers1.feedforward(bach2I[i]);
+        {
+            bach2I[i].print(std::cout);
+            std::cout << " --> ";
+            std::cout << pers1.back().outputs[0][0] << "\n";
+        }
+    }
+    if(back1_fails > 0) std::cout << "Fallos totales : " << back1_fails << " de " << bach2I.size() << " : " << float(100) * float(back1_fails)/float(bach2I.size()) << "%\n";
+    std::cout << "\n\n";
+    CU_ASSERT(back1_fails == 0);*/
+
+    core::array<core::array<float>> bach3I {{0.1f,0.0f},{0.09f,1.09f},{1.1f,0.0f},{1.03f,1.01f}};
+    pers1.feedforward(bach3I[0]);
+    CU_ASSERT(pers1.back().outputs[0][0] < 0.5f)
+    pers1.feedforward(bach3I[1]);
+    CU_ASSERT(pers1.back().outputs[0][0] > 0.5f)
+    pers1.feedforward(bach3I[2]);
+    CU_ASSERT(pers1.back().outputs[0][0] > 0.5f)
+    pers1.feedforward(bach3I[3]);
+    CU_ASSERT(pers1.back().outputs[0][0] > 0.5f)
+
+}
+
+
 template<core::number T> class FunctionBach
 {
 public:
