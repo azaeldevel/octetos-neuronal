@@ -445,9 +445,9 @@ void v1_developing()
 {
     core::array<core::array<float>> line_bachin_1;
     core::array<core::array<float>> line_bachout_1;
-    neuronal::Random<float> random(10.0f);
-    FunctionBach<float> bach1_fill(1.0e-2,100,1,line_bachin_1,line_bachout_1);
-    bach1_fill.line(0,1000);
+    neuronal::Random<float> random(0.5f);
+    FunctionBach<float> bach1_fill(1.0e-2f,1.0f,1,line_bachin_1,line_bachout_1);
+    bach1_fill.line(0,100000);
     /*
     for(size_t i = 0; i < line_bachin_1.size(); i++)
     {
@@ -455,9 +455,9 @@ void v1_developing()
     }
     */
     neuronal::Perceptron<float> pers1(2,1,10,5,neuronal::identity);
-    neuronal::Backp<float> back1(line_bachin_1,line_bachout_1,pers1,neuronal::identity_D,1.0e-2,random,1.0e-3);
+    neuronal::Backp<float> back1(line_bachin_1,line_bachout_1,pers1,neuronal::identity_D,1.0e-2,random,1.0e-6);
     back1.training(100,100,std::cout);
-    for(size_t i = 0; i < line_bachin_1.size(); i++)
+    for(size_t i = 0; i < 5; i++)
     {
         pers1.feedforward(line_bachin_1[i]);
         {
